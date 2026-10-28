@@ -9,7 +9,7 @@ from core.snap import Tool
 def test_inventory_loads_sheet_libraries(tools):
     drills = [t for t in tools if t.type == "drill"]
     endmills = [t for t in tools if t.type == "endmill" and t.available]
-    assert len(drills) == 130 and all(t.available for t in drills)
+    assert len(drills) == 132 and all(t.available for t in drills)
     assert sorted(t.name for t in endmills) == sorted(
         ["1/8", "3/16", "1/4", "5/16", "3/8", "1/2", "3/4", "1", "5 mm", "6 mm"])
 
@@ -83,7 +83,7 @@ def test_sheet_export_matches_google_sheet_tabs(tools, tmp_path):
     assert drills[0] == ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)",
                          "Drill Category", "Available"]
     assert mills[0] == ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)", "Available"]
-    assert len(drills) == 131 and len(mills) == 226          # header + every tool, like the sheet
+    assert len(drills) == 133 and len(mills) == 226          # header + every tool, like the sheet
     by = {r[0]: r for r in drills[1:]}
     assert by["29"][1:] == ["Drill", "Imperial", "in", "0.1360", "3.4544", "Number", "YES"]
     assert by["5 mm"][1:] == ["Drill", "Metric", "mm", "0.1969", "5.0000", "Metric", "YES"]
