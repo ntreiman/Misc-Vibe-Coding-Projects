@@ -25,9 +25,11 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
 Only the "tool-driven" parameters (`mX_clearance_hole`, `mX_pilot_drill`,
-`mX_counterbore_ID_round/socket`) are written. Counterbore depths and
-countersink chamfer legs keep their Fusion expressions and recompute by
-themselves.
+`mX_counterbore_ID_round/socket`, `emN_dia`) are written. Counterbore depths,
+countersink chamfer legs and `mX_countersink_OD` (the countersink's edge
+diameter at the surface — sketch that circle; it equals the theoretical head
+diameter + 2 × depth clearance and is the same for clearance and tapped
+holes) keep their Fusion expressions and recompute by themselves.
 
 Sizes are discovered from the design: every `mX_nominal_dia` present is a
 size, and a family whose inputs are absent for a size (say M8 has clearance and

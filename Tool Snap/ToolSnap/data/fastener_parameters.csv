@@ -127,6 +127,11 @@ m3_countersink_chamfer_tapped,mm,m3_flat_head_height + countersink_depth_clearan
 m4_countersink_chamfer_tapped,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_pilot_drill) / 2,2.95,45 deg equal-distance chamfer leg on the hole edge,true
 m5_countersink_chamfer_tapped,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_pilot_drill) / 2,3.5,45 deg equal-distance chamfer leg on the hole edge,true
 m6_countersink_chamfer_tapped,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_pilot_drill) / 2,4.1,45 deg equal-distance chamfer leg on the hole edge,true
+m2_countersink_OD,mm,m2_nominal_dia + 2 * (m2_flat_head_height + countersink_depth_clearance),5,"Countersink edge diameter at the surface (sketch this circle); theoretical head diameter + 2 x depth clearance, identical for clearance and tapped holes",true
+m3_countersink_OD,mm,m3_nominal_dia + 2 * (m3_flat_head_height + countersink_depth_clearance),7,"Countersink edge diameter at the surface (sketch this circle); theoretical head diameter + 2 x depth clearance, identical for clearance and tapped holes",true
+m4_countersink_OD,mm,m4_nominal_dia + 2 * (m4_flat_head_height + countersink_depth_clearance),9.2,"Countersink edge diameter at the surface (sketch this circle); theoretical head diameter + 2 x depth clearance, identical for clearance and tapped holes",true
+m5_countersink_OD,mm,m5_nominal_dia + 2 * (m5_flat_head_height + countersink_depth_clearance),11.2,"Countersink edge diameter at the surface (sketch this circle); theoretical head diameter + 2 x depth clearance, identical for clearance and tapped holes",true
+m6_countersink_OD,mm,m6_nominal_dia + 2 * (m6_flat_head_height + countersink_depth_clearance),13.2,"Countersink edge diameter at the surface (sketch this circle); theoretical head diameter + 2 x depth clearance, identical for clearance and tapped holes",true
 em3_nominal_dia,mm,,3,EM3: the endmill class wanted (3 mm),false
 em6_nominal_dia,mm,,6,EM6: the endmill class wanted (6 mm),false
 em10_nominal_dia,mm,,10,EM10: the endmill class wanted (10 mm),false

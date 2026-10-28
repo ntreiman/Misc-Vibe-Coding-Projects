@@ -176,7 +176,7 @@ def param_rows(sizes: Iterable[str], families: Iterable[str] = FAMILIES,
         "pilot", "pilot_nominal", "pitch", "tap_min", "tap_max",
         "socket_h", "socket_od", "flat_h", "flat_od", "round_h", "round_od",
         "globals", "cb_od_round", "cb_depth_round", "cb_od_socket", "cb_depth_socket",
-        "csk_slip", "csk_tapped")}
+        "csk_slip", "csk_tapped", "csk_od")}
 
     for key in sizes:
         s = SIZES[key]; d = s["d"]; p = s["p"]; lbl = size_label(key)
@@ -235,6 +235,13 @@ def param_rows(sizes: Iterable[str], families: Iterable[str] = FAMILIES,
                     f"{key}_countersink_chamfer_tapped",
                     f"{key}_flat_head_height + countersink_depth_clearance + ({key}_nominal_dia - {key}_pilot_drill) / 2",
                     None, note, True))
+            # surface diameter of the countersink = hole + 2 x chamfer; the hole cancels,
+            # so it is the same on a clearance hole and a tapped hole
+            blocks["csk_od"].append(_row(
+                f"{key}_countersink_OD",
+                f"{key}_nominal_dia + 2 * ({key}_flat_head_height + countersink_depth_clearance)",
+                None, "Countersink edge diameter at the surface (sketch this circle); theoretical head "
+                      "diameter + 2 x depth clearance, identical for clearance and tapped holes", True))
     if include_globals:
         blocks["globals"] = [_row(n, "", v, c) for n, v, c in GLOBALS]
     for k in blocks:

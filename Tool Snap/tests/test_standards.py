@@ -93,3 +93,14 @@ def test_short_names_and_tool_labels():
     assert inventory.label(Tool("1/16", "drill", 1.5875, category="Fractional")) == '1/16"'
     assert inventory.label(Tool("E", "drill", 6.35, category="Letter")) == "E"
     assert inventory.label(Tool("5 mm", "endmill", 5.0, category="Metric")) == "5 mm"
+
+
+def test_countersink_od_is_hole_plus_two_chamfers_for_either_hole():
+    rows = standards.param_rows(["m3", "m8"])
+    v = paramcsv.values(rows)
+    for m in ("m3", "m8"):
+        od = v[f"{m}_countersink_OD"]
+        assert od == pytest.approx(v[f"{m}_clearance_hole"] + 2 * v[f"{m}_countersink_chamfer_clearance"], abs=1e-3)
+        assert od == pytest.approx(v[f"{m}_pilot_drill"] + 2 * v[f"{m}_countersink_chamfer_tapped"], abs=1e-3)
+    assert v["m3_countersink_OD"] == pytest.approx(7.0)      # 3 + 2 * (1.7 + 0.3)
+    assert "m7_countersink_OD" not in paramcsv.values(standards.param_rows(["m7"]))   # no flat head data
