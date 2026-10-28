@@ -41,7 +41,10 @@ def remove_panel(ui: adsk.core.UserInterface) -> None:
 
 
 def add_button(ui: adsk.core.UserInterface, panel: adsk.core.ToolbarPanel,
-               cmd_id: str, name: str, tooltip: str, created_handler) -> adsk.core.CommandDefinition:
+               cmd_id: str, name: str, tooltip: str, created_handler,
+               promoted: bool = False) -> adsk.core.CommandDefinition:
+    """Add a command to the TOOL SNAP panel; only a promoted one shows as an icon,
+    the rest sit in the panel's drop-down."""
     cmd_def = ui.commandDefinitions.itemById(cmd_id)
     if cmd_def:
         cmd_def.deleteMe()
@@ -52,7 +55,8 @@ def add_button(ui: adsk.core.UserInterface, panel: adsk.core.ToolbarPanel,
     if control:
         control.deleteMe()
     control = panel.controls.addCommand(cmd_def)
-    control.isPromoted = True
+    control.isPromoted = promoted
+    control.isPromotedByDefault = promoted
     return cmd_def
 
 
@@ -72,6 +76,11 @@ def remove_button(ui: adsk.core.UserInterface, cmd_id: str) -> None:
 
 def report_error(ui: adsk.core.UserInterface, title: str) -> None:
     ui.messageBox(f"{title}\n\n{traceback.format_exc()}", "ToolSnap")
+
+
+def user_parameter_names(design) -> list:
+    params = design.userParameters
+    return [params.item(i).name for i in range(params.count)]
 
 
 def active_design(app: adsk.core.Application):

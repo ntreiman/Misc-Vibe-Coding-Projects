@@ -14,17 +14,27 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 
 ## Commands (Design → Solid tab → TOOL SNAP panel)
 
+**Snap to Tools** is the panel's icon; the other commands are in its drop-down.
+
 | Command | What it does |
 |---|---|
 | **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off / Keep), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
 | **Add Shop Tool** | Type (drill / endmill), diameter (`10`, `0.4375`, or `7/16`), unit, optional name → appended to `data/shop_tools.json`. |
-| **Shop Tools** | Table of the whole inventory (name, type, Ø mm / in, category) with a filter for drills / endmills / available only. Tick or untick *Available* to retire or restore a tool. *Export CSVs on Save* writes `Drill Library.csv` and `Endmill Library.csv` — one per Google Sheet tab, same columns — into a folder you pick. |
+| **Shop Tools** | Filterable inventory table — type, category (Number / Letter / Fractional / Metric), available / retired, Ø range, name search, "only tools a hole snaps to" — with human labels (`#29`, `1/16"`, `E`, `5 mm`), a **Used for** column (which hole parameters currently pick that tool) and a shown/total count. Tick or untick *Available* to retire or restore a tool; Save persists. *Export CSVs on Save* writes `Drill Library.csv` and `Endmill Library.csv` — one per Google Sheet tab, same columns — into a folder you pick. |
+| **Add Fastener Size** | Pick a size (M1.6 … M20) and the features to set up — clearance hole, tap drill, socket-head counterbore, button-head counterbore, countersink — and the parameters are created from the standards table (`core/standards.py`: ISO 273 + ISO 286 limits, ISO 262 pitch, ISO 965-1 6H band, ISO 4762 / ISO 7380 / DIN 7991 heads). Snap to Tools then shows the size automatically; features without standard head data for a size (e.g. M7 counterbores) are greyed out. |
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
-Only the 20 "tool-driven" parameters (`mX_clearance_hole`, `mX_pilot_drill`,
+Only the "tool-driven" parameters (`mX_clearance_hole`, `mX_pilot_drill`,
 `mX_counterbore_OD_round/socket`) are written. Counterbore depths and
 countersink chamfer legs keep their Fusion expressions and recompute by
 themselves.
+
+Sizes are discovered from the design: every `mX_nominal_dia` present is a
+size, and a family whose inputs are absent for a size (say M8 has clearance and
+tap-drill parameters but no head data) is simply listed as "not set up" rather
+than being an error. `fastener_parameters.csv` (M2–M6, all families) is
+generated from the same standards table Add Fastener Size uses, and a test
+keeps the two identical.
 
 ## Snap semantics (identical to the spreadsheet)
 
@@ -77,9 +87,9 @@ wall.
   unused. Seeded from the Drill Library / Endmill Library tabs; **Shop Tools →
   Export** writes it back out in exactly that two-tab layout.
 * `snap_rules.json` — which parameters are tool-driven and how. `{m}` expands
-  over `sizes`, `{fit}` is the active clearance series; `target` and `floor`
-  are ordinary Fusion expressions over user parameters. Add M8 by appending
-  `"m8"` to `sizes` and the M8 inputs to the CSV — no Python changes.
+  over the sizes found in the design (the file's `sizes` list is only the CLI
+  default), `{fit}` is the active clearance series; `target`, `floor` and
+  `ceiling` are ordinary Fusion expressions over user parameters.
 * `fastener_parameters.csv` — the ExportedParameters tab in Fusion's own
   parameter CSV format (also importable via Parameters → Import in Fusion).
 * `snap_settings.json` — last-used fit / tolerance / per-row modes (auto-written).
@@ -135,8 +145,9 @@ implies).
 ```
 ToolSnap/
   ToolSnap.py, ToolSnap.manifest   add-in entry point
-  core/      pure Python: snap.py (modes/floor), rules.py, inventory.py,
-             paramcsv.py, expr.py (safe expression evaluator for tests/CLI)
+  core/      pure Python: snap.py (modes/floor/ceiling), rules.py, inventory.py,
+             standards.py (fastener data -> parameters), paramcsv.py,
+             expr.py (safe expression evaluator for tests/CLI)
   fusion/    Fusion API only: commands, user-parameter I/O, CAM library reader
   resources/ toolbar icon (16/32/64 px + @2x)
   data/      inventory, rules, parameter CSV

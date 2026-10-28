@@ -1,14 +1,14 @@
 Name,Unit,Expression,Value,Comments,Favorite
-m2_nominal_dia,mm,,2,,false
-m3_nominal_dia,mm,,3,,false
-m4_nominal_dia,mm,,4,,false
-m5_nominal_dia,mm,,5,,false
-m6_nominal_dia,mm,,6,,false
-m2_clearance_hole,mm,,2.4384,Tool-driven: written by ToolSnap from the shop inventory,true
-m3_clearance_hole,mm,,3.4544,Tool-driven: written by ToolSnap from the shop inventory,true
+m2_nominal_dia,mm,,2,M2 nominal thread diameter,false
+m3_nominal_dia,mm,,3,M3 nominal thread diameter,false
+m4_nominal_dia,mm,,4,M4 nominal thread diameter,false
+m5_nominal_dia,mm,,5,M5 nominal thread diameter,false
+m6_nominal_dia,mm,,6,M6 nominal thread diameter,false
+m2_clearance_hole,mm,,2.4,Tool-driven: written by ToolSnap from the shop inventory,true
+m3_clearance_hole,mm,,3.4,Tool-driven: written by ToolSnap from the shop inventory,true
 m4_clearance_hole,mm,,4.5,Tool-driven: written by ToolSnap from the shop inventory,true
 m5_clearance_hole,mm,,5.5,Tool-driven: written by ToolSnap from the shop inventory,true
-m6_clearance_hole,mm,,6.6294,Tool-driven: written by ToolSnap from the shop inventory,true
+m6_clearance_hole,mm,,6.6,Tool-driven: written by ToolSnap from the shop inventory,true
 m2_clearance_hole_fine,mm,,2.2,ISO 273 fine series,false
 m3_clearance_hole_fine,mm,,3.2,ISO 273 fine series,false
 m4_clearance_hole_fine,mm,,4.3,ISO 273 fine series,false
@@ -24,25 +24,25 @@ m3_clearance_hole_coarse,mm,,3.6,ISO 273 coarse series,false
 m4_clearance_hole_coarse,mm,,4.8,ISO 273 coarse series,false
 m5_clearance_hole_coarse,mm,,5.8,ISO 273 coarse series,false
 m6_clearance_hole_coarse,mm,,7,ISO 273 coarse series,false
-m2_clearance_hole_fine_max,mm,m2_clearance_hole_fine + 0.1 mm,2.30,"ISO 273 fine = H12: upper limit, IT12 over 1-3 mm = 0.1 (ISO 286)",false
+m2_clearance_hole_fine_max,mm,m2_clearance_hole_fine + 0.1 mm,2.3,"ISO 273 fine = H12: upper limit, IT12 over 0-3 mm = 0.1 (ISO 286)",false
 m3_clearance_hole_fine_max,mm,m3_clearance_hole_fine + 0.12 mm,3.32,"ISO 273 fine = H12: upper limit, IT12 over 3-6 mm = 0.12 (ISO 286)",false
 m4_clearance_hole_fine_max,mm,m4_clearance_hole_fine + 0.12 mm,4.42,"ISO 273 fine = H12: upper limit, IT12 over 3-6 mm = 0.12 (ISO 286)",false
 m5_clearance_hole_fine_max,mm,m5_clearance_hole_fine + 0.12 mm,5.42,"ISO 273 fine = H12: upper limit, IT12 over 3-6 mm = 0.12 (ISO 286)",false
 m6_clearance_hole_fine_max,mm,m6_clearance_hole_fine + 0.15 mm,6.55,"ISO 273 fine = H12: upper limit, IT12 over 6-10 mm = 0.15 (ISO 286)",false
-m2_clearance_hole_medium_max,mm,m2_clearance_hole_medium + 0.14 mm,2.54,"ISO 273 medium = H13: upper limit, IT13 over 1-3 mm = 0.14 (ISO 286)",false
+m2_clearance_hole_medium_max,mm,m2_clearance_hole_medium + 0.14 mm,2.54,"ISO 273 medium = H13: upper limit, IT13 over 0-3 mm = 0.14 (ISO 286)",false
 m3_clearance_hole_medium_max,mm,m3_clearance_hole_medium + 0.18 mm,3.58,"ISO 273 medium = H13: upper limit, IT13 over 3-6 mm = 0.18 (ISO 286)",false
 m4_clearance_hole_medium_max,mm,m4_clearance_hole_medium + 0.18 mm,4.68,"ISO 273 medium = H13: upper limit, IT13 over 3-6 mm = 0.18 (ISO 286)",false
 m5_clearance_hole_medium_max,mm,m5_clearance_hole_medium + 0.18 mm,5.68,"ISO 273 medium = H13: upper limit, IT13 over 3-6 mm = 0.18 (ISO 286)",false
 m6_clearance_hole_medium_max,mm,m6_clearance_hole_medium + 0.22 mm,6.82,"ISO 273 medium = H13: upper limit, IT13 over 6-10 mm = 0.22 (ISO 286)",false
-m2_clearance_hole_coarse_max,mm,m2_clearance_hole_coarse + 0.25 mm,2.85,"ISO 273 coarse = H14: upper limit, IT14 over 1-3 mm = 0.25 (ISO 286)",false
-m3_clearance_hole_coarse_max,mm,m3_clearance_hole_coarse + 0.3 mm,3.90,"ISO 273 coarse = H14: upper limit, IT14 over 3-6 mm = 0.3 (ISO 286)",false
-m4_clearance_hole_coarse_max,mm,m4_clearance_hole_coarse + 0.3 mm,5.10,"ISO 273 coarse = H14: upper limit, IT14 over 3-6 mm = 0.3 (ISO 286)",false
-m5_clearance_hole_coarse_max,mm,m5_clearance_hole_coarse + 0.3 mm,6.10,"ISO 273 coarse = H14: upper limit, IT14 over 3-6 mm = 0.3 (ISO 286)",false
+m2_clearance_hole_coarse_max,mm,m2_clearance_hole_coarse + 0.25 mm,2.85,"ISO 273 coarse = H14: upper limit, IT14 over 0-3 mm = 0.25 (ISO 286)",false
+m3_clearance_hole_coarse_max,mm,m3_clearance_hole_coarse + 0.3 mm,3.9,"ISO 273 coarse = H14: upper limit, IT14 over 3-6 mm = 0.3 (ISO 286)",false
+m4_clearance_hole_coarse_max,mm,m4_clearance_hole_coarse + 0.3 mm,5.1,"ISO 273 coarse = H14: upper limit, IT14 over 3-6 mm = 0.3 (ISO 286)",false
+m5_clearance_hole_coarse_max,mm,m5_clearance_hole_coarse + 0.3 mm,6.1,"ISO 273 coarse = H14: upper limit, IT14 over 3-6 mm = 0.3 (ISO 286)",false
 m6_clearance_hole_coarse_max,mm,m6_clearance_hole_coarse + 0.36 mm,7.36,"ISO 273 coarse = H14: upper limit, IT14 over 6-10 mm = 0.36 (ISO 286)",false
-m2_pilot_drill,mm,,1.6129,Tool-driven: written by ToolSnap from the shop inventory,true
+m2_pilot_drill,mm,,1.6,Tool-driven: written by ToolSnap from the shop inventory,true
 m3_pilot_drill,mm,,2.5,Tool-driven: written by ToolSnap from the shop inventory,true
-m4_pilot_drill,mm,,3.4544,Tool-driven: written by ToolSnap from the shop inventory,true
-m5_pilot_drill,mm,,4.2164,Tool-driven: written by ToolSnap from the shop inventory,true
+m4_pilot_drill,mm,,3.3,Tool-driven: written by ToolSnap from the shop inventory,true
+m5_pilot_drill,mm,,4.2,Tool-driven: written by ToolSnap from the shop inventory,true
 m6_pilot_drill,mm,,5,Tool-driven: written by ToolSnap from the shop inventory,true
 m2_pilot_drill_nominal,mm,,1.6,"Standard tap drill, ISO metric coarse thread (~75% thread)",false
 m3_pilot_drill_nominal,mm,,2.5,"Standard tap drill, ISO metric coarse thread (~75% thread)",false
@@ -55,75 +55,75 @@ m4_thread_pitch,mm,,0.7,ISO metric coarse pitch; drives the % thread note in Too
 m5_thread_pitch,mm,,0.8,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
 m6_thread_pitch,mm,,1,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
 m2_tap_drill_min,mm,m2_nominal_dia - 1.082532 * m2_thread_pitch,1.567,6H minor diameter minimum = basic D1 (ISO 965-1),false
-m3_tap_drill_min,mm,m3_nominal_dia - 1.082532 * m3_thread_pitch,2.459,6H minor diameter minimum = basic D1 (ISO 965-1),false
-m4_tap_drill_min,mm,m4_nominal_dia - 1.082532 * m4_thread_pitch,3.242,6H minor diameter minimum = basic D1 (ISO 965-1),false
+m3_tap_drill_min,mm,m3_nominal_dia - 1.082532 * m3_thread_pitch,2.4587,6H minor diameter minimum = basic D1 (ISO 965-1),false
+m4_tap_drill_min,mm,m4_nominal_dia - 1.082532 * m4_thread_pitch,3.2422,6H minor diameter minimum = basic D1 (ISO 965-1),false
 m5_tap_drill_min,mm,m5_nominal_dia - 1.082532 * m5_thread_pitch,4.134,6H minor diameter minimum = basic D1 (ISO 965-1),false
-m6_tap_drill_min,mm,m6_nominal_dia - 1.082532 * m6_thread_pitch,4.917,6H minor diameter minimum = basic D1 (ISO 965-1),false
+m6_tap_drill_min,mm,m6_nominal_dia - 1.082532 * m6_thread_pitch,4.9175,6H minor diameter minimum = basic D1 (ISO 965-1),false
 m2_tap_drill_max,mm,m2_tap_drill_min + 0.112 mm,1.679,6H minor diameter maximum: TD1 grade 6 for P=0.4 is 0.112 (ISO 965-1),false
-m3_tap_drill_max,mm,m3_tap_drill_min + 0.14 mm,2.599,6H minor diameter maximum: TD1 grade 6 for P=0.5 is 0.14 (ISO 965-1),false
-m4_tap_drill_max,mm,m4_tap_drill_min + 0.18 mm,3.422,6H minor diameter maximum: TD1 grade 6 for P=0.7 is 0.18 (ISO 965-1),false
+m3_tap_drill_max,mm,m3_tap_drill_min + 0.14 mm,2.5987,6H minor diameter maximum: TD1 grade 6 for P=0.5 is 0.14 (ISO 965-1),false
+m4_tap_drill_max,mm,m4_tap_drill_min + 0.18 mm,3.4222,6H minor diameter maximum: TD1 grade 6 for P=0.7 is 0.18 (ISO 965-1),false
 m5_tap_drill_max,mm,m5_tap_drill_min + 0.2 mm,4.334,6H minor diameter maximum: TD1 grade 6 for P=0.8 is 0.2 (ISO 965-1),false
-m6_tap_drill_max,mm,m6_tap_drill_min + 0.236 mm,5.153,6H minor diameter maximum: TD1 grade 6 for P=1 is 0.236 (ISO 965-1),false
-m2_socket_head_height,mm,,2,,false
-m3_socket_head_height,mm,,3,,false
-m4_socket_head_height,mm,,4,,false
-m5_socket_head_height,mm,,5,,false
-m6_socket_head_height,mm,,6,,false
-m2_socket_head_OD,mm,,3.8,,false
-m3_socket_head_OD,mm,,5.5,,false
-m4_socket_head_OD,mm,,7,,false
-m5_socket_head_OD,mm,,8.5,,false
-m6_socket_head_OD,mm,,10,,false
-m2_flat_head_height,mm,,1.2,,false
-m3_flat_head_height,mm,,1.7,,false
-m4_flat_head_height,mm,,2.3,,false
-m5_flat_head_height,mm,,2.8,,false
-m6_flat_head_height,mm,,3.3,,false
-m2_flat_head_OD,mm,,4,,false
-m3_flat_head_OD,mm,,6,,false
-m4_flat_head_OD,mm,,8,,false
-m5_flat_head_OD,mm,,10,,false
-m6_flat_head_OD,mm,,12,,false
-m2_round_head_height,mm,,1.3,,false
-m3_round_head_height,mm,,1.65,,false
-m4_round_head_height,mm,,2.2,,false
-m5_round_head_height,mm,,2.75,,false
-m6_round_head_height,mm,,3.3,,false
-m2_round_head_OD,mm,,3.5,,false
-m3_round_head_OD,mm,,5.7,,false
-m4_round_head_OD,mm,,7.6,,false
-m5_round_head_OD,mm,,9.5,,false
-m6_round_head_OD,mm,,10.5,,false
+m6_tap_drill_max,mm,m6_tap_drill_min + 0.236 mm,5.1535,6H minor diameter maximum: TD1 grade 6 for P=1 is 0.236 (ISO 965-1),false
+m2_socket_head_height,mm,,2,ISO 4762 M2 head height k,false
+m3_socket_head_height,mm,,3,ISO 4762 M3 head height k,false
+m4_socket_head_height,mm,,4,ISO 4762 M4 head height k,false
+m5_socket_head_height,mm,,5,ISO 4762 M5 head height k,false
+m6_socket_head_height,mm,,6,ISO 4762 M6 head height k,false
+m2_socket_head_OD,mm,,3.8,ISO 4762 M2 head diameter dk max,false
+m3_socket_head_OD,mm,,5.5,ISO 4762 M3 head diameter dk max,false
+m4_socket_head_OD,mm,,7,ISO 4762 M4 head diameter dk max,false
+m5_socket_head_OD,mm,,8.5,ISO 4762 M5 head diameter dk max,false
+m6_socket_head_OD,mm,,10,ISO 4762 M6 head diameter dk max,false
+m2_flat_head_height,mm,,1.2,DIN 7991 M2 countersunk head height k,false
+m3_flat_head_height,mm,,1.7,DIN 7991 M3 countersunk head height k,false
+m4_flat_head_height,mm,,2.3,DIN 7991 M4 countersunk head height k,false
+m5_flat_head_height,mm,,2.8,DIN 7991 M5 countersunk head height k,false
+m6_flat_head_height,mm,,3.3,DIN 7991 M6 countersunk head height k,false
+m2_flat_head_OD,mm,,4,DIN 7991 M2 countersunk head diameter dk (actual),false
+m3_flat_head_OD,mm,,6,DIN 7991 M3 countersunk head diameter dk (actual),false
+m4_flat_head_OD,mm,,8,DIN 7991 M4 countersunk head diameter dk (actual),false
+m5_flat_head_OD,mm,,10,DIN 7991 M5 countersunk head diameter dk (actual),false
+m6_flat_head_OD,mm,,12,DIN 7991 M6 countersunk head diameter dk (actual),false
+m2_round_head_height,mm,,1.3,ISO 7380 M2 button head height k,false
+m3_round_head_height,mm,,1.65,ISO 7380 M3 button head height k,false
+m4_round_head_height,mm,,2.2,ISO 7380 M4 button head height k,false
+m5_round_head_height,mm,,2.75,ISO 7380 M5 button head height k,false
+m6_round_head_height,mm,,3.3,ISO 7380 M6 button head height k,false
+m2_round_head_OD,mm,,3.5,ISO 7380 M2 button head diameter dk,false
+m3_round_head_OD,mm,,5.7,ISO 7380 M3 button head diameter dk,false
+m4_round_head_OD,mm,,7.6,ISO 7380 M4 button head diameter dk,false
+m5_round_head_OD,mm,,9.5,ISO 7380 M5 button head diameter dk,false
+m6_round_head_OD,mm,,10.5,ISO 7380 M6 button head diameter dk,false
 countersink_depth_clearance,mm,,0.3,How far below flush a flat head sits,false
 counterbore_depth_clearance,mm,,0.3,How far below flush a counterbored head sits,false
 counterbore_radial_clearance,mm,,1,Target radial gap between head OD and counterbore wall,false
-m2_counterbore_OD_round,mm,,6,Tool-driven: written by ToolSnap from the shop inventory,true
-m3_counterbore_OD_round,mm,,7.9375,Tool-driven: written by ToolSnap from the shop inventory,true
-m4_counterbore_OD_round,mm,,9.525,Tool-driven: written by ToolSnap from the shop inventory,true
-m5_counterbore_OD_round,mm,,12.7,Tool-driven: written by ToolSnap from the shop inventory,true
-m6_counterbore_OD_round,mm,,12.7,Tool-driven: written by ToolSnap from the shop inventory,true
+m2_counterbore_OD_round,mm,,5.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m3_counterbore_OD_round,mm,,7.7,Tool-driven: written by ToolSnap from the shop inventory,true
+m4_counterbore_OD_round,mm,,9.6,Tool-driven: written by ToolSnap from the shop inventory,true
+m5_counterbore_OD_round,mm,,11.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m6_counterbore_OD_round,mm,,12.5,Tool-driven: written by ToolSnap from the shop inventory,true
 m2_counterbore_depth_round,mm,m2_round_head_height + counterbore_depth_clearance,1.6,,true
 m3_counterbore_depth_round,mm,m3_round_head_height + counterbore_depth_clearance,1.95,,true
 m4_counterbore_depth_round,mm,m4_round_head_height + counterbore_depth_clearance,2.5,,true
 m5_counterbore_depth_round,mm,m5_round_head_height + counterbore_depth_clearance,3.05,,true
 m6_counterbore_depth_round,mm,m6_round_head_height + counterbore_depth_clearance,3.6,,true
-m2_counterbore_OD_socket,mm,,6,Tool-driven: written by ToolSnap from the shop inventory,true
-m3_counterbore_OD_socket,mm,,7.9375,Tool-driven: written by ToolSnap from the shop inventory,true
-m4_counterbore_OD_socket,mm,,9.525,Tool-driven: written by ToolSnap from the shop inventory,true
-m5_counterbore_OD_socket,mm,,9.525,Tool-driven: written by ToolSnap from the shop inventory,true
-m6_counterbore_OD_socket,mm,,12.7,Tool-driven: written by ToolSnap from the shop inventory,true
+m2_counterbore_OD_socket,mm,,5.8,Tool-driven: written by ToolSnap from the shop inventory,true
+m3_counterbore_OD_socket,mm,,7.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m4_counterbore_OD_socket,mm,,9,Tool-driven: written by ToolSnap from the shop inventory,true
+m5_counterbore_OD_socket,mm,,10.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m6_counterbore_OD_socket,mm,,12,Tool-driven: written by ToolSnap from the shop inventory,true
 m2_counterbore_depth_socket,mm,m2_socket_head_height + counterbore_depth_clearance,2.3,,true
 m3_counterbore_depth_socket,mm,m3_socket_head_height + counterbore_depth_clearance,3.3,,true
 m4_counterbore_depth_socket,mm,m4_socket_head_height + counterbore_depth_clearance,4.3,,true
 m5_counterbore_depth_socket,mm,m5_socket_head_height + counterbore_depth_clearance,5.3,,true
 m6_counterbore_depth_socket,mm,m6_socket_head_height + counterbore_depth_clearance,6.3,,true
-m2_countersink_chamfer_slip_fit,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_clearance_hole) / 2,1.281,45 deg equal-distance chamfer leg on the hole edge,true
-m3_countersink_chamfer_slip_fit,mm,m3_flat_head_height + countersink_depth_clearance + (m3_nominal_dia - m3_clearance_hole) / 2,1.773,45 deg equal-distance chamfer leg on the hole edge,true
+m2_countersink_chamfer_slip_fit,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_clearance_hole) / 2,1.3,45 deg equal-distance chamfer leg on the hole edge,true
+m3_countersink_chamfer_slip_fit,mm,m3_flat_head_height + countersink_depth_clearance + (m3_nominal_dia - m3_clearance_hole) / 2,1.8,45 deg equal-distance chamfer leg on the hole edge,true
 m4_countersink_chamfer_slip_fit,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_clearance_hole) / 2,2.35,45 deg equal-distance chamfer leg on the hole edge,true
 m5_countersink_chamfer_slip_fit,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_clearance_hole) / 2,2.85,45 deg equal-distance chamfer leg on the hole edge,true
-m6_countersink_chamfer_slip_fit,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_clearance_hole) / 2,3.285,45 deg equal-distance chamfer leg on the hole edge,true
-m2_countersink_chamfer_tapped,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_pilot_drill) / 2,1.694,45 deg equal-distance chamfer leg on the hole edge,true
+m6_countersink_chamfer_slip_fit,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_clearance_hole) / 2,3.3,45 deg equal-distance chamfer leg on the hole edge,true
+m2_countersink_chamfer_tapped,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_pilot_drill) / 2,1.7,45 deg equal-distance chamfer leg on the hole edge,true
 m3_countersink_chamfer_tapped,mm,m3_flat_head_height + countersink_depth_clearance + (m3_nominal_dia - m3_pilot_drill) / 2,2.25,45 deg equal-distance chamfer leg on the hole edge,true
-m4_countersink_chamfer_tapped,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_pilot_drill) / 2,2.873,45 deg equal-distance chamfer leg on the hole edge,true
-m5_countersink_chamfer_tapped,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_pilot_drill) / 2,3.492,45 deg equal-distance chamfer leg on the hole edge,true
+m4_countersink_chamfer_tapped,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_pilot_drill) / 2,2.95,45 deg equal-distance chamfer leg on the hole edge,true
+m5_countersink_chamfer_tapped,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_pilot_drill) / 2,3.5,45 deg equal-distance chamfer leg on the hole edge,true
 m6_countersink_chamfer_tapped,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_pilot_drill) / 2,4.1,45 deg equal-distance chamfer leg on the hole edge,true

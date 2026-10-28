@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional
 
 from .snap import MODES, SnapResult, Tool, snap
+from .standards import identifiers, size_label
 
 
 @dataclass(frozen=True)
@@ -50,14 +51,19 @@ class RuleSet:
     defaults: Dict[str, object]
     rules: List[Rule]
 
-    def expand(self, fit: str) -> List[Rule]:
-        """Instantiate the templated rules for every size and the given fit."""
+    def expand(self, fit: str, sizes: Optional[List[str]] = None) -> List[Rule]:
+        """Instantiate the templated rules for every size and the given fit.
+
+        ``sizes`` overrides the file's default list - the Fusion dialog passes
+        the sizes actually present in the design (every ``mX_nominal_dia``).
+        """
         if fit not in self.fits:
             raise ValueError(f"fit must be one of {self.fits}, got {fit!r}")
+        use = self.sizes if sizes is None else sizes
         out: List[Rule] = []
         for rule in self.rules:
-            sizes = self.sizes if "{m}" in rule.parameter else [""]
-            out.extend(rule.filled(m, fit) for m in sizes)
+            per_size = use if "{m}" in rule.parameter else [""]
+            out.extend(rule.filled(m, fit) for m in per_size)
         return out
 
 
@@ -88,6 +94,7 @@ class Snapped:
     result: Optional[SnapResult]   # None when an expression could not be evaluated
     note: str = ""                 # "% thread" / "radial x mm" annotation
     error: str = ""                # why result is None
+    skipped: bool = False          # family not set up for this size (inputs absent) - not an error
 
     @property
     def parameter(self) -> str:
@@ -126,13 +133,24 @@ def _note(rule: Rule, result: SnapResult, evaluate) -> str:
     return ", ".join(parts)
 
 
+def inputs_of(rule: Rule) -> List[str]:
+    """Every parameter name a rule reads."""
+    names: List[str] = []
+    for e in (rule.target, rule.floor, rule.ceiling, rule.nominal, rule.pitch, rule.head_od):
+        if e:
+            names.extend(identifiers(e))
+    return sorted(set(names))
+
+
 def run(ruleset: RuleSet,
         tools: List[Tool],
         evaluate: Callable[[str], float],
         fit: str,
         tolerance_mm: float = 0.0,
         mode_overrides: Optional[Dict[str, str]] = None,
-        strict: bool = True) -> List[Snapped]:
+        strict: bool = True,
+        sizes: Optional[List[str]] = None,
+        has_param: Optional[Callable[[str], bool]] = None) -> List[Snapped]:
     """Evaluate every expanded rule and snap it.
 
     ``evaluate`` turns a Fusion expression into mm - inside Fusion that is the
@@ -140,11 +158,19 @@ def run(ruleset: RuleSet,
     ``mode_overrides`` maps parameter name -> mode for per-row choices made in
     the dialog.  With ``strict=False`` a rule whose expressions fail to
     evaluate (parameter missing from the design) yields ``result=None`` and
-    an ``error`` instead of raising, so the dialog can show it.
+    an ``error`` instead of raising, so the dialog can show it.  ``sizes``
+    selects which fastener sizes to expand; with ``has_param`` a rule whose
+    inputs are absent is marked ``skipped`` (that family just isn't set up for
+    that size) rather than treated as an error.
     """
     overrides = mode_overrides or {}
     out = []
-    for rule in ruleset.expand(fit):
+    for rule in ruleset.expand(fit, sizes):
+        if has_param is not None:
+            missing = [n for n in inputs_of(rule) if not has_param(n)]
+            if missing:
+                out.append(Snapped(rule, None, error="needs " + ", ".join(missing), skipped=True))
+                continue
         try:
             target = evaluate(rule.target)
             floor = evaluate(rule.floor) if rule.floor else None
@@ -157,3 +183,15 @@ def run(ruleset: RuleSet,
                 raise
             out.append(Snapped(rule, None, error=str(exc)))
     return out
+
+
+_SHORT = (("_counterbore_OD_socket", " cbore socket"), ("_counterbore_OD_round", " cbore button"),
+          ("_clearance_hole", " clearance"), ("_pilot_drill", " tap drill"))
+
+
+def short_name(parameter: str) -> str:
+    """'m4_counterbore_OD_socket' -> 'M4 cbore socket' (for compact UI columns)."""
+    for suffix, label in _SHORT:
+        if parameter.endswith(suffix):
+            return size_label(parameter[:-len(suffix)]) + label
+    return parameter

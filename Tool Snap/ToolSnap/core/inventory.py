@@ -76,6 +76,16 @@ def set_available(tools: List[Tool], name: str, tool_type: str, available: bool)
             if (t.type == tool_type and t.name == name) else t for t in tools]
 
 
+def label(t: Tool) -> str:
+    """Human-readable size: '#29', '1/16\"', 'E', '5 mm'."""
+    cat = t.category.lower()
+    if cat == "number" and t.name.isdigit():
+        return f"#{t.name}"
+    if cat == "fractional" and "/" in t.name or t.name == "1":
+        return f'{t.name}"'
+    return t.name
+
+
 def default_name(dia_mm: float, unit: str) -> str:
     if unit.lower() == "mm":
         return f"{dia_mm:g} mm"
