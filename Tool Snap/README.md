@@ -37,6 +37,14 @@ manual mill). Counterbore **floor** = head OD + ISO 273 coarse radial clearance
 for that fastener, so a "Nearest" pick can go smaller than the 1 mm target
 clearance but never below the coarse one.
 
+**Notes column.** Tap-drill rows show the resulting percent of thread using the
+Machinery's Handbook convention `% = (D − drill) / (1.299 × pitch)` — the one
+tap-drill charts mean by "75 % thread". Worth a glance before writing: with the
+bundled inventory, snapping M4's 3.3 mm tap drill *up* lands on #29 (3.454 mm)
+= 60 % thread, fine in aluminium, on the light side for steel; switch that row
+to *Down* for #30 (3.264 mm, 81 %). Counterbore rows show the actual radial gap
+between head and wall.
+
 ## Data files (`ToolSnap/data/`)
 
 * `shop_tools.json` — the inventory. `available: false` keeps a tool listed but
@@ -51,6 +59,18 @@ clearance but never below the coarse one.
 
 Optionally the Snap dialog can also read Fusion's **local CAM tool libraries**
 (tool source dropdown): drills and flat end mills found there count as owned.
+
+## Related work
+
+Nothing I could find does this already. The nearest things:
+
+* Autodesk's **ParameterIO** sample and tapnair's **ParamEdit** / **FusionCSVer**
+  move user parameters in and out of CSV, but know nothing about tools.
+* Fusion's own threaded Hole feature models the thread's *minor* diameter, not a
+  real tap-drill size, and offers no override — a long-standing forum complaint.
+* The CAM tool library is the other half: ToolSnap can read it (tool source
+  dropdown) but keeps its own `shop_tools.json` as the source of truth, because
+  "I own it" and "it's in a CAM library" aren't the same thing.
 
 ## Install
 
@@ -68,6 +88,14 @@ python snap_report.py --fit fine --tol 0.05 --params my_fusion_export.csv
 
 `snap_report.py` takes any Fusion parameter CSV export, so you can preview what
 a changed inventory does to a design before opening it.
+
+**Verified / not verified.** The snapping logic, rules, inventory, CSV handling
+and the 20 spreadsheet rows are covered by tests. The Fusion-side code follows
+the official API reference (command inputs, user parameters, CAM tool
+libraries) but has not been exercised inside Fusion yet; if a dialog errors,
+the message box carries a traceback. The CAM-library tool source is best-effort
+(tool diameters are assumed to come back in cm, as the API's own sample
+implies).
 
 ## Layout
 

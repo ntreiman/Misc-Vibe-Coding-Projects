@@ -34,6 +34,11 @@ m3_pilot_drill_nominal,mm,,2.5,"Standard tap drill, ISO metric coarse thread (~7
 m4_pilot_drill_nominal,mm,,3.3,"Standard tap drill, ISO metric coarse thread (~75% thread)",false
 m5_pilot_drill_nominal,mm,,4.2,"Standard tap drill, ISO metric coarse thread (~75% thread)",false
 m6_pilot_drill_nominal,mm,,5,"Standard tap drill, ISO metric coarse thread (~75% thread)",false
+m2_thread_pitch,mm,,0.4,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
+m3_thread_pitch,mm,,0.5,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
+m4_thread_pitch,mm,,0.7,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
+m5_thread_pitch,mm,,0.8,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
+m6_thread_pitch,mm,,1,ISO metric coarse pitch; drives the % thread note in ToolSnap,false
 m2_socket_head_height,mm,,2,,false
 m3_socket_head_height,mm,,3,,false
 m4_socket_head_height,mm,,4,,false

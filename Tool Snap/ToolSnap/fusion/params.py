@@ -37,7 +37,7 @@ def set_mm(design: adsk.fusion.Design, name: str, value_mm: float,
     expression = f"{value_mm:.4f} mm"
     p = design.userParameters.itemByName(name)
     if p:
-        if p.expression != expression:
+        if not _same_expression(p.expression, expression):
             p.expression = expression
     else:
         p = design.userParameters.add(name, adsk.core.ValueInput.createByString(expression),
@@ -47,6 +47,10 @@ def set_mm(design: adsk.fusion.Design, name: str, value_mm: float,
     if favorite is not None and p.isFavorite != favorite:
         p.isFavorite = favorite
     return p
+
+
+def _same_expression(a: str, b: str) -> bool:
+    return a.replace(" ", "") == b.replace(" ", "")
 
 
 def import_rows(design: adsk.fusion.Design, rows: List[ParamRow],
@@ -66,14 +70,14 @@ def import_rows(design: adsk.fusion.Design, rows: List[ParamRow],
             design.userParameters.add(r.name, adsk.core.ValueInput.createByString(literal),
                                       r.unit, r.comment)
             stats["created"] += 1
-        elif overwrite_values and not r.expression and p.expression != literal:
+        elif overwrite_values and not r.expression and not _same_expression(p.expression, literal):
             p.expression = literal
             stats["updated"] += 1
         else:
             stats["unchanged"] += 1
     for r in rows:
         p = design.userParameters.itemByName(r.name)
-        if r.expression and p.expression != r.expression:
+        if r.expression and not _same_expression(p.expression, r.expression):
             p.expression = r.expression
             stats["updated"] += 1
             stats["unchanged"] = max(0, stats["unchanged"] - 1)

@@ -37,7 +37,7 @@ def main(argv=None):
 
     rows = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit, tol)
     print(f"fit={fit}  tolerance={tol} mm  tools={sum(t.available for t in tools)} available")
-    hdr = f"{'Parameter':28} {'Tool':8} {'Mode':8} {'Target':>8} {'Floor':>7} {'Snapped':>8} {'Delta':>8}  Tool(s)"
+    hdr = f"{'Parameter':28} {'Tool':8} {'Mode':8} {'Target':>8} {'Floor':>7} {'Snapped':>8} {'Delta':>8}  {'Tool(s)':10} Note"
     print(hdr)
     print("-" * len(hdr))
     bad = 0
@@ -47,7 +47,7 @@ def main(argv=None):
         snapped = f"{r.snapped_mm:8.4f}" if r.ok else f"{'NONE':>8}"
         delta = f"{r.delta_mm:+8.4f}" if r.ok else f"{'':8}"
         bad += not r.ok
-        print(f"{s.parameter:28} {s.rule.tool:8} {r.mode:8} {r.target_mm:8.3f} {floor} {snapped} {delta}  {r.tool_label}")
+        print(f"{s.parameter:28} {s.rule.tool:8} {r.mode:8} {r.target_mm:8.3f} {floor} {snapped} {delta}  {r.tool_label:10} {s.note}")
     return 1 if bad else 0
 
 

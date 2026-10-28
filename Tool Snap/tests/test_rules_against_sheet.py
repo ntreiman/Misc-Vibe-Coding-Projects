@@ -79,3 +79,22 @@ def test_mode_override_off(ruleset, tools, params):
 def test_bad_fit_rejected(ruleset):
     with pytest.raises(ValueError):
         ruleset.expand("sloppy")
+
+
+def test_notes_thread_percent_and_radial(snapped):
+    # Machinery's Handbook convention: % = (D - drill) / (1.299 * pitch)
+    assert rules.thread_percent(4.0, 0.7, 3.3) == pytest.approx(77.0, abs=0.5)
+    assert snapped["m4_pilot_drill"].note == "60% thread"        # #29 is a loose tap drill for M4
+    assert snapped["m5_counterbore_OD_socket"].note == "radial 0.51 mm"
+    assert snapped["m2_clearance_hole"].note == ""
+
+
+def test_non_strict_run_reports_missing_parameters(ruleset, tools, params):
+    partial = {k: v for k, v in params.items() if k != "m5_socket_head_OD"}
+    out = {s.parameter: s for s in
+           rules.run(ruleset, tools, lambda e: expr.evaluate(e, partial), fit="medium", strict=False)}
+    bad = out["m5_counterbore_OD_socket"]
+    assert bad.result is None and not bad.ok and "m5_socket_head_OD" in bad.error
+    assert out["m4_counterbore_OD_socket"].ok
+    with pytest.raises(expr.ExpressionError):
+        rules.run(ruleset, tools, lambda e: expr.evaluate(e, partial), fit="medium")
