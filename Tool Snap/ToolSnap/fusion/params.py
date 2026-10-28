@@ -38,8 +38,12 @@ def get_mm(design: adsk.fusion.Design, name: str) -> Optional[float]:
 
 
 def set_mm(design: adsk.fusion.Design, name: str, value_mm: float,
-           comment: Optional[str] = None, favorite: Optional[bool] = None) -> adsk.fusion.UserParameter:
-    """Write a hard value (in mm) to a user parameter, creating it if needed."""
+           comment: Optional[str] = None, favorite_if_new: bool = False) -> adsk.fusion.UserParameter:
+    """Write a hard value (in mm) to a user parameter, creating it if needed.
+
+    The Favorite flag is only set when the parameter is created; an existing
+    parameter keeps whatever the user chose in Change Parameters.
+    """
     expression = f"{value_mm:.4f} mm"
     p = design.userParameters.itemByName(name)
     if p:
@@ -48,10 +52,10 @@ def set_mm(design: adsk.fusion.Design, name: str, value_mm: float,
     else:
         p = design.userParameters.add(name, adsk.core.ValueInput.createByString(expression),
                                       "mm", comment or "")
+        if favorite_if_new:
+            p.isFavorite = True
     if comment is not None:
         _set_comment(p, comment)
-    if favorite is not None and p.isFavorite != favorite:
-        p.isFavorite = favorite
     return p
 
 
@@ -75,16 +79,22 @@ def import_rows(design: adsk.fusion.Design, rows: List[ParamRow],
 
     Two passes so expressions may reference parameters defined later in the
     file: first every parameter exists with its literal value, then the
-    expressions are applied.  Existing literal values are left alone unless
-    ``overwrite_values`` is set; expressions are always brought in line.
+    expressions are applied.  A missing parameter is created exactly as the
+    file describes it.  For an existing one, literal values are left alone
+    unless ``overwrite_values`` is set, expressions are brought in line, and
+    the Favorite flag is never touched.
     """
     stats = {"created": 0, "updated": 0, "unchanged": 0}
+    created = set()
     for r in rows:
         p = design.userParameters.itemByName(r.name)
         literal = f"{r.value:g} {r.unit}"
         if not p:
-            design.userParameters.add(r.name, adsk.core.ValueInput.createByString(literal),
-                                      r.unit, r.comment)
+            p = design.userParameters.add(r.name, adsk.core.ValueInput.createByString(literal),
+                                          r.unit, r.comment)
+            if r.favorite:
+                p.isFavorite = True
+            created.add(r.name)
             stats["created"] += 1
         elif overwrite_values and not r.expression and not _same_expression(p.expression, literal):
             p.expression = literal
@@ -97,8 +107,6 @@ def import_rows(design: adsk.fusion.Design, rows: List[ParamRow],
             p.expression = r.expression
             stats["updated"] += 1
             stats["unchanged"] = max(0, stats["unchanged"] - 1)
-        if r.comment:
+        if r.comment and r.name in created:
             _set_comment(p, r.comment)
-        if p.isFavorite != r.favorite:
-            p.isFavorite = r.favorite
     return stats

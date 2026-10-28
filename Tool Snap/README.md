@@ -41,7 +41,9 @@ the existing one, exactly like typing in Change Parameters — so sketches and
 features referencing `m4_clearance_hole` etc. keep their links and recompute.
 Edit the inputs (head ODs, clearances, ISO rows) freely; the next Snap reads
 the live values. Hand-edit one of the 20 tool-driven outputs and either set its
-row to **Keep** or expect the next Snap to overwrite it. If you rename one of
+row to **Keep** or expect the next Snap to overwrite it. Neither command ever
+changes the Favorite flag or comment of a parameter that already exists —
+those are only set when ToolSnap creates one. If you rename one of
 those 20, rename it in `snap_rules.json` too, or Snap will create the old name
 afresh.
 

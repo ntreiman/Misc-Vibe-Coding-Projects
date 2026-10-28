@@ -210,7 +210,7 @@ class Execute(adsk.core.CommandEventHandler):
                 before = params.get_mm(state.design, s.parameter)
                 comment = (f"Tool-driven ({r.mode}): {r.tool_label}, target {r.target_mm:.3f} mm"
                            if r.mode != "Off" else "Tool-driven (Off): target written unsnapped")
-                params.set_mm(state.design, s.parameter, r.snapped_mm, comment=comment, favorite=True)
+                params.set_mm(state.design, s.parameter, r.snapped_mm, comment=comment, favorite_if_new=True)
                 if before is None or abs(before - r.snapped_mm) > 1e-6:
                     changed.append(f"{s.parameter}: "
                                    f"{'new' if before is None else f'{before:.4f}'} → {r.snapped_mm:.4f} mm  [{r.tool_label}]")
