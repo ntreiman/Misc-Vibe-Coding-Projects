@@ -15,14 +15,16 @@ from typing import Dict, List
 import adsk.core
 
 from ..core import inventory, rules
-from ..core.snap import MODES, snap
+from ..core.snap import MODES
 from . import params, toollib, ui
 
 CMD_ID = "ToolSnap_Snap"
 SETTINGS_PATH = os.path.join(ui.DATA_DIR, "snap_settings.json")
 SOURCES = ("Shop inventory (shop_tools.json)",
            "Shop inventory + Fusion local tool libraries")
-COLS = ("Parameter", "Target", "Floor", "Mode", "Snapped", "Tool(s)", "Δ")
+COLS = ("Parameter", "Target", "Floor", "Mode", "Snapped", "Tool(s)", "Δ", "Note")
+MODE_COL = 3
+TEXT_COLS = tuple(c for c in range(len(COLS)) if c != MODE_COL)
 
 
 def _load_settings() -> dict:
@@ -66,26 +68,15 @@ class State:
 
     def compute(self, inputs):
         fit = inputs.itemById("fit").selectedItem.name
-        tol_cm = inputs.itemById("tol").value
+        tol_input = inputs.itemById("tol")
         um = self.design.unitsManager
-        tol_mm = um.convert(tol_cm, um.internalUnits, "mm")
+        # value is in database units (cm); a half-typed expression is not valid yet
+        tol_mm = um.convert(tol_input.value, um.internalUnits, "mm") if tol_input.isValidExpression else 0.0
         source = inputs.itemById("source").selectedItem.index
         overrides = {name: inputs.itemById(f"mode_{i}").selectedItem.name
                      for i, name in enumerate(self.rows) if inputs.itemById(f"mode_{i}")}
-        self.problems = [p for p in self.problems if not p.startswith("missing")]
-        tools = self.tools(source)
-
-        results = []
-        for rule in self.ruleset.expand(fit):
-            try:
-                target = self.evaluate(rule.target)
-                floor = self.evaluate(rule.floor) if rule.floor else None
-            except Exception as exc:  # noqa: BLE001 - shown in the dialog, row skipped
-                self.problems.append(f"missing parameter for {rule.parameter}: {exc}")
-                results.append(rules.Snapped(rule, None))
-                continue
-            mode = overrides.get(rule.parameter, rule.mode)
-            results.append(rules.Snapped(rule, snap(target, tools, rule.tool, mode, floor, tol_mm)))
+        results = rules.run(self.ruleset, self.tools(source), self.evaluate, fit, tol_mm,
+                            overrides, strict=False)
         self.results = results
         self.settings.update({"fit": fit, "tolerance_mm": tol_mm, "source": source,
                               "modes": overrides})
@@ -116,10 +107,10 @@ class Created(adsk.core.CommandCreatedEventHandler):
             inputs.addValueInput("tol", "Snap tolerance", "mm",
                                  adsk.core.ValueInput.createByString(f"{tol0:g} mm"))
 
-            table = inputs.addTableCommandInput("table", "Snap preview", len(COLS), "5:2:2:3:2:3:2")
-            table.minimumVisibleRows = 8
+            table = inputs.addTableCommandInput("table", "Snap preview", len(COLS), "5:2:2:3:2:3:2:3")
+            # max first: the default max is 4 and min may not exceed it
             table.maximumVisibleRows = 22
-            table.hasGrid = True
+            table.minimumVisibleRows = 8
             for c, title in enumerate(COLS):
                 cell = inputs.addStringValueInput(f"hdr_{c}", title, title)
                 cell.isReadOnly = True
@@ -130,7 +121,7 @@ class Created(adsk.core.CommandCreatedEventHandler):
             for i, rule in enumerate(expanded):
                 state.rows.append(rule.parameter)
                 row = i + 1
-                for c in (0, 1, 2, 4, 5, 6):
+                for c in TEXT_COLS:
                     cell = inputs.addStringValueInput(f"c{c}_{i}", COLS[c], "")
                     cell.isReadOnly = True
                     table.addCommandInput(cell, row, c)
@@ -139,7 +130,7 @@ class Created(adsk.core.CommandCreatedEventHandler):
                 chosen = saved_modes.get(rule.parameter, rule.mode)
                 for m in MODES:
                     dd.listItems.add(m, m == chosen)
-                table.addCommandInput(dd, row, 3)
+                table.addCommandInput(dd, row, MODE_COL)
 
             inputs.addTextBoxCommandInput("status", "", "", 3, True)
 
@@ -154,24 +145,35 @@ class Created(adsk.core.CommandCreatedEventHandler):
 def refresh(state: State, inputs) -> None:
     results = state.compute(inputs)
     for i, snapped in enumerate(results):
-        inputs.itemById(f"c0_{i}").value = snapped.parameter
         r = snapped.result
         if r is None:
-            for c in (1, 2, 4, 5, 6):
-                inputs.itemById(f"c{c}_{i}").value = "?"
-            continue
-        inputs.itemById(f"c1_{i}").value = f"{r.target_mm:.3f}"
-        inputs.itemById(f"c2_{i}").value = f"{r.floor_mm:.3f}" if r.floor_mm is not None else ""
-        inputs.itemById(f"c4_{i}").value = f"{r.snapped_mm:.4f}" if r.ok else "NONE"
-        inputs.itemById(f"c5_{i}").value = r.tool_label
-        inputs.itemById(f"c6_{i}").value = f"{r.delta_mm:+.3f}" if r.ok else ""
-    n_bad = sum(1 for s in results if s.result is None or not s.result.ok)
+            cells = (snapped.parameter, "?", "", "?", "", "", "missing parameter")
+        elif r.kept:
+            current = params.get_mm(state.design, snapped.parameter)
+            cells = (snapped.parameter, f"{r.target_mm:.3f}", "",
+                     f"{current:.4f}" if current is not None else "(absent)", r.tool_label, "", "")
+        else:
+            cells = (snapped.parameter,
+                     f"{r.target_mm:.3f}",
+                     f"{r.floor_mm:.3f}" if r.floor_mm is not None else "",
+                     f"{r.snapped_mm:.4f}" if r.ok else "NONE",
+                     r.tool_label,
+                     f"{r.delta_mm:+.3f}" if r.ok else "",
+                     snapped.note)
+        for c, text in zip(TEXT_COLS, cells):
+            inputs.itemById(f"c{c}_{i}").value = text
+        # hover a Target / Floor cell to see the expression it came from
+        inputs.itemById(f"c1_{i}").tooltip = snapped.rule.target
+        inputs.itemById(f"c2_{i}").tooltip = snapped.rule.floor or ""
+    missing = [s for s in results if s.result is None]
+    no_tool = [s for s in results if s.result is not None and not s.ok and not s.kept]
     lines = []
-    if n_bad:
-        lines.append(f"{n_bad} row(s) cannot be written (no tool / missing parameter) and will be skipped.")
-    if any(p.startswith("missing") for p in state.problems):
-        lines.append("Some parameters are missing - run Import Parameters first.")
-    lines.extend(p for p in state.problems if not p.startswith("missing"))
+    if missing:
+        lines.append(f"{len(missing)} parameter(s) missing from this design - run Import Parameters first. "
+                     f"({missing[0].error})")
+    if no_tool:
+        lines.append("No available tool for: " + ", ".join(s.parameter for s in no_tool))
+    lines.extend(state.problems)
     inputs.itemById("status").text = "\n".join(lines) if lines else "All rows resolve to an available tool."
 
 
@@ -198,16 +200,19 @@ class Execute(adsk.core.CommandEventHandler):
         try:
             state = self.state
             results = state.compute(args.command.commandInputs)
-            changed, skipped, same = [], [], 0
+            changed, skipped, kept, same = [], [], [], 0
             for s in results:
                 r = s.result
-                if r is None or not r.ok:
+                if s.kept:
+                    kept.append(s.parameter)
+                    continue
+                if not s.ok:
                     skipped.append(s.parameter)
                     continue
                 before = params.get_mm(state.design, s.parameter)
                 comment = (f"Tool-driven ({r.mode}): {r.tool_label}, target {r.target_mm:.3f} mm"
                            if r.mode != "Off" else "Tool-driven (Off): target written unsnapped")
-                params.set_mm(state.design, s.parameter, r.snapped_mm, comment=comment, favorite=True)
+                params.set_mm(state.design, s.parameter, r.snapped_mm, comment=comment, favorite_if_new=True)
                 if before is None or abs(before - r.snapped_mm) > 1e-6:
                     changed.append(f"{s.parameter}: "
                                    f"{'new' if before is None else f'{before:.4f}'} → {r.snapped_mm:.4f} mm  [{r.tool_label}]")
@@ -218,6 +223,8 @@ class Execute(adsk.core.CommandEventHandler):
             msg.extend(changed[:30])
             if len(changed) > 30:
                 msg.append(f"... and {len(changed) - 30} more")
+            if kept:
+                msg.append("\nKept as is: " + ", ".join(kept))
             if skipped:
                 msg.append("\nSkipped (no tool / missing parameter): " + ", ".join(skipped))
             app.userInterface.messageBox("\n".join(msg), "ToolSnap")

@@ -45,7 +45,7 @@ def test_set_available_and_roundtrip(tmp_path):
 def test_paramcsv_roundtrip(tmp_path):
     rows = paramcsv.load(os.path.join(os.path.dirname(__file__), "..", "ToolSnap", "data",
                                       "fastener_parameters.csv"))
-    assert len(rows) == 98
+    assert len(rows) == 103
     by = {r.name: r for r in rows}
     assert by["m3_counterbore_depth_socket"].expression == \
         "m3_socket_head_height + counterbore_depth_clearance"

@@ -16,7 +16,7 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 
 | Command | What it does |
 |---|---|
-| **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
+| **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off / Keep), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
 | **Add Shop Tool** | Type (drill / endmill), diameter (`10`, `0.4375`, or `7/16`), unit, optional name → appended to `data/shop_tools.json`. |
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
@@ -31,11 +31,34 @@ themselves.
 * **Down** — largest available tool ≤ target + tol that is still ≥ floor; falls back to Up
 * **Nearest** — closer of Up / Down to the target; ties go Up
 * **Off** — write the target unsnapped (helical-bored counterbores on a CNC)
+* **Keep** — don't touch the parameter; a value you set by hand in Change
+  Parameters survives re-snapping
+
+## Editing parameters in Fusion
+
+ToolSnap never deletes or recreates a parameter — it sets the expression on
+the existing one, exactly like typing in Change Parameters — so sketches and
+features referencing `m4_clearance_hole` etc. keep their links and recompute.
+Edit the inputs (head ODs, clearances, ISO rows) freely; the next Snap reads
+the live values. Hand-edit one of the 20 tool-driven outputs and either set its
+row to **Keep** or expect the next Snap to overwrite it. Neither command ever
+changes the Favorite flag or comment of a parameter that already exists —
+those are only set when ToolSnap creates one. If you rename one of
+those 20, rename it in `snap_rules.json` too, or Snap will create the old name
+afresh.
 
 Holes snap to **drills**; counterbores snap to **flat endmills** (plunged on a
 manual mill). Counterbore **floor** = head OD + ISO 273 coarse radial clearance
 for that fastener, so a "Nearest" pick can go smaller than the 1 mm target
 clearance but never below the coarse one.
+
+**Notes column.** Tap-drill rows show the resulting percent of thread using the
+Machinery's Handbook convention `% = (D − drill) / (1.299 × pitch)` — the one
+tap-drill charts mean by "75 % thread". Worth a glance before writing: with the
+bundled inventory, snapping M4's 3.3 mm tap drill *up* lands on #29 (3.454 mm)
+= 60 % thread, fine in aluminium, on the light side for steel; switch that row
+to *Down* for #30 (3.264 mm, 81 %). Counterbore rows show the actual radial gap
+between head and wall.
 
 ## Data files (`ToolSnap/data/`)
 
@@ -52,11 +75,29 @@ clearance but never below the coarse one.
 Optionally the Snap dialog can also read Fusion's **local CAM tool libraries**
 (tool source dropdown): drills and flat end mills found there count as owned.
 
+## Related work
+
+Nothing I could find does this already. The nearest things:
+
+* Autodesk's **ParameterIO** sample and tapnair's **ParamEdit** / **FusionCSVer**
+  move user parameters in and out of CSV, but know nothing about tools.
+* Fusion's own threaded Hole feature models the thread's *minor* diameter, not a
+  real tap-drill size, and offers no override — a long-standing forum complaint.
+* The CAM tool library is the other half: ToolSnap can read it (tool source
+  dropdown) but keeps its own `shop_tools.json` as the source of truth, because
+  "I own it" and "it's in a CAM library" aren't the same thing.
+
 ## Install
 
 1. Fusion 360 → Utilities → Add-Ins → **Scripts and Add-Ins** → *Add-Ins* tab → **+**
 2. Pick the `ToolSnap` folder (the one containing `ToolSnap.py`).
 3. Run (and tick *Run on Startup*). A **TOOL SNAP** panel appears on the Solid tab.
+
+Alternatively, copy or symlink the `ToolSnap` folder into Fusion's add-ins
+directory and it shows up in that dialog by itself:
+
+* macOS: `~/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/`
+* Windows: `%APPDATA%\Autodesk\Autodesk Fusion 360\API\AddIns\`
 
 ## Checking without Fusion
 
@@ -68,6 +109,14 @@ python snap_report.py --fit fine --tol 0.05 --params my_fusion_export.csv
 
 `snap_report.py` takes any Fusion parameter CSV export, so you can preview what
 a changed inventory does to a design before opening it.
+
+**Verified / not verified.** The snapping logic, rules, inventory, CSV handling
+and the 20 spreadsheet rows are covered by tests. The Fusion-side code follows
+the official API reference (command inputs, user parameters, CAM tool
+libraries) but has not been exercised inside Fusion yet; if a dialog errors,
+the message box carries a traceback. The CAM-library tool source is best-effort
+(tool diameters are assumed to come back in cm, as the API's own sample
+implies).
 
 ## Layout
 

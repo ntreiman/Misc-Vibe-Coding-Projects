@@ -23,7 +23,8 @@ class Created(adsk.core.CommandCreatedEventHandler):
                 f"Source: {ui.PARAMS_CSV_PATH}", 4, True)
             inputs.addBoolValueInput("overwrite", "Reset existing literal values to the CSV",
                                      True, "", False)
-            inputs.addBoolValueInput("snap_after", "Run Snap to Tools afterwards", True, "", True)
+            inputs.addTextBoxCommandInput("next", "", "Afterwards run Snap to Tools to fill in the "
+                                          "tool-driven diameters.", 2, True)
             h = Execute()
             cmd.execute.add(h)
             ui.handlers.append(h)
@@ -39,13 +40,11 @@ class Execute(adsk.core.CommandEventHandler):
             inputs = args.command.commandInputs
             rows = paramcsv.load(ui.PARAMS_CSV_PATH)
             stats = params.import_rows(design, rows, inputs.itemById("overwrite").value)
-            msg = (f"Parameters: {stats['created']} created, {stats['updated']} updated, "
-                   f"{stats['unchanged']} unchanged.")
-            if inputs.itemById("snap_after").value:
-                from . import cmd_snap
-                app.userInterface.commandDefinitions.itemById(cmd_snap.CMD_ID).execute()
-            else:
-                app.userInterface.messageBox(msg, "ToolSnap")
+            # Launching Snap to Tools from here is not allowed: the API forbids
+            # CommandDefinition.execute() inside another command's events.
+            app.userInterface.messageBox(
+                f"Parameters: {stats['created']} created, {stats['updated']} updated, "
+                f"{stats['unchanged']} unchanged.\n\nNow run Snap to Tools.", "ToolSnap")
         except Exception:
             ui.report_error(app.userInterface, "Import Parameters failed")
 

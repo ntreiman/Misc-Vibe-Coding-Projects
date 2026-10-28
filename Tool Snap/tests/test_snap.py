@@ -60,3 +60,8 @@ def test_no_tool_large_enough():
 def test_unknown_mode():
     with pytest.raises(ValueError):
         snap(1, EM, "endmill", "Sideways")
+
+
+def test_keep_leaves_parameter_alone():
+    r = snap(10.5, EM, "endmill", "Keep", floor_mm=9.3)
+    assert r.kept and not r.ok and r.tool_label == "(kept as is)" and r.delta_mm is None

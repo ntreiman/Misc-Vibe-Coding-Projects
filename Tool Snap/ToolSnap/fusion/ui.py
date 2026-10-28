@@ -78,4 +78,7 @@ def active_design(app: adsk.core.Application):
     design = adsk.fusion.Design.cast(app.activeProduct)
     if not design:
         raise RuntimeError("Open a Design (not CAM/Drawing) before running ToolSnap.")
+    if design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
+        raise RuntimeError("This design is in Direct Modeling mode, which has no user parameters. "
+                           "Right-click the root component > 'Capture Design History' first.")
     return design
