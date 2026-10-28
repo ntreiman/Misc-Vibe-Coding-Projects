@@ -58,17 +58,20 @@ def test_matches_sheet(snapped, name):
         assert s.result.floor_mm == pytest.approx(want_floor, abs=1e-6)
 
 
-def test_fine_fit_moves_m3_clearance_to_number_30(ruleset, tools, params):
+def test_fine_fit_uses_the_exact_3_2_mm_drill(ruleset, tools, params):
     out = {s.parameter: s for s in
            rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="fine")}
-    assert out["m3_clearance_hole"].result.snapped_mm == pytest.approx(3.2639)
-    assert out["m3_clearance_hole"].result.tool_label == "30"
+    assert out["m3_clearance_hole"].result.snapped_mm == pytest.approx(3.2)
+    assert out["m3_clearance_hole"].result.tool_label == "3.2 mm"
 
 
 def test_clearance_floor_is_iso_nominal_so_nearest_never_goes_under(ruleset, tools, params):
-    # 1/8" (3.175) is closer to 3.2 than #30 (3.264) but below the H12 lower limit
+    # without the 3.2 mm drill: 1/8" (3.175) is closer to 3.2 than #30 (3.264)
+    # but below the H12 lower limit, so #30 must win
+    from core import inventory
+    without = inventory.set_available(tools, "3.2 mm", "drill", False)
     out = {s.parameter: s for s in
-           rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="fine")}
+           rules.run(ruleset, without, lambda e: expr.evaluate(e, params), fit="fine")}
     r = out["m3_clearance_hole"].result
     assert r.floor_mm == 3.2 and r.snapped_mm == pytest.approx(3.2639) and r.tool_label == "30"
     assert r.ceiling_mm == pytest.approx(3.32) and not r.over_ceiling   # H12 over 3-6 mm = +0.12
