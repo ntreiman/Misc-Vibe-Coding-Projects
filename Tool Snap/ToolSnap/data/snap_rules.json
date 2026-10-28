@@ -1,13 +1,16 @@
 {
  "_comment": [
   "Which user parameters are driven by the shop tool inventory, and how.",
-  "{m} is expanded over `sizes`; {fit} is the active ISO 273 clearance series.",
+  "{m} is expanded over `sizes` (fastener sizes), {em} over `endmill_classes`; {fit} is the active ISO 273 clearance series.",
   "`target` and `floor` are Fusion expressions over user parameters (result in mm).",
   "Modes: Up = smallest tool >= target; Down = largest tool <= target but >= floor (falls back to Up);",
   "Nearest = closer of the two (ties go Up); Off = write the target unsnapped (e.g. helical-bored counterbores on CNC); Keep = leave the parameter untouched.",
+  "`ceiling` is the ISO upper limit: not enforced (a too-large tool beats no hole) but flagged in the Note and status line.",
+  "`legacy`: an older name for the parameter; when a design has only that name it is written in place instead of creating the new one.",
   "Optional per-rule annotations: nominal + pitch -> '% thread' note for tap drills; head_od -> actual radial clearance note for counterbores."
  ],
  "sizes": ["m2", "m3", "m4", "m5", "m6"],
+ "endmill_classes": ["em3", "em6", "em10", "em12"],
  "fits": ["fine", "medium", "coarse"],
  "defaults": {"fit": "medium", "tolerance_mm": 0.0},
  "rules": [
@@ -15,20 +18,25 @@
    "parameter": "{m}_clearance_hole",
    "tool": "drill",
    "target": "{m}_clearance_hole_{fit}",
-   "mode": "Up",
-   "comment": "ISO 273 {fit} clearance hole, snapped up to the next available drill"
+   "floor": "{m}_clearance_hole_{fit}",
+   "ceiling": "{m}_clearance_hole_{fit}_max",
+   "mode": "Nearest",
+   "comment": "ISO 273 {fit} clearance hole: never below nominal (H tolerance), flagged above the IT limit"
   },
   {
    "parameter": "{m}_pilot_drill",
    "tool": "drill",
    "target": "{m}_pilot_drill_nominal",
-   "mode": "Up",
+   "floor": "{m}_tap_drill_min",
+   "ceiling": "{m}_tap_drill_max",
+   "mode": "Nearest",
    "nominal": "{m}_nominal_dia",
    "pitch": "{m}_thread_pitch",
-   "comment": "Tap drill, snapped up to the next available drill; note shows resulting % thread"
+   "comment": "Tap drill within the 6H minor-diameter band (ISO 965-1); note shows resulting % thread"
   },
   {
-   "parameter": "{m}_counterbore_OD_round",
+   "parameter": "{m}_counterbore_ID_round",
+   "legacy": "{m}_counterbore_OD_round",
    "tool": "endmill",
    "target": "{m}_round_head_OD + 2 * counterbore_radial_clearance",
    "floor": "{m}_round_head_OD + ({m}_clearance_hole_coarse - {m}_nominal_dia)",
@@ -37,13 +45,21 @@
    "comment": "Plunged counterbore for a button head; never below ISO coarse radial clearance"
   },
   {
-   "parameter": "{m}_counterbore_OD_socket",
+   "parameter": "{m}_counterbore_ID_socket",
+   "legacy": "{m}_counterbore_OD_socket",
    "tool": "endmill",
    "target": "{m}_socket_head_OD + 2 * counterbore_radial_clearance",
    "floor": "{m}_socket_head_OD + ({m}_clearance_hole_coarse - {m}_nominal_dia)",
    "head_od": "{m}_socket_head_OD",
    "mode": "Nearest",
    "comment": "Plunged counterbore for a socket head cap screw; never below ISO coarse radial clearance"
+  },
+  {
+   "parameter": "{em}_dia",
+   "tool": "endmill",
+   "target": "{em}_nominal_dia",
+   "mode": "Nearest",
+   "comment": "Endmill class: the owned endmill nearest to N mm; drives {em}_radius and {em}_corner_radius"
   }
  ]
 }

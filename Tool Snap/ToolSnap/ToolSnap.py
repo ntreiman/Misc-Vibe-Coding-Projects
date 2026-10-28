@@ -1,10 +1,12 @@
 """ToolSnap - Fusion 360 add-in entry point.
 
-Adds a TOOL SNAP panel to the Design > Solid tab with three commands:
+Adds a TOOL SNAP panel to the Design > Solid tab:
 
-* Snap to Tools       - compute every tool-driven parameter and write it
+* Snap to Tools       - (the icon) compute every tool-driven parameter and write it
 * Add Shop Tool       - record a new drill / endmill in the shop inventory
-* Import Parameters   - create the fastener parameter set in a fresh design
+* Shop Tools          - browse / filter / retire tools, export the sheet-format CSVs
+* Add Fastener Size   - create the parameters for another metric size (M8, M12...)
+* Import Parameters   - create the base fastener parameter set in a fresh design
 
 All the snapping logic lives in ``core/`` (pure Python, unit-tested); the
 ``fusion/`` package only talks to the Fusion API.
@@ -15,11 +17,12 @@ import traceback
 import adsk.core
 
 from .fusion import ui
-from .fusion import cmd_snap, cmd_add_tool, cmd_import_params
+from .fusion import cmd_snap, cmd_add_tool, cmd_shop_tools, cmd_add_size, cmd_import_params
 
 _app = None
 _ui = None
-COMMANDS = (cmd_snap, cmd_add_tool, cmd_import_params)
+# Snap to Tools is the panel's icon; the rest sit in its drop-down, in this order.
+COMMANDS = (cmd_snap, cmd_add_tool, cmd_shop_tools, cmd_add_size, cmd_import_params)
 
 
 def run(context):

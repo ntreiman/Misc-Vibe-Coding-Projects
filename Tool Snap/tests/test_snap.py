@@ -65,3 +65,9 @@ def test_unknown_mode():
 def test_keep_leaves_parameter_alone():
     r = snap(10.5, EM, "endmill", "Keep", floor_mm=9.3)
     assert r.kept and not r.ok and r.tool_label == "(kept as is)" and r.delta_mm is None
+
+
+def test_ceiling_is_flagged_not_enforced():
+    r = snap(3.3, [Tool("29", "drill", 3.4544)], "drill", "Nearest", floor_mm=3.242, ceiling_mm=3.422)
+    assert r.snapped_mm == 3.4544 and r.over_ceiling
+    assert not snap(3.3, [Tool("30", "drill", 3.2639)], "drill", "Nearest", 3.242, ceiling_mm=3.422).over_ceiling

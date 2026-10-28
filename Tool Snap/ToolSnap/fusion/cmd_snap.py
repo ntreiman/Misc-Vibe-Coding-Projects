@@ -14,7 +14,7 @@ from typing import Dict, List
 
 import adsk.core
 
-from ..core import inventory, rules
+from ..core import inventory, rules, standards
 from ..core.snap import MODES
 from . import params, toollib, ui
 
@@ -54,7 +54,12 @@ class State:
         self.results: List[rules.Snapped] = []
         self.problems: List[str] = []
         self.rows: List[str] = []      # parameter name per table row, in order
+        self.row_index: Dict[str, int] = {}
         self._tool_cache: Dict[int, list] = {}
+        names = set(ui.user_parameter_names(design))
+        self.sizes = standards.sizes_in(names)      # every mX_nominal_dia in the design
+        self.endmill_classes = standards.endmill_classes_in(names)   # every emN_nominal_dia
+        self.has_param = names.__contains__
 
     def tools(self, source_index: int):
         if source_index not in self._tool_cache:
@@ -76,7 +81,8 @@ class State:
         overrides = {name: inputs.itemById(f"mode_{i}").selectedItem.name
                      for i, name in enumerate(self.rows) if inputs.itemById(f"mode_{i}")}
         results = rules.run(self.ruleset, self.tools(source), self.evaluate, fit, tol_mm,
-                            overrides, strict=False)
+                            overrides, strict=False, sizes=self.sizes, has_param=self.has_param,
+                            endmill_classes=self.endmill_classes)
         self.results = results
         self.settings.update({"fit": fit, "tolerance_mm": tol_mm, "source": source,
                               "modes": overrides})
@@ -116,10 +122,16 @@ class Created(adsk.core.CommandCreatedEventHandler):
                 cell.isReadOnly = True
                 table.addCommandInput(cell, 0, c)
 
-            expanded = state.ruleset.expand(default_fit)
+            # one table row per rule whose inputs exist in this design
+            first = rules.run(state.ruleset, [], state.evaluate, default_fit, strict=False,
+                              sizes=state.sizes, has_param=state.has_param,
+                              endmill_classes=state.endmill_classes)
             saved_modes = s.get("modes", {})
-            for i, rule in enumerate(expanded):
+            for snapped_rule in (r for r in first if not r.skipped):
+                rule = snapped_rule.rule
+                i = len(state.rows)
                 state.rows.append(rule.parameter)
+                state.row_index[rule.parameter] = i
                 row = i + 1
                 for c in TEXT_COLS:
                     cell = inputs.addStringValueInput(f"c{c}_{i}", COLS[c], "")
@@ -132,7 +144,7 @@ class Created(adsk.core.CommandCreatedEventHandler):
                     dd.listItems.add(m, m == chosen)
                 table.addCommandInput(dd, row, MODE_COL)
 
-            inputs.addTextBoxCommandInput("status", "", "", 3, True)
+            inputs.addTextBoxCommandInput("status", "", "", 4, True)
 
             refresh(state, inputs)
             for ev, h in ((cmd.inputChanged, Changed(state)), (cmd.execute, Execute(state))):
@@ -144,7 +156,10 @@ class Created(adsk.core.CommandCreatedEventHandler):
 
 def refresh(state: State, inputs) -> None:
     results = state.compute(inputs)
-    for i, snapped in enumerate(results):
+    for snapped in results:
+        if snapped.skipped or snapped.parameter not in state.row_index:
+            continue
+        i = state.row_index[snapped.parameter]
         r = snapped.result
         if r is None:
             cells = (snapped.parameter, "?", "", "?", "", "", "missing parameter")
@@ -164,8 +179,12 @@ def refresh(state: State, inputs) -> None:
             inputs.itemById(f"c{c}_{i}").value = text
         # hover a Target / Floor cell to see the expression it came from
         inputs.itemById(f"c1_{i}").tooltip = snapped.rule.target
-        inputs.itemById(f"c2_{i}").tooltip = snapped.rule.floor or ""
-    missing = [s for s in results if s.result is None]
+        floor_tip = snapped.rule.floor or ""
+        if snapped.rule.ceiling:
+            floor_tip += f"\nISO max: {snapped.rule.ceiling}"
+        inputs.itemById(f"c2_{i}").tooltip = floor_tip
+    missing = [s for s in results if s.result is None and not s.skipped]
+    skipped = [s for s in results if s.skipped]
     no_tool = [s for s in results if s.result is not None and not s.ok and not s.kept]
     lines = []
     if missing:
@@ -173,8 +192,18 @@ def refresh(state: State, inputs) -> None:
                      f"({missing[0].error})")
     if no_tool:
         lines.append("No available tool for: " + ", ".join(s.parameter for s in no_tool))
+    over = [s for s in results if s.result is not None and s.result.over_ceiling]
+    if over:
+        lines.append("Over the ISO maximum (no smaller tool available): "
+                     + ", ".join(s.parameter for s in over))
     lines.extend(state.problems)
-    inputs.itemById("status").text = "\n".join(lines) if lines else "All rows resolve to an available tool."
+    if not lines:
+        lines.append("All rows resolve to an available tool. In this design: "
+                     + ", ".join(standards.size_label(k) for k in state.sizes + state.endmill_classes) + ".")
+    if skipped:
+        lines.append("Not set up for this design (Add Fastener Size): "
+                     + ", ".join(rules.short_name(s.parameter) for s in skipped))
+    inputs.itemById("status").text = "\n".join(lines)
 
 
 class Changed(adsk.core.InputChangedEventHandler):
@@ -203,6 +232,8 @@ class Execute(adsk.core.CommandEventHandler):
             changed, skipped, kept, same = [], [], [], 0
             for s in results:
                 r = s.result
+                if s.skipped:
+                    continue
                 if s.kept:
                     kept.append(s.parameter)
                     continue
@@ -218,8 +249,17 @@ class Execute(adsk.core.CommandEventHandler):
                                    f"{'new' if before is None else f'{before:.4f}'} → {r.snapped_mm:.4f} mm  [{r.tool_label}]")
                 else:
                     same += 1
+            # a design migrated to a new parameter name may still carry the old one
+            removed = []
+            for s in results:
+                lg = s.rule.legacy
+                if lg and lg != s.parameter and state.has_param(s.parameter) and state.has_param(lg):
+                    if params.remove_if_unused(state.design, lg):
+                        removed.append(lg)
             _save_settings(state.settings)
             msg = [f"Wrote {len(changed)} changed parameter(s); {same} already matched."]
+            if removed:
+                msg.append("Removed unused legacy parameter(s): " + ", ".join(removed))
             msg.extend(changed[:30])
             if len(changed) > 30:
                 msg.append(f"... and {len(changed) - 30} more")
@@ -240,7 +280,8 @@ def start(user_interface, panel):
     _created = Created()
     ui.add_button(user_interface, panel, CMD_ID, "Snap to Tools",
                   "Snap clearance holes, tap drills and counterbore diameters to the drills "
-                  "and endmills in the shop inventory, then write them to user parameters.", _created)
+                  "and endmills in the shop inventory, then write them to user parameters.", _created,
+                  promoted=True)
 
 
 def stop(user_interface):

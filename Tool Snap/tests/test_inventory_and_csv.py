@@ -9,7 +9,7 @@ from core.snap import Tool
 def test_inventory_loads_sheet_libraries(tools):
     drills = [t for t in tools if t.type == "drill"]
     endmills = [t for t in tools if t.type == "endmill" and t.available]
-    assert len(drills) == 130 and all(t.available for t in drills)
+    assert len(drills) == 132 and all(t.available for t in drills)
     assert sorted(t.name for t in endmills) == sorted(
         ["1/8", "3/16", "1/4", "5/16", "3/8", "1/2", "3/4", "1", "5 mm", "6 mm"])
 
@@ -45,7 +45,7 @@ def test_set_available_and_roundtrip(tmp_path):
 def test_paramcsv_roundtrip(tmp_path):
     rows = paramcsv.load(os.path.join(os.path.dirname(__file__), "..", "ToolSnap", "data",
                                       "fastener_parameters.csv"))
-    assert len(rows) == 103
+    assert len(rows) == 150
     by = {r.name: r for r in rows}
     assert by["m3_counterbore_depth_socket"].expression == \
         "m3_socket_head_height + counterbore_depth_clearance"
@@ -72,3 +72,21 @@ def test_bundled_expressions_all_evaluate(params):
     for r in rows:
         if r.expression:
             assert expr.evaluate(r.expression, params) == pytest.approx(r.value, abs=1e-3), r.name
+
+
+def test_sheet_export_matches_google_sheet_tabs(tools, tmp_path):
+    import csv
+    written = inventory.export_sheet_csvs(tools, str(tmp_path))
+    assert sorted(os.path.basename(p) for p in written.values()) == ["Drill Library.csv", "Endmill Library.csv"]
+    drills = list(csv.reader(open(written["drill"], newline="")))
+    mills = list(csv.reader(open(written["endmill"], newline="")))
+    assert drills[0] == ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)",
+                         "Drill Category", "Available"]
+    assert mills[0] == ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)", "Available"]
+    assert len(drills) == 133 and len(mills) == 226          # header + every tool, like the sheet
+    by = {r[0]: r for r in drills[1:]}
+    assert by["29"][1:] == ["Drill", "Imperial", "in", "0.1360", "3.4544", "Number", "YES"]
+    assert by["5 mm"][1:] == ["Drill", "Metric", "mm", "0.1969", "5.0000", "Metric", "YES"]
+    bym = {r[0]: r for r in mills[1:]}
+    assert bym["3/8"][1:] == ["Endmill", "Imperial", "in", "0.3750", "9.5250", "YES"]
+    assert bym["7/16"][-1] == "NO"

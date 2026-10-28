@@ -14,7 +14,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "ToolSnap"))
 
-from core import expr, inventory, paramcsv, rules  # noqa: E402
+from core import expr, inventory, paramcsv, rules, standards  # noqa: E402
 
 DATA = os.path.join(HERE, "ToolSnap", "data")
 
@@ -35,7 +35,11 @@ def main(argv=None):
     tools = inventory.load(args.tools)
     params = paramcsv.values(paramcsv.load(args.params))
 
-    rows = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit, tol)
+    rows = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit, tol,
+                     sizes=standards.sizes_in(params), has_param=params.__contains__,
+                     endmill_classes=standards.endmill_classes_in(params))
+    skipped = [s for s in rows if s.skipped]
+    rows = [s for s in rows if not s.skipped]
     print(f"fit={fit}  tolerance={tol} mm  tools={sum(t.available for t in tools)} available")
     hdr = f"{'Parameter':28} {'Tool':8} {'Mode':8} {'Target':>8} {'Floor':>7} {'Snapped':>8} {'Delta':>8}  {'Tool(s)':10} Note"
     print(hdr)
@@ -48,6 +52,8 @@ def main(argv=None):
         delta = f"{r.delta_mm:+8.4f}" if r.ok else f"{'':8}"
         bad += not (r.ok or r.kept)
         print(f"{s.parameter:28} {s.rule.tool:8} {r.mode:8} {r.target_mm:8.3f} {floor} {snapped} {delta}  {r.tool_label:10} {s.note}")
+    if skipped:
+        print("not set up:", ", ".join(rules.short_name(s.parameter) for s in skipped))
     return 1 if bad else 0
 
 

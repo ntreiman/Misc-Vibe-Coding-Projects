@@ -13,6 +13,7 @@ PANEL_NAME = "TOOL SNAP"
 
 ADDIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(ADDIN_DIR, "data")
+ICON_DIR = os.path.join(ADDIN_DIR, "resources", "toolsnap")
 RULES_PATH = os.path.join(DATA_DIR, "snap_rules.json")
 TOOLS_PATH = os.path.join(DATA_DIR, "shop_tools.json")
 PARAMS_CSV_PATH = os.path.join(DATA_DIR, "fastener_parameters.csv")
@@ -40,18 +41,22 @@ def remove_panel(ui: adsk.core.UserInterface) -> None:
 
 
 def add_button(ui: adsk.core.UserInterface, panel: adsk.core.ToolbarPanel,
-               cmd_id: str, name: str, tooltip: str, created_handler) -> adsk.core.CommandDefinition:
+               cmd_id: str, name: str, tooltip: str, created_handler,
+               promoted: bool = False) -> adsk.core.CommandDefinition:
+    """Add a command to the TOOL SNAP panel; only a promoted one shows as an icon,
+    the rest sit in the panel's drop-down."""
     cmd_def = ui.commandDefinitions.itemById(cmd_id)
     if cmd_def:
         cmd_def.deleteMe()
-    cmd_def = ui.commandDefinitions.addButtonDefinition(cmd_id, name, tooltip)
+    cmd_def = ui.commandDefinitions.addButtonDefinition(cmd_id, name, tooltip, ICON_DIR)
     cmd_def.commandCreated.add(created_handler)
     handlers.append(created_handler)
     control = panel.controls.itemById(cmd_id)
     if control:
         control.deleteMe()
     control = panel.controls.addCommand(cmd_def)
-    control.isPromoted = True
+    control.isPromoted = promoted
+    control.isPromotedByDefault = promoted
     return cmd_def
 
 
@@ -71,6 +76,11 @@ def remove_button(ui: adsk.core.UserInterface, cmd_id: str) -> None:
 
 def report_error(ui: adsk.core.UserInterface, title: str) -> None:
     ui.messageBox(f"{title}\n\n{traceback.format_exc()}", "ToolSnap")
+
+
+def user_parameter_names(design) -> list:
+    params = design.userParameters
+    return [params.item(i).name for i in range(params.count)]
 
 
 def active_design(app: adsk.core.Application):

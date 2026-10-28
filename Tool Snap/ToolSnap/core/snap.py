@@ -42,6 +42,13 @@ class SnapResult:
     down_mm: Optional[float]
     snapped_mm: Optional[float]
     tools: List[str] = field(default_factory=list)
+    ceiling_mm: Optional[float] = None   # ISO upper limit; exceeding it is flagged, not forbidden
+
+    @property
+    def over_ceiling(self) -> bool:
+        return (self.ceiling_mm is not None and self.snapped_mm is not None
+                and self.mode not in ("Off", "Keep")
+                and self.snapped_mm > self.ceiling_mm + 1e-9)
 
     @property
     def kept(self) -> bool:
@@ -75,8 +82,14 @@ def snap(target_mm: float,
          tool_type: str,
          mode: str = "Up",
          floor_mm: Optional[float] = None,
-         tolerance_mm: float = 0.0) -> SnapResult:
-    """Pick the diameter to cut for ``target_mm`` from ``tools`` of ``tool_type``."""
+         tolerance_mm: float = 0.0,
+         ceiling_mm: Optional[float] = None) -> SnapResult:
+    """Pick the diameter to cut for ``target_mm`` from ``tools`` of ``tool_type``.
+
+    ``floor_mm`` is a hard lower limit (never pick below it).  ``ceiling_mm``
+    is only recorded so callers can flag a pick that exceeds the ISO maximum;
+    a tool that is too large is still better than no hole.
+    """
     if mode not in MODES:
         raise ValueError(f"unknown mode {mode!r}; expected one of {MODES}")
 
@@ -110,4 +123,5 @@ def snap(target_mm: float,
     if snapped is not None and mode not in ("Off", "Keep"):
         names = [t.name for t in pool if round(t.diameter_mm, ROUNDING) == snapped]
     return SnapResult(target_mm=target_mm, floor_mm=floor_mm, mode=mode,
-                      up_mm=up, down_mm=down, snapped_mm=snapped, tools=names)
+                      up_mm=up, down_mm=down, snapped_mm=snapped, tools=names,
+                      ceiling_mm=ceiling_mm)
