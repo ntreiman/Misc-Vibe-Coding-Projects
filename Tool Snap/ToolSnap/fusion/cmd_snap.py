@@ -108,8 +108,9 @@ class Created(adsk.core.CommandCreatedEventHandler):
                                  adsk.core.ValueInput.createByString(f"{tol0:g} mm"))
 
             table = inputs.addTableCommandInput("table", "Snap preview", len(COLS), "5:2:2:3:2:3:2:3")
-            table.minimumVisibleRows = 8
+            # max first: the default max is 4 and min may not exceed it
             table.maximumVisibleRows = 22
+            table.minimumVisibleRows = 8
             table.hasGrid = True
             for c, title in enumerate(COLS):
                 cell = inputs.addStringValueInput(f"hdr_{c}", title, title)
