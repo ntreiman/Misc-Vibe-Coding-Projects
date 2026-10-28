@@ -39,7 +39,7 @@ SHEET_MODES = {name: "Up" for name in SHEET if "counterbore" not in name}
 @pytest.fixture(scope="module")
 def snapped(ruleset, tools, params):
     out = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="medium",
-                    mode_overrides=SHEET_MODES)
+                    mode_overrides=SHEET_MODES, endmill_classes=[])   # the sheet had no endmill classes
     return {s.parameter: s for s in out}
 
 

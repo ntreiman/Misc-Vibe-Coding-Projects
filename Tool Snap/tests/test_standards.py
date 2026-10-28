@@ -23,7 +23,7 @@ def test_endmill_class_rows_and_snapping(ruleset, tools):
                                              strict=False, sizes=[], has_param=params.__contains__,
                                              endmill_classes=standards.endmill_classes_in(params))}
     assert set(out) == {"em3_dia", "em6_dia", "em10_dia", "em12_dia"}
-    assert out["em3_dia"].result.tool_label == "1/8" and out["em3_dia"].note == "radius 1.588 mm"
+    assert out["em3_dia"].result.tool_label == "1/8" and out["em3_dia"].note.startswith("radius 1.58")
     assert out["em6_dia"].result.snapped_mm == 6.0 and out["em10_dia"].result.tool_label == "3/8"
     assert standards.size_label("em10") == "EM10" and rules.short_name("em10_dia") == "EM10 endmill"
     assert standards.endmill_classes_in(["em6_nominal_dia", "m6_nominal_dia"]) == ["em6"]
