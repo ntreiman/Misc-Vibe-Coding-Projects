@@ -30,6 +30,7 @@ class State:
         self.checkbox_key: Dict[str, Tuple[str, str]] = {}
         self.counter = 0
         self.shown: List[lv.Row] = []
+        self.inputs = None   # the dialog's top-level CommandInputs (inputChanged only hands us a group's)
 
 
 def _used_for(app) -> Dict[Tuple[str, str], List[str]]:
@@ -72,6 +73,7 @@ class Created(adsk.core.CommandCreatedEventHandler):
             inputs = cmd.commandInputs
             tools = inventory.load(ui.TOOLS_PATH)
             state = State(tools, _used_for(app))
+            state.inputs = inputs
 
             grp = inputs.addGroupCommandInput("filters", "Filter")
             grp.isExpanded = True
@@ -227,17 +229,20 @@ class Changed(adsk.core.InputChangedEventHandler):
             if cid in st.checkbox_key:
                 st.avail[st.checkbox_key[cid]] = args.input.value
                 return
+            # an input inside a group reports the group's children as args.inputs;
+            # always rebuild from the dialog's top-level collection
+            inputs = st.inputs
             if cid == "bulk":
                 choice = args.input.selectedItem.index
                 if choice:
                     for row in st.shown:
                         st.avail[(row.tool.type, row.tool.name)] = (choice == 1)
                     args.input.listItems.item(0).isSelected = True
-                    rebuild(args.inputs, st)
+                    rebuild(inputs, st)
                 return
             if cid in ("type", "system", "series", "avail", "dmin", "dmax", "near", "search",
                        "used_only", "units", "sort"):
-                rebuild(args.inputs, st)
+                rebuild(inputs, st)
         except Exception:
             ui.report_error(adsk.core.Application.get().userInterface, "Shop Tools filter failed")
 
@@ -250,7 +255,7 @@ class Execute(adsk.core.CommandEventHandler):
     def notify(self, args):
         app = adsk.core.Application.get()
         try:
-            inputs = args.command.commandInputs
+            inputs = self.state.inputs or args.command.commandInputs
             tools = self.state.tools
             changed = 0
             for t in list(tools):
