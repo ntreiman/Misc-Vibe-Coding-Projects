@@ -14,10 +14,16 @@ from ..core.paramcsv import ParamRow
 
 
 def evaluator(design: adsk.fusion.Design) -> Callable[[str], float]:
-    """Return a function that evaluates a Fusion expression to mm."""
+    """Return a function that evaluates a Fusion expression to mm.
+
+    evaluateExpression does not raise on a bad expression - it returns -1 and
+    sets the API's last error - so validate first and raise ourselves.
+    """
     um = design.unitsManager
 
     def evaluate(expression: str) -> float:
+        if not um.isValidExpression(expression, "mm"):
+            raise ValueError(f"cannot evaluate '{expression}' (missing parameter?)")
         internal = um.evaluateExpression(expression, "mm")
         return um.convert(internal, um.internalUnits, "mm")
     return evaluate
@@ -42,11 +48,21 @@ def set_mm(design: adsk.fusion.Design, name: str, value_mm: float,
     else:
         p = design.userParameters.add(name, adsk.core.ValueInput.createByString(expression),
                                       "mm", comment or "")
-    if comment is not None and p.comment != comment:
-        p.comment = comment
+    if comment is not None:
+        _set_comment(p, comment)
     if favorite is not None and p.isFavorite != favorite:
         p.isFavorite = favorite
     return p
+
+
+def _set_comment(p, comment: str) -> None:
+    # Comment is settable on user parameters in practice, but the reference
+    # does not promise it; never let a cosmetic write fail the command.
+    try:
+        if p.comment != comment:
+            p.comment = comment
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def _same_expression(a: str, b: str) -> bool:
@@ -81,8 +97,8 @@ def import_rows(design: adsk.fusion.Design, rows: List[ParamRow],
             p.expression = r.expression
             stats["updated"] += 1
             stats["unchanged"] = max(0, stats["unchanged"] - 1)
-        if r.comment and p.comment != r.comment:
-            p.comment = r.comment
+        if r.comment:
+            _set_comment(p, r.comment)
         if p.isFavorite != r.favorite:
             p.isFavorite = r.favorite
     return stats

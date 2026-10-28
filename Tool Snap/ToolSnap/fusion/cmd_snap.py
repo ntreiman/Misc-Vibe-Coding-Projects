@@ -68,9 +68,10 @@ class State:
 
     def compute(self, inputs):
         fit = inputs.itemById("fit").selectedItem.name
-        tol_cm = inputs.itemById("tol").value
+        tol_input = inputs.itemById("tol")
         um = self.design.unitsManager
-        tol_mm = um.convert(tol_cm, um.internalUnits, "mm")
+        # value is in database units (cm); a half-typed expression is not valid yet
+        tol_mm = um.convert(tol_input.value, um.internalUnits, "mm") if tol_input.isValidExpression else 0.0
         source = inputs.itemById("source").selectedItem.index
         overrides = {name: inputs.itemById(f"mode_{i}").selectedItem.name
                      for i, name in enumerate(self.rows) if inputs.itemById(f"mode_{i}")}
