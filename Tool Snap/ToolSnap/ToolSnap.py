@@ -4,6 +4,7 @@ Adds a TOOL SNAP panel to the Design > Solid tab with three commands:
 
 * Snap to Tools       - compute every tool-driven parameter and write it
 * Add Shop Tool       - record a new drill / endmill in the shop inventory
+* Shop Tools          - browse / retire tools, export the sheet-format CSVs
 * Import Parameters   - create the fastener parameter set in a fresh design
 
 All the snapping logic lives in ``core/`` (pure Python, unit-tested); the
@@ -15,11 +16,11 @@ import traceback
 import adsk.core
 
 from .fusion import ui
-from .fusion import cmd_snap, cmd_add_tool, cmd_import_params
+from .fusion import cmd_snap, cmd_add_tool, cmd_shop_tools, cmd_import_params
 
 _app = None
 _ui = None
-COMMANDS = (cmd_snap, cmd_add_tool, cmd_import_params)
+COMMANDS = (cmd_snap, cmd_add_tool, cmd_shop_tools, cmd_import_params)
 
 
 def run(context):

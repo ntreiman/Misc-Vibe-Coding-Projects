@@ -7,9 +7,10 @@ Format::
                 "available": true, "category": "Number"}, ...]}
 """
 
+import csv
 import json
 import os
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from .snap import Tool
 
@@ -79,3 +80,47 @@ def default_name(dia_mm: float, unit: str) -> str:
     if unit.lower() == "mm":
         return f"{dia_mm:g} mm"
     return f'{dia_mm / INCH_MM:.4g}"'
+
+
+# The two library tabs of the "Tools and Fastener Parameters" Google Sheet.
+SHEET_TABS = {"drill": "Drill Library", "endmill": "Endmill Library"}
+_SHEET_COLUMNS = ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)"]
+
+
+def _is_metric(t: Tool) -> bool:
+    return t.category.lower() == "metric" or t.name.strip().lower().endswith("mm")
+
+
+def sheet_rows(tools: List[Tool], tool_type: str) -> List[List[str]]:
+    """Rows (header first) for one library tab, matching the sheet's columns."""
+    header = list(_SHEET_COLUMNS)
+    if tool_type == "drill":
+        header.append("Drill Category")
+    header.append("Available")
+    rows = [header]
+    for t in sorted((t for t in tools if t.type == tool_type), key=lambda t: t.diameter_mm):
+        metric = _is_metric(t)
+        row = [t.name, "Drill" if t.type == "drill" else "Endmill",
+               "Metric" if metric else "Imperial", "mm" if metric else "in",
+               f"{t.diameter_mm / INCH_MM:.4f}", f"{t.diameter_mm:.4f}"]
+        if tool_type == "drill":
+            row.append(t.category or ("Metric" if metric else ""))
+        row.append("YES" if t.available else "NO")
+        rows.append(row)
+    return rows
+
+
+def export_sheet_csvs(tools: List[Tool], folder: str) -> Dict[str, str]:
+    """Write '<folder>/Drill Library.csv' and '<folder>/Endmill Library.csv'.
+
+    Each file is one tab of the Google Sheet; File > Import in Sheets (or
+    drag-and-drop) puts it back where it came from.  Returns {type: path}.
+    """
+    os.makedirs(folder, exist_ok=True)
+    written = {}
+    for tool_type, tab in SHEET_TABS.items():
+        path = os.path.join(folder, f"{tab}.csv")
+        with open(path, "w", encoding="utf-8", newline="") as fh:
+            csv.writer(fh).writerows(sheet_rows(tools, tool_type))
+        written[tool_type] = path
+    return written

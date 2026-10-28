@@ -18,6 +18,7 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 |---|---|
 | **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off / Keep), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
 | **Add Shop Tool** | Type (drill / endmill), diameter (`10`, `0.4375`, or `7/16`), unit, optional name → appended to `data/shop_tools.json`. |
+| **Shop Tools** | Table of the whole inventory (name, type, Ø mm / in, category) with a filter for drills / endmills / available only. Tick or untick *Available* to retire or restore a tool. *Export CSVs on Save* writes `Drill Library.csv` and `Endmill Library.csv` — one per Google Sheet tab, same columns — into a folder you pick. |
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
 Only the 20 "tool-driven" parameters (`mX_clearance_hole`, `mX_pilot_drill`,
@@ -73,7 +74,8 @@ wall.
 ## Data files (`ToolSnap/data/`)
 
 * `shop_tools.json` — the inventory. `available: false` keeps a tool listed but
-  unused. Seeded from the Drill Library / Endmill Library tabs.
+  unused. Seeded from the Drill Library / Endmill Library tabs; **Shop Tools →
+  Export** writes it back out in exactly that two-tab layout.
 * `snap_rules.json` — which parameters are tool-driven and how. `{m}` expands
   over `sizes`, `{fit}` is the active clearance series; `target` and `floor`
   are ordinary Fusion expressions over user parameters. Add M8 by appending
@@ -136,6 +138,7 @@ ToolSnap/
   core/      pure Python: snap.py (modes/floor), rules.py, inventory.py,
              paramcsv.py, expr.py (safe expression evaluator for tests/CLI)
   fusion/    Fusion API only: commands, user-parameter I/O, CAM library reader
+  resources/ toolbar icon (16/32/64 px + @2x)
   data/      inventory, rules, parameter CSV
 tests/       pytest; no Fusion needed
 snap_report.py

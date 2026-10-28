@@ -13,6 +13,7 @@ PANEL_NAME = "TOOL SNAP"
 
 ADDIN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(ADDIN_DIR, "data")
+ICON_DIR = os.path.join(ADDIN_DIR, "resources", "toolsnap")
 RULES_PATH = os.path.join(DATA_DIR, "snap_rules.json")
 TOOLS_PATH = os.path.join(DATA_DIR, "shop_tools.json")
 PARAMS_CSV_PATH = os.path.join(DATA_DIR, "fastener_parameters.csv")
@@ -44,7 +45,7 @@ def add_button(ui: adsk.core.UserInterface, panel: adsk.core.ToolbarPanel,
     cmd_def = ui.commandDefinitions.itemById(cmd_id)
     if cmd_def:
         cmd_def.deleteMe()
-    cmd_def = ui.commandDefinitions.addButtonDefinition(cmd_id, name, tooltip)
+    cmd_def = ui.commandDefinitions.addButtonDefinition(cmd_id, name, tooltip, ICON_DIR)
     cmd_def.commandCreated.add(created_handler)
     handlers.append(created_handler)
     control = panel.controls.itemById(cmd_id)

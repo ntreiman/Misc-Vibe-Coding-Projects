@@ -72,3 +72,21 @@ def test_bundled_expressions_all_evaluate(params):
     for r in rows:
         if r.expression:
             assert expr.evaluate(r.expression, params) == pytest.approx(r.value, abs=1e-3), r.name
+
+
+def test_sheet_export_matches_google_sheet_tabs(tools, tmp_path):
+    import csv
+    written = inventory.export_sheet_csvs(tools, str(tmp_path))
+    assert sorted(os.path.basename(p) for p in written.values()) == ["Drill Library.csv", "Endmill Library.csv"]
+    drills = list(csv.reader(open(written["drill"], newline="")))
+    mills = list(csv.reader(open(written["endmill"], newline="")))
+    assert drills[0] == ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)",
+                         "Drill Category", "Available"]
+    assert mills[0] == ["Name", "Tool Category", "Imperial/Metric", "Unit", "Value (inch)", "Value (mm)", "Available"]
+    assert len(drills) == 131 and len(mills) == 226          # header + every tool, like the sheet
+    by = {r[0]: r for r in drills[1:]}
+    assert by["29"][1:] == ["Drill", "Imperial", "in", "0.1360", "3.4544", "Number", "YES"]
+    assert by["5 mm"][1:] == ["Drill", "Metric", "mm", "0.1969", "5.0000", "Metric", "YES"]
+    bym = {r[0]: r for r in mills[1:]}
+    assert bym["3/8"][1:] == ["Endmill", "Imperial", "in", "0.3750", "9.5250", "YES"]
+    assert bym["7/16"][-1] == "NO"
