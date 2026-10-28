@@ -31,9 +31,15 @@ SHEET = {
 }
 
 
+# The sheet snapped every drill row Up; the add-in's defaults are now Nearest
+# with ISO floors, so force the sheet's modes to compare engines like for like.
+SHEET_MODES = {name: "Up" for name in SHEET if "counterbore" not in name}
+
+
 @pytest.fixture(scope="module")
 def snapped(ruleset, tools, params):
-    out = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="medium")
+    out = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="medium",
+                    mode_overrides=SHEET_MODES)
     return {s.parameter: s for s in out}
 
 
@@ -47,9 +53,8 @@ def test_matches_sheet(snapped, name):
     s = snapped[name]
     assert s.result.snapped_mm == pytest.approx(want_mm, abs=1e-4)
     assert s.result.tool_label == want_tool
-    if want_floor is None:
-        assert s.result.floor_mm is None
-    else:
+    # the sheet had floors only on counterbores; drill rows have gained ISO floors since
+    if want_floor is not None:
         assert s.result.floor_mm == pytest.approx(want_floor, abs=1e-6)
 
 
@@ -58,6 +63,35 @@ def test_fine_fit_moves_m3_clearance_to_number_30(ruleset, tools, params):
            rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="fine")}
     assert out["m3_clearance_hole"].result.snapped_mm == pytest.approx(3.2639)
     assert out["m3_clearance_hole"].result.tool_label == "30"
+
+
+def test_clearance_floor_is_iso_nominal_so_nearest_never_goes_under(ruleset, tools, params):
+    # 1/8" (3.175) is closer to 3.2 than #30 (3.264) but below the H12 lower limit
+    out = {s.parameter: s for s in
+           rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="fine")}
+    r = out["m3_clearance_hole"].result
+    assert r.floor_mm == 3.2 and r.snapped_mm == pytest.approx(3.2639) and r.tool_label == "30"
+    assert r.ceiling_mm == pytest.approx(3.32) and not r.over_ceiling   # H12 over 3-6 mm = +0.12
+    assert out["m6_clearance_hole"].result.ceiling_mm == pytest.approx(6.55)  # IT12 over 6-10 = 0.15
+    assert out["m2_clearance_hole"].result.ceiling_mm == pytest.approx(2.30)  # IT12 over 1-3 = 0.10
+
+
+def test_tap_drill_default_stays_inside_6h_minor_band(ruleset, tools, params):
+    out = {s.parameter: s for s in
+           rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="medium")}
+    m4 = out["m4_pilot_drill"].result
+    assert m4.floor_mm == pytest.approx(3.242, abs=1e-3) and m4.ceiling_mm == pytest.approx(3.422, abs=1e-3)
+    assert m4.tool_label == "30" and out["m4_pilot_drill"].note == "81% thread"
+    # #29 would be over the 6H maximum and is flagged when forced
+    forced = {s.parameter: s for s in
+              rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="medium",
+                        mode_overrides={"m4_pilot_drill": "Up"})}
+    assert forced["m4_pilot_drill"].result.over_ceiling
+    assert forced["m4_pilot_drill"].note == "60% thread, OVER ISO max 3.422"
+    for m, lo, hi in (("m2", 1.567, 1.679), ("m3", 2.459, 2.599), ("m5", 4.134, 4.334), ("m6", 4.917, 5.153)):
+        r = out[f"{m}_pilot_drill"].result
+        assert (r.floor_mm, r.ceiling_mm) == (pytest.approx(lo, abs=1e-3), pytest.approx(hi, abs=1e-3))
+        assert r.floor_mm <= r.snapped_mm <= r.ceiling_mm + 1e-9
 
 
 def test_adding_a_10mm_endmill_changes_m5_socket(ruleset, tools, params):

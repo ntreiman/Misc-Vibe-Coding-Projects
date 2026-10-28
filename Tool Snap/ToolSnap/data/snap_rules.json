@@ -5,6 +5,7 @@
   "`target` and `floor` are Fusion expressions over user parameters (result in mm).",
   "Modes: Up = smallest tool >= target; Down = largest tool <= target but >= floor (falls back to Up);",
   "Nearest = closer of the two (ties go Up); Off = write the target unsnapped (e.g. helical-bored counterbores on CNC); Keep = leave the parameter untouched.",
+  "`ceiling` is the ISO upper limit: not enforced (a too-large tool beats no hole) but flagged in the Note and status line.",
   "Optional per-rule annotations: nominal + pitch -> '% thread' note for tap drills; head_od -> actual radial clearance note for counterbores."
  ],
  "sizes": ["m2", "m3", "m4", "m5", "m6"],
@@ -15,17 +16,21 @@
    "parameter": "{m}_clearance_hole",
    "tool": "drill",
    "target": "{m}_clearance_hole_{fit}",
-   "mode": "Up",
-   "comment": "ISO 273 {fit} clearance hole, snapped up to the next available drill"
+   "floor": "{m}_clearance_hole_{fit}",
+   "ceiling": "{m}_clearance_hole_{fit}_max",
+   "mode": "Nearest",
+   "comment": "ISO 273 {fit} clearance hole: never below nominal (H tolerance), flagged above the IT limit"
   },
   {
    "parameter": "{m}_pilot_drill",
    "tool": "drill",
    "target": "{m}_pilot_drill_nominal",
-   "mode": "Up",
+   "floor": "{m}_tap_drill_min",
+   "ceiling": "{m}_tap_drill_max",
+   "mode": "Nearest",
    "nominal": "{m}_nominal_dia",
    "pitch": "{m}_thread_pitch",
-   "comment": "Tap drill, snapped up to the next available drill; note shows resulting % thread"
+   "comment": "Tap drill within the 6H minor-diameter band (ISO 965-1); note shows resulting % thread"
   },
   {
    "parameter": "{m}_counterbore_OD_round",

@@ -48,17 +48,27 @@ those 20, rename it in `snap_rules.json` too, or Snap will create the old name
 afresh.
 
 Holes snap to **drills**; counterbores snap to **flat endmills** (plunged on a
-manual mill). Counterbore **floor** = head OD + ISO 273 coarse radial clearance
-for that fastener, so a "Nearest" pick can go smaller than the 1 mm target
-clearance but never below the coarse one.
+manual mill). Every row has a **floor** (hard minimum) and most have an ISO
+**maximum** that is flagged, not enforced (a slightly oversize hole beats no
+hole):
+
+| Row | Floor | ISO maximum (flagged) |
+|---|---|---|
+| Clearance hole | the ISO 273 series value itself (H tolerance: zero lower deviation) | value + IT grade — fine H12, medium H13, coarse H14, IT per ISO 286 for the hole's size range |
+| Tap drill | 6H minor diameter minimum = basic D1 = D − 1.0825 P (ISO 965-1) | 6H minor diameter maximum = D1 + TD1 grade 6 |
+| Counterbore | head OD + ISO 273 coarse radial clearance for that fastener | — |
+
+All limits live as parameters (`mX_clearance_hole_fine_max`, `mX_tap_drill_min/max`,
+…) with their derivation in the comment, so they are visible and editable in
+Change Parameters. Default mode is **Nearest** for drills (the floor stops it
+going under) and for counterbores.
 
 **Notes column.** Tap-drill rows show the resulting percent of thread using the
 Machinery's Handbook convention `% = (D − drill) / (1.299 × pitch)` — the one
-tap-drill charts mean by "75 % thread". Worth a glance before writing: with the
-bundled inventory, snapping M4's 3.3 mm tap drill *up* lands on #29 (3.454 mm)
-= 60 % thread, fine in aluminium, on the light side for steel; switch that row
-to *Down* for #30 (3.264 mm, 81 %). Counterbore rows show the actual radial gap
-between head and wall.
+tap-drill charts mean by "75 % thread". With the bundled inventory M4's tap drill lands on #30 (3.264 mm, 81 %); #29
+(3.454 mm, 60 %) is above the 6H minor-diameter maximum and would be flagged
+`OVER ISO max`. Counterbore rows show the actual radial gap between head and
+wall.
 
 ## Data files (`ToolSnap/data/`)
 
