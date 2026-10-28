@@ -163,6 +163,9 @@ def refresh(state: State, inputs) -> None:
                      snapped.note)
         for c, text in zip(TEXT_COLS, cells):
             inputs.itemById(f"c{c}_{i}").value = text
+        # hover a Target / Floor cell to see the expression it came from
+        inputs.itemById(f"c1_{i}").tooltip = snapped.rule.target
+        inputs.itemById(f"c2_{i}").tooltip = snapped.rule.floor or ""
     missing = [s for s in results if s.result is None]
     no_tool = [s for s in results if s.result is not None and not s.ok and not s.kept]
     lines = []
