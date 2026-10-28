@@ -111,7 +111,6 @@ class Created(adsk.core.CommandCreatedEventHandler):
             # max first: the default max is 4 and min may not exceed it
             table.maximumVisibleRows = 22
             table.minimumVisibleRows = 8
-            table.hasGrid = True
             for c, title in enumerate(COLS):
                 cell = inputs.addStringValueInput(f"hdr_{c}", title, title)
                 cell.isReadOnly = True
