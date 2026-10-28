@@ -16,7 +16,7 @@ TYPES = (("All tools", "all"), ("Drills", "drill"), ("Endmills", "endmill"))
 SYSTEMS = (("All", "all"), ("Imperial", "imperial"), ("Metric", "metric"))
 AVAIL = (("All", "all"), ("Available", "available"), ("Retired", "retired"))
 UNITS = (("mm and inches", "both"), ("millimetres", "mm"), ("inches", "in"))
-BULK = ("—", "Mark all shown AVAILABLE", "Mark all shown RETIRED")
+BULK = ("—", "Mark all shown AVAILABLE", "Mark all shown RETIRED", "Revert unsaved changes")
 N_COLS = 8
 RATIO = "2:2:2:2:2:2:4:2"
 
@@ -26,6 +26,7 @@ class State:
         self.tools = sorted(tools, key=lambda t: (t.type, t.diameter_mm))
         self.used_for = used_for
         self.avail = {(t.type, t.name): t.available for t in self.tools}   # edited in the dialog
+        self.saved = dict(self.avail)                                        # as loaded from disk
         self.row_ids: List[str] = []
         self.checkbox_key: Dict[str, Tuple[str, str]] = {}
         self.counter = 0
@@ -213,8 +214,11 @@ def rebuild(inputs, state: State) -> None:
         table.addCommandInput(chk, r, 7)
         state.row_ids.append(chk.id)
         r += 1
-    inputs.itemById("status").text = lv.summary(rows, state.tools, state.avail) + (
-        f"  Ø min / max / near are in {'inches' if units == 'in' else 'mm'}.")
+    pending = sum(1 for k, v in state.avail.items() if v != state.saved[k])
+    status = lv.summary(rows, state.tools, state.avail) + f"  Ø min / max / near are in {'inches' if units == 'in' else 'mm'}."
+    if pending:
+        status += f"\n{pending} availability change(s) NOT SAVED yet - Save keeps them, Cancel discards them."
+    inputs.itemById("status").text = status
 
 
 class Changed(adsk.core.InputChangedEventHandler):
@@ -234,9 +238,12 @@ class Changed(adsk.core.InputChangedEventHandler):
             inputs = st.inputs
             if cid == "bulk":
                 choice = args.input.selectedItem.index
-                if choice:
+                if choice == 3:
+                    st.avail = dict(st.saved)
+                elif choice:
                     for row in st.shown:
                         st.avail[(row.tool.type, row.tool.name)] = (choice == 1)
+                if choice:
                     args.input.listItems.item(0).isSelected = True
                     rebuild(inputs, st)
                 return
