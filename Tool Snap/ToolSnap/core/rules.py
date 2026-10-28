@@ -25,7 +25,8 @@ class Rule:
     parameter: str
     tool: str                    # "drill" | "endmill"
     target: str                  # Fusion expression -> mm
-    floor: Optional[str] = None  # Fusion expression -> mm, or None
+    floor: Optional[str] = None  # Fusion expression -> mm, or None (hard minimum)
+    ceiling: Optional[str] = None  # Fusion expression -> mm, or None (ISO maximum, flagged)
     mode: str = "Up"
     comment: str = ""
     # optional annotations, shown as a note next to the result:
@@ -37,8 +38,9 @@ class Rule:
         def fill(s: Optional[str]) -> Optional[str]:
             return None if s is None else s.replace("{m}", m).replace("{fit}", fit)
         return Rule(parameter=fill(self.parameter), tool=self.tool, target=fill(self.target),
-                    floor=fill(self.floor), mode=self.mode, comment=fill(self.comment),
-                    nominal=fill(self.nominal), pitch=fill(self.pitch), head_od=fill(self.head_od))
+                    floor=fill(self.floor), ceiling=fill(self.ceiling), mode=self.mode,
+                    comment=fill(self.comment), nominal=fill(self.nominal),
+                    pitch=fill(self.pitch), head_od=fill(self.head_od))
 
 
 @dataclass
@@ -70,7 +72,8 @@ def load(path: str) -> RuleSet:
         if raw["tool"] not in ("drill", "endmill"):
             raise ValueError(f"rule {raw.get('parameter')}: tool must be drill or endmill")
         rules.append(Rule(parameter=raw["parameter"], tool=raw["tool"], target=raw["target"],
-                          floor=raw.get("floor"), mode=mode, comment=raw.get("comment", ""),
+                          floor=raw.get("floor"), ceiling=raw.get("ceiling"), mode=mode,
+                          comment=raw.get("comment", ""),
                           nominal=raw.get("nominal"), pitch=raw.get("pitch"),
                           head_od=raw.get("head_od")))
     return RuleSet(sizes=list(data.get("sizes", [])),
@@ -111,13 +114,16 @@ def thread_percent(nominal_mm: float, pitch_mm: float, drill_mm: float) -> float
 def _note(rule: Rule, result: SnapResult, evaluate) -> str:
     if not result.ok:
         return ""
+    parts = []
     if rule.nominal and rule.pitch:
         pct = thread_percent(evaluate(rule.nominal), evaluate(rule.pitch), result.snapped_mm)
-        return f"{pct:.0f}% thread"
+        parts.append(f"{pct:.0f}% thread")
     if rule.head_od:
         radial = (result.snapped_mm - evaluate(rule.head_od)) / 2
-        return f"radial {radial:.2f} mm"
-    return ""
+        parts.append(f"radial {radial:.2f} mm")
+    if result.over_ceiling:
+        parts.append(f"OVER ISO max {result.ceiling_mm:.3f}")
+    return ", ".join(parts)
 
 
 def run(ruleset: RuleSet,
@@ -142,8 +148,9 @@ def run(ruleset: RuleSet,
         try:
             target = evaluate(rule.target)
             floor = evaluate(rule.floor) if rule.floor else None
+            ceiling = evaluate(rule.ceiling) if rule.ceiling else None
             mode = overrides.get(rule.parameter, rule.mode)
-            result = snap(target, tools, rule.tool, mode, floor, tolerance_mm)
+            result = snap(target, tools, rule.tool, mode, floor, tolerance_mm, ceiling)
             out.append(Snapped(rule, result, _note(rule, result, evaluate)))
         except Exception as exc:  # noqa: BLE001 - reported per row when not strict
             if strict:

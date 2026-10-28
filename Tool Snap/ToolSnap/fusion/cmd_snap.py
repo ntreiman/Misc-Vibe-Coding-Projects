@@ -164,7 +164,10 @@ def refresh(state: State, inputs) -> None:
             inputs.itemById(f"c{c}_{i}").value = text
         # hover a Target / Floor cell to see the expression it came from
         inputs.itemById(f"c1_{i}").tooltip = snapped.rule.target
-        inputs.itemById(f"c2_{i}").tooltip = snapped.rule.floor or ""
+        floor_tip = snapped.rule.floor or ""
+        if snapped.rule.ceiling:
+            floor_tip += f"\nISO max: {snapped.rule.ceiling}"
+        inputs.itemById(f"c2_{i}").tooltip = floor_tip
     missing = [s for s in results if s.result is None]
     no_tool = [s for s in results if s.result is not None and not s.ok and not s.kept]
     lines = []
@@ -173,6 +176,10 @@ def refresh(state: State, inputs) -> None:
                      f"({missing[0].error})")
     if no_tool:
         lines.append("No available tool for: " + ", ".join(s.parameter for s in no_tool))
+    over = [s for s in results if s.result is not None and s.result.over_ceiling]
+    if over:
+        lines.append("Over the ISO maximum (no smaller tool available): "
+                     + ", ".join(s.parameter for s in over))
     lines.extend(state.problems)
     inputs.itemById("status").text = "\n".join(lines) if lines else "All rows resolve to an available tool."
 
