@@ -118,7 +118,7 @@ def test_bad_fit_rejected(ruleset):
 def test_notes_thread_percent_and_radial(snapped):
     # Machinery's Handbook convention: % = (D - drill) / (1.299 * pitch)
     assert rules.thread_percent(4.0, 0.7, 3.3) == pytest.approx(77.0, abs=0.5)
-    assert snapped["m4_pilot_drill"].note == "60% thread"        # #29 is a loose tap drill for M4
+    assert snapped["m4_pilot_drill"].note == "60% thread, OVER ISO max 3.422"  # forced Up -> #29
     assert snapped["m5_counterbore_OD_socket"].note == "radial 0.51 mm"
     assert snapped["m2_clearance_hole"].note == ""
 
