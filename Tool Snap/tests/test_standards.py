@@ -8,8 +8,26 @@ CSV = os.path.join(os.path.dirname(__file__), "..", "ToolSnap", "data", "fastene
 
 
 def test_bundled_csv_is_generated_from_the_standards_table():
-    gen = standards.param_rows(["m2", "m3", "m4", "m5", "m6"])
+    gen = standards.param_rows(["m2", "m3", "m4", "m5", "m6"]) + \
+        standards.endmill_rows(standards.DEFAULT_ENDMILL_CLASSES)
     assert gen == paramcsv.load(CSV)
+
+
+def test_endmill_class_rows_and_snapping(ruleset, tools):
+    rows = {r.name: r for r in standards.endmill_rows(["em6"])}
+    assert set(rows) == {"em6_nominal_dia", "em6_dia", "corner_radius_factor", "em6_radius", "em6_corner_radius"}
+    assert rows["em6_radius"].expression == "em6_dia / 2"
+    assert rows["em6_corner_radius"].value == pytest.approx(3.3)          # 6/2 * 1.1 before snapping
+    params = paramcsv.values(standards.endmill_rows(["em3", "em6", "em10", "em12"]))
+    out = {s.parameter: s for s in rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), "medium",
+                                             strict=False, sizes=[], has_param=params.__contains__,
+                                             endmill_classes=standards.endmill_classes_in(params))}
+    assert set(out) == {"em3_dia", "em6_dia", "em10_dia", "em12_dia"}
+    assert out["em3_dia"].result.tool_label == "1/8" and out["em3_dia"].note == "radius 1.588 mm"
+    assert out["em6_dia"].result.snapped_mm == 6.0 and out["em10_dia"].result.tool_label == "3/8"
+    assert standards.size_label("em10") == "EM10" and rules.short_name("em10_dia") == "EM10 endmill"
+    assert standards.endmill_classes_in(["em6_nominal_dia", "m6_nominal_dia"]) == ["em6"]
+    assert standards.sizes_in(["em6_nominal_dia", "m6_nominal_dia"]) == ["m6"]
 
 
 def test_size_keys_and_labels():

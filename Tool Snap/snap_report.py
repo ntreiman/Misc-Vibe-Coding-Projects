@@ -36,7 +36,8 @@ def main(argv=None):
     params = paramcsv.values(paramcsv.load(args.params))
 
     rows = rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit, tol,
-                     sizes=standards.sizes_in(params), has_param=params.__contains__)
+                     sizes=standards.sizes_in(params), has_param=params.__contains__,
+                     endmill_classes=standards.endmill_classes_in(params))
     skipped = [s for s in rows if s.skipped]
     rows = [s for s in rows if not s.skipped]
     print(f"fit={fit}  tolerance={tol} mm  tools={sum(t.available for t in tools)} available")

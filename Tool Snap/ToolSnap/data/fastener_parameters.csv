@@ -127,3 +127,20 @@ m3_countersink_chamfer_tapped,mm,m3_flat_head_height + countersink_depth_clearan
 m4_countersink_chamfer_tapped,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_pilot_drill) / 2,2.95,45 deg equal-distance chamfer leg on the hole edge,true
 m5_countersink_chamfer_tapped,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_pilot_drill) / 2,3.5,45 deg equal-distance chamfer leg on the hole edge,true
 m6_countersink_chamfer_tapped,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_pilot_drill) / 2,4.1,45 deg equal-distance chamfer leg on the hole edge,true
+em3_nominal_dia,mm,,3,EM3: the endmill class wanted (3 mm),false
+em6_nominal_dia,mm,,6,EM6: the endmill class wanted (6 mm),false
+em10_nominal_dia,mm,,10,EM10: the endmill class wanted (10 mm),false
+em12_nominal_dia,mm,,12,EM12: the endmill class wanted (12 mm),false
+em3_dia,mm,,3,"Tool-driven: nearest available endmill, written by ToolSnap",true
+em6_dia,mm,,6,"Tool-driven: nearest available endmill, written by ToolSnap",true
+em10_dia,mm,,10,"Tool-driven: nearest available endmill, written by ToolSnap",true
+em12_dia,mm,,12,"Tool-driven: nearest available endmill, written by ToolSnap",true
+corner_radius_factor,mm,,1.1,"Pocket corner radius = endmill radius x this; 1.0 = exactly the cutter, 1.1 leaves 10% relief so the tool is never fully engaged in the corner",false
+em3_radius,mm,em3_dia / 2,1.5,Radius of the snapped endmill,false
+em6_radius,mm,em6_dia / 2,3,Radius of the snapped endmill,false
+em10_radius,mm,em10_dia / 2,5,Radius of the snapped endmill,false
+em12_radius,mm,em12_dia / 2,6,Radius of the snapped endmill,false
+em3_corner_radius,mm,em3_radius * corner_radius_factor,1.65,Internal pocket corner radius this endmill can cut (with relief factor),true
+em6_corner_radius,mm,em6_radius * corner_radius_factor,3.3,Internal pocket corner radius this endmill can cut (with relief factor),true
+em10_corner_radius,mm,em10_radius * corner_radius_factor,5.5,Internal pocket corner radius this endmill can cut (with relief factor),true
+em12_corner_radius,mm,em12_radius * corner_radius_factor,6.6,Internal pocket corner radius this endmill can cut (with relief factor),true

@@ -21,7 +21,7 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 | **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off / Keep), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
 | **Add Shop Tool** | Type (drill / endmill), diameter (`10`, `0.4375`, or `7/16`), unit, optional name → appended to `data/shop_tools.json`. |
 | **Shop Tools** | The inventory as a filterable, sortable table. **Filter:** type · system (imperial / metric) · series as a multi-select (Number, Letter, Fractional, Metric, …) · available / retired · Ø min / max · *near Ø* (the 4 closest tools each side of a size) · search · "only tools a hole snaps to". **Display:** units (mm, inches, or both), sort (Ø up / down, name, series-grouped with header rows), human labels (`#29`, `1/16"`, `E`, `5 mm`), a **Step ↑** column with the gap to the next larger available tool of the same type (big steps = holes in the library), a **Used for** column listing the hole parameters that currently pick each tool, and a shown/total count. **Edit:** tick / untick *Available* per tool or mark all shown tools available / retired in one go; Save persists. *Export CSVs on Save* writes `Drill Library.csv` and `Endmill Library.csv` — one per Google Sheet tab, same columns — into a folder you pick. |
-| **Add Fastener Size** | Pick a size (M1.6 … M20) and the features to set up — clearance hole, tap drill, socket-head counterbore, button-head counterbore, countersink — and the parameters are created from the standards table (`core/standards.py`: ISO 273 + ISO 286 limits, ISO 262 pitch, ISO 965-1 6H band, ISO 4762 / ISO 7380 / DIN 7991 heads). Snap to Tools then shows the size automatically; features without standard head data for a size (e.g. M7 counterbores) are greyed out. |
+| **Add Size** | Pick a size (M1.6 … M20) and the features to set up — clearance hole, tap drill, socket-head counterbore, button-head counterbore, countersink — and the parameters are created from the standards table (`core/standards.py`: ISO 273 + ISO 286 limits, ISO 262 pitch, ISO 965-1 6H band, ISO 4762 / ISO 7380 / DIN 7991 heads). Snap to Tools then shows the size automatically; features without standard head data for a size (e.g. M7 counterbores) are greyed out. Or pick **Endmill class** to add `emN_*` parameters (below). |
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
 Only the "tool-driven" parameters (`mX_clearance_hole`, `mX_pilot_drill`,
@@ -44,6 +44,22 @@ keeps the two identical.
 * **Off** — write the target unsnapped (helical-bored counterbores on a CNC)
 * **Keep** — don't touch the parameter; a value you set by hand in Change
   Parameters survives re-snapping
+
+## Endmill classes (pocket corner radii)
+
+`emN` is to a pocket what `mN` is to a hole: "the endmill I own that is nearest
+N mm". Default classes em3, em6, em10, em12; add others with Add Size.
+
+| Parameter | Role |
+|---|---|
+| `em6_nominal_dia` = 6 mm | the class wanted (input) |
+| `em6_dia` | **tool-driven**: nearest available endmill (6 mm, or 1/4" = 6.35 if you don't own one) |
+| `em6_radius` = `em6_dia / 2` | expression |
+| `em6_corner_radius` = `em6_radius * corner_radius_factor` | expression — use it on internal pocket fillets |
+| `corner_radius_factor` = 1.1 | global; 1.0 = exactly the cutter radius, 1.1 leaves 10 % relief so the tool is never fully engaged in a corner |
+
+Buy a 10 mm endmill, add it in Shop Tools, re-run Snap: `em10_dia` moves from
+3/8" (9.525) to 10 and every pocket fillet using `em10_corner_radius` follows.
 
 ## Editing parameters in Fusion
 

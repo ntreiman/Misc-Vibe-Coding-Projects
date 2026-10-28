@@ -1,7 +1,7 @@
 {
  "_comment": [
   "Which user parameters are driven by the shop tool inventory, and how.",
-  "{m} is expanded over `sizes`; {fit} is the active ISO 273 clearance series.",
+  "{m} is expanded over `sizes` (fastener sizes), {em} over `endmill_classes`; {fit} is the active ISO 273 clearance series.",
   "`target` and `floor` are Fusion expressions over user parameters (result in mm).",
   "Modes: Up = smallest tool >= target; Down = largest tool <= target but >= floor (falls back to Up);",
   "Nearest = closer of the two (ties go Up); Off = write the target unsnapped (e.g. helical-bored counterbores on CNC); Keep = leave the parameter untouched.",
@@ -10,6 +10,7 @@
   "Optional per-rule annotations: nominal + pitch -> '% thread' note for tap drills; head_od -> actual radial clearance note for counterbores."
  ],
  "sizes": ["m2", "m3", "m4", "m5", "m6"],
+ "endmill_classes": ["em3", "em6", "em10", "em12"],
  "fits": ["fine", "medium", "coarse"],
  "defaults": {"fit": "medium", "tolerance_mm": 0.0},
  "rules": [
@@ -52,6 +53,13 @@
    "head_od": "{m}_socket_head_OD",
    "mode": "Nearest",
    "comment": "Plunged counterbore for a socket head cap screw; never below ISO coarse radial clearance"
+  },
+  {
+   "parameter": "{em}_dia",
+   "tool": "endmill",
+   "target": "{em}_nominal_dia",
+   "mode": "Nearest",
+   "comment": "Endmill class: the owned endmill nearest to N mm; drives {em}_radius and {em}_corner_radius"
   }
  ]
 }

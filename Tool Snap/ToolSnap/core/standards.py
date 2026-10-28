@@ -37,6 +37,14 @@ GLOBALS = [  # name, value, comment
     ("counterbore_depth_clearance", 0.3, "How far below flush a counterbored head sits"),
     ("counterbore_radial_clearance", 1.0, "Target radial gap between head OD and counterbore wall"),
 ]
+ENDMILL_GLOBALS = [
+    ("corner_radius_factor", 1.1, "Pocket corner radius = endmill radius x this; 1.0 = exactly the cutter, "
+                                 "1.1 leaves 10% relief so the tool is never fully engaged in the corner"),
+]
+
+# Endmill classes: emN = "the endmill nearest to N mm that I own".  Mirrors mN for fasteners.
+ENDMILL_CLASSES = ["em2", "em3", "em4", "em5", "em6", "em8", "em10", "em12", "em16", "em20", "em25"]
+DEFAULT_ENDMILL_CLASSES = ["em3", "em6", "em10", "em12"]
 
 # size key -> nominal, pitch, ISO 273 (fine, medium, coarse), tap drill,
 #             socket (dk, k) | None, button (dk, k) | None, flat (dk, k) | None
@@ -71,7 +79,9 @@ D1_FACTOR = 1.082532   # H = 0.866025 P, D1 = D - 2 * (5/8) H
 
 
 def size_label(key: str) -> str:
-    """'m2_5' -> 'M2.5'"""
+    """'m2_5' -> 'M2.5';  'em6' -> 'EM6'"""
+    if key.startswith("em"):
+        return "EM" + key[2:].replace("_", ".")
     return "M" + key[1:].replace("_", ".")
 
 
@@ -82,7 +92,37 @@ def size_key(label: str) -> str:
 
 
 def sort_key(key: str) -> float:
-    return float(key[1:].replace("_", "."))
+    return float(key.lstrip("em").replace("_", "."))
+
+
+def endmill_rows(classes: Iterable[str], include_globals: bool = True) -> List[ParamRow]:
+    """Parameters for endmill classes: nominal (input), dia (tool-driven),
+    radius and pocket corner radius (expressions)."""
+    rows: List[ParamRow] = []
+    classes = sorted(classes, key=sort_key)
+    for key in classes:
+        n = sort_key(key); lbl = size_label(key)
+        rows.append(_row(f"{key}_nominal_dia", "", n, f"{lbl}: the endmill class wanted ({n:g} mm)"))
+    for key in classes:
+        rows.append(_row(f"{key}_dia", "", sort_key(key), "Tool-driven: nearest available endmill, written by ToolSnap", True))
+    if include_globals:
+        rows.extend(_row(nm, "", v, c) for nm, v, c in ENDMILL_GLOBALS)
+    for key in classes:
+        rows.append(_row(f"{key}_radius", f"{key}_dia / 2", None, "Radius of the snapped endmill", False))
+    for key in classes:
+        rows.append(_row(f"{key}_corner_radius", f"{key}_radius * corner_radius_factor", None,
+                         "Internal pocket corner radius this endmill can cut (with relief factor)", True))
+    values = {r.name: r.value for r in rows if r.value is not None}
+    for r in rows:
+        if r.expression:
+            r.value = round(expr.evaluate(r.expression, values), 4)
+            values[r.name] = r.value
+    return rows
+
+
+def endmill_classes_in(names: Iterable[str]) -> List[str]:
+    found = [n[:-len("_nominal_dia")] for n in names if n.endswith("_nominal_dia")]
+    return sorted((k for k in found if re.fullmatch(r"em\d+(_\d+)?", k)), key=sort_key)
 
 
 def it_grade(d: float, grade: int) -> float:

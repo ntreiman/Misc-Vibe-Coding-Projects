@@ -38,7 +38,7 @@ class Rule:
 
     def filled(self, m: str, fit: str) -> "Rule":
         def fill(s: Optional[str]) -> Optional[str]:
-            return None if s is None else s.replace("{m}", m).replace("{fit}", fit)
+            return None if s is None else s.replace("{em}", m).replace("{m}", m).replace("{fit}", fit)
         return Rule(parameter=fill(self.parameter), tool=self.tool, target=fill(self.target),
                     floor=fill(self.floor), ceiling=fill(self.ceiling), mode=self.mode,
                     comment=fill(self.comment), nominal=fill(self.nominal),
@@ -51,20 +51,29 @@ class RuleSet:
     fits: List[str]
     defaults: Dict[str, object]
     rules: List[Rule]
+    endmill_classes: List[str] = None
 
-    def expand(self, fit: str, sizes: Optional[List[str]] = None) -> List[Rule]:
-        """Instantiate the templated rules for every size and the given fit.
+    def expand(self, fit: str, sizes: Optional[List[str]] = None,
+               endmill_classes: Optional[List[str]] = None) -> List[Rule]:
+        """Instantiate the templated rules for every size / endmill class and the given fit.
 
-        ``sizes`` overrides the file's default list - the Fusion dialog passes
-        the sizes actually present in the design (every ``mX_nominal_dia``).
+        ``sizes`` / ``endmill_classes`` override the file's defaults - the Fusion
+        dialog passes what is actually present in the design (every
+        ``mX_nominal_dia`` / ``emN_nominal_dia``).
         """
         if fit not in self.fits:
             raise ValueError(f"fit must be one of {self.fits}, got {fit!r}")
         use = self.sizes if sizes is None else sizes
+        ems = (self.endmill_classes or []) if endmill_classes is None else endmill_classes
         out: List[Rule] = []
         for rule in self.rules:
-            per_size = use if "{m}" in rule.parameter else [""]
-            out.extend(rule.filled(m, fit) for m in per_size)
+            if "{em}" in rule.parameter:
+                per = ems
+            elif "{m}" in rule.parameter:
+                per = use
+            else:
+                per = [""]
+            out.extend(rule.filled(m, fit) for m in per)
         return out
 
 
@@ -86,7 +95,8 @@ def load(path: str) -> RuleSet:
     return RuleSet(sizes=list(data.get("sizes", [])),
                    fits=list(data.get("fits", ["fine", "medium", "coarse"])),
                    defaults=dict(data.get("defaults", {})),
-                   rules=rules)
+                   rules=rules,
+                   endmill_classes=list(data.get("endmill_classes", [])))
 
 
 @dataclass
@@ -129,6 +139,8 @@ def _note(rule: Rule, result: SnapResult, evaluate) -> str:
     if rule.head_od:
         radial = (result.snapped_mm - evaluate(rule.head_od)) / 2
         parts.append(f"radial {radial:.2f} mm")
+    elif rule.tool == "endmill":
+        parts.append(f"radius {result.snapped_mm / 2:.3f} mm")
     if result.over_ceiling:
         parts.append(f"OVER ISO max {result.ceiling_mm:.3f}")
     return ", ".join(parts)
@@ -151,7 +163,8 @@ def run(ruleset: RuleSet,
         mode_overrides: Optional[Dict[str, str]] = None,
         strict: bool = True,
         sizes: Optional[List[str]] = None,
-        has_param: Optional[Callable[[str], bool]] = None) -> List[Snapped]:
+        has_param: Optional[Callable[[str], bool]] = None,
+        endmill_classes: Optional[List[str]] = None) -> List[Snapped]:
     """Evaluate every expanded rule and snap it.
 
     ``evaluate`` turns a Fusion expression into mm - inside Fusion that is the
@@ -166,7 +179,7 @@ def run(ruleset: RuleSet,
     """
     overrides = mode_overrides or {}
     out = []
-    for rule in ruleset.expand(fit, sizes):
+    for rule in ruleset.expand(fit, sizes, endmill_classes):
         if has_param is not None:
             if rule.legacy and has_param(rule.legacy) and not has_param(rule.parameter):
                 rule = replace(rule, parameter=rule.legacy)   # keep writing the design's own name
@@ -189,7 +202,7 @@ def run(ruleset: RuleSet,
 
 
 _SHORT = (("_counterbore_ID_socket", " cbore socket"), ("_counterbore_ID_round", " cbore button"),
-          ("_clearance_hole", " clearance"), ("_pilot_drill", " tap drill"))
+          ("_clearance_hole", " clearance"), ("_pilot_drill", " tap drill"), ("_dia", " endmill"))
 
 
 def short_name(parameter: str) -> str:

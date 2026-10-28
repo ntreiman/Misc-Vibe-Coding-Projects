@@ -44,7 +44,8 @@ def _used_for(app) -> Dict[Tuple[str, str], List[str]]:
         fit = ruleset.defaults.get("fit", "medium")
         out: Dict[Tuple[str, str], List[str]] = {}
         for s in rules.run(ruleset, tools, params.evaluator(design), fit, strict=False,
-                           sizes=standards.sizes_in(names), has_param=names.__contains__):
+                           sizes=standards.sizes_in(names), has_param=names.__contains__,
+                           endmill_classes=standards.endmill_classes_in(names)):
             if s.ok and not s.kept:
                 for name in s.result.tools:
                     out.setdefault((s.rule.tool, name), []).append(rules.short_name(s.parameter))

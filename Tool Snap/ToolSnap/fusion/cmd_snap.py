@@ -58,6 +58,7 @@ class State:
         self._tool_cache: Dict[int, list] = {}
         names = set(ui.user_parameter_names(design))
         self.sizes = standards.sizes_in(names)      # every mX_nominal_dia in the design
+        self.endmill_classes = standards.endmill_classes_in(names)   # every emN_nominal_dia
         self.has_param = names.__contains__
 
     def tools(self, source_index: int):
@@ -80,7 +81,8 @@ class State:
         overrides = {name: inputs.itemById(f"mode_{i}").selectedItem.name
                      for i, name in enumerate(self.rows) if inputs.itemById(f"mode_{i}")}
         results = rules.run(self.ruleset, self.tools(source), self.evaluate, fit, tol_mm,
-                            overrides, strict=False, sizes=self.sizes, has_param=self.has_param)
+                            overrides, strict=False, sizes=self.sizes, has_param=self.has_param,
+                            endmill_classes=self.endmill_classes)
         self.results = results
         self.settings.update({"fit": fit, "tolerance_mm": tol_mm, "source": source,
                               "modes": overrides})
@@ -122,7 +124,8 @@ class Created(adsk.core.CommandCreatedEventHandler):
 
             # one table row per rule whose inputs exist in this design
             first = rules.run(state.ruleset, [], state.evaluate, default_fit, strict=False,
-                              sizes=state.sizes, has_param=state.has_param)
+                              sizes=state.sizes, has_param=state.has_param,
+                              endmill_classes=state.endmill_classes)
             saved_modes = s.get("modes", {})
             for snapped_rule in (r for r in first if not r.skipped):
                 rule = snapped_rule.rule
@@ -195,8 +198,8 @@ def refresh(state: State, inputs) -> None:
                      + ", ".join(s.parameter for s in over))
     lines.extend(state.problems)
     if not lines:
-        lines.append("All rows resolve to an available tool. Sizes in this design: "
-                     + ", ".join(standards.size_label(k) for k in state.sizes) + ".")
+        lines.append("All rows resolve to an available tool. In this design: "
+                     + ", ".join(standards.size_label(k) for k in state.sizes + state.endmill_classes) + ".")
     if skipped:
         lines.append("Not set up for this design (Add Fastener Size): "
                      + ", ".join(rules.short_name(s.parameter) for s in skipped))
