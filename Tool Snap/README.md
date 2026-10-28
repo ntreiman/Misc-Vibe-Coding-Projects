@@ -16,7 +16,7 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 
 | Command | What it does |
 |---|---|
-| **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
+| **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off / Keep), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
 | **Add Shop Tool** | Type (drill / endmill), diameter (`10`, `0.4375`, or `7/16`), unit, optional name → appended to `data/shop_tools.json`. |
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
@@ -31,6 +31,19 @@ themselves.
 * **Down** — largest available tool ≤ target + tol that is still ≥ floor; falls back to Up
 * **Nearest** — closer of Up / Down to the target; ties go Up
 * **Off** — write the target unsnapped (helical-bored counterbores on a CNC)
+* **Keep** — don't touch the parameter; a value you set by hand in Change
+  Parameters survives re-snapping
+
+## Editing parameters in Fusion
+
+ToolSnap never deletes or recreates a parameter — it sets the expression on
+the existing one, exactly like typing in Change Parameters — so sketches and
+features referencing `m4_clearance_hole` etc. keep their links and recompute.
+Edit the inputs (head ODs, clearances, ISO rows) freely; the next Snap reads
+the live values. Hand-edit one of the 20 tool-driven outputs and either set its
+row to **Keep** or expect the next Snap to overwrite it. If you rename one of
+those 20, rename it in `snap_rules.json` too, or Snap will create the old name
+afresh.
 
 Holes snap to **drills**; counterbores snap to **flat endmills** (plunged on a
 manual mill). Counterbore **floor** = head OD + ISO 273 coarse radial clearance

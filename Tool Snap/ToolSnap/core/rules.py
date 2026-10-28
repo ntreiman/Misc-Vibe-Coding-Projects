@@ -94,6 +94,10 @@ class Snapped:
     def ok(self) -> bool:
         return self.result is not None and self.result.ok
 
+    @property
+    def kept(self) -> bool:
+        return self.result is not None and self.result.kept
+
 
 # Machinery's Handbook convention: % thread = (D - drill) / (1.299 * pitch),
 # the one tap-drill charts use when they say "75 % thread".

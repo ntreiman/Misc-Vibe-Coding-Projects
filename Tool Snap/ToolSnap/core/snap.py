@@ -10,6 +10,8 @@ Parameters" spreadsheet, so the two can be cross-checked against each other:
                  i.e. the larger clearance)
 * ``Off``     -> pass the target straight through (e.g. helical-bored
                  counterbores on a CNC, where any diameter is machinable)
+* ``Keep``    -> do not touch the parameter at all (a hand-set override
+                 survives re-snapping)
 
 Everything here is pure Python so it runs under plain ``python -m pytest``
 without Fusion.
@@ -18,7 +20,7 @@ without Fusion.
 from dataclasses import dataclass, field
 from typing import Iterable, List, Optional, Sequence
 
-MODES = ("Up", "Nearest", "Down", "Off")
+MODES = ("Up", "Nearest", "Down", "Off", "Keep")
 ROUNDING = 4  # decimal places, same as the spreadsheet
 
 
@@ -42,6 +44,10 @@ class SnapResult:
     tools: List[str] = field(default_factory=list)
 
     @property
+    def kept(self) -> bool:
+        return self.mode == "Keep"
+
+    @property
     def ok(self) -> bool:
         return self.snapped_mm is not None
 
@@ -53,6 +59,8 @@ class SnapResult:
 
     @property
     def tool_label(self) -> str:
+        if self.mode == "Keep":
+            return "(kept as is)"
         if self.mode == "Off":
             return "(not snapped)"
         return " / ".join(self.tools) if self.tools else "no tool"
@@ -81,7 +89,9 @@ def snap(target_mm: float,
     up = up_candidates[0] if up_candidates else None
     down = down_candidates[-1] if down_candidates else None
 
-    if mode == "Off":
+    if mode == "Keep":
+        pick = None
+    elif mode == "Off":
         pick = target_mm
     elif mode == "Up":
         pick = up
@@ -97,7 +107,7 @@ def snap(target_mm: float,
 
     snapped = round(pick, ROUNDING) if pick is not None else None
     names = []
-    if snapped is not None and mode != "Off":
+    if snapped is not None and mode not in ("Off", "Keep"):
         names = [t.name for t in pool if round(t.diameter_mm, ROUNDING) == snapped]
     return SnapResult(target_mm=target_mm, floor_mm=floor_mm, mode=mode,
                       up_mm=up, down_mm=down, snapped_mm=snapped, tools=names)

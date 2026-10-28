@@ -148,6 +148,10 @@ def refresh(state: State, inputs) -> None:
         r = snapped.result
         if r is None:
             cells = (snapped.parameter, "?", "", "?", "", "", "missing parameter")
+        elif r.kept:
+            current = params.get_mm(state.design, snapped.parameter)
+            cells = (snapped.parameter, f"{r.target_mm:.3f}", "",
+                     f"{current:.4f}" if current is not None else "(absent)", r.tool_label, "", "")
         else:
             cells = (snapped.parameter,
                      f"{r.target_mm:.3f}",
@@ -159,7 +163,7 @@ def refresh(state: State, inputs) -> None:
         for c, text in zip(TEXT_COLS, cells):
             inputs.itemById(f"c{c}_{i}").value = text
     missing = [s for s in results if s.result is None]
-    no_tool = [s for s in results if s.result is not None and not s.result.ok]
+    no_tool = [s for s in results if s.result is not None and not s.ok and not s.kept]
     lines = []
     if missing:
         lines.append(f"{len(missing)} parameter(s) missing from this design - run Import Parameters first. "
@@ -193,9 +197,12 @@ class Execute(adsk.core.CommandEventHandler):
         try:
             state = self.state
             results = state.compute(args.command.commandInputs)
-            changed, skipped, same = [], [], 0
+            changed, skipped, kept, same = [], [], [], 0
             for s in results:
                 r = s.result
+                if s.kept:
+                    kept.append(s.parameter)
+                    continue
                 if not s.ok:
                     skipped.append(s.parameter)
                     continue
@@ -213,6 +220,8 @@ class Execute(adsk.core.CommandEventHandler):
             msg.extend(changed[:30])
             if len(changed) > 30:
                 msg.append(f"... and {len(changed) - 30} more")
+            if kept:
+                msg.append("\nKept as is: " + ", ".join(kept))
             if skipped:
                 msg.append("\nSkipped (no tool / missing parameter): " + ", ".join(skipped))
             app.userInterface.messageBox("\n".join(msg), "ToolSnap")

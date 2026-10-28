@@ -44,9 +44,9 @@ def main(argv=None):
     for s in rows:
         r = s.result
         floor = f"{r.floor_mm:7.3f}" if r.floor_mm is not None else f"{'':7}"
-        snapped = f"{r.snapped_mm:8.4f}" if r.ok else f"{'NONE':>8}"
+        snapped = f"{r.snapped_mm:8.4f}" if r.ok else f"{('kept' if r.kept else 'NONE'):>8}"
         delta = f"{r.delta_mm:+8.4f}" if r.ok else f"{'':8}"
-        bad += not r.ok
+        bad += not (r.ok or r.kept)
         print(f"{s.parameter:28} {s.rule.tool:8} {r.mode:8} {r.target_mm:8.3f} {floor} {snapped} {delta}  {r.tool_label:10} {s.note}")
     return 1 if bad else 0
 

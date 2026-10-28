@@ -4,7 +4,7 @@
   "{m} is expanded over `sizes`; {fit} is the active ISO 273 clearance series.",
   "`target` and `floor` are Fusion expressions over user parameters (result in mm).",
   "Modes: Up = smallest tool >= target; Down = largest tool <= target but >= floor (falls back to Up);",
-  "Nearest = closer of the two (ties go Up); Off = write the target unsnapped (e.g. helical-bored counterbores on CNC).",
+  "Nearest = closer of the two (ties go Up); Off = write the target unsnapped (e.g. helical-bored counterbores on CNC); Keep = leave the parameter untouched.",
   "Optional per-rule annotations: nominal + pitch -> '% thread' note for tap drills; head_od -> actual radial clearance note for counterbores."
  ],
  "sizes": ["m2", "m3", "m4", "m5", "m6"],
