@@ -246,8 +246,17 @@ class Execute(adsk.core.CommandEventHandler):
                                    f"{'new' if before is None else f'{before:.4f}'} → {r.snapped_mm:.4f} mm  [{r.tool_label}]")
                 else:
                     same += 1
+            # a design migrated to a new parameter name may still carry the old one
+            removed = []
+            for s in results:
+                lg = s.rule.legacy
+                if lg and lg != s.parameter and state.has_param(s.parameter) and state.has_param(lg):
+                    if params.remove_if_unused(state.design, lg):
+                        removed.append(lg)
             _save_settings(state.settings)
             msg = [f"Wrote {len(changed)} changed parameter(s); {same} already matched."]
+            if removed:
+                msg.append("Removed unused legacy parameter(s): " + ", ".join(removed))
             msg.extend(changed[:30])
             if len(changed) > 30:
                 msg.append(f"... and {len(changed) - 30} more")

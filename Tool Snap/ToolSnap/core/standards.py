@@ -168,7 +168,7 @@ def param_rows(sizes: Iterable[str], families: Iterable[str] = FAMILIES,
             dk, k = s["socket"]
             blocks["socket_h"].append(_row(f"{key}_socket_head_height", "", k, f"ISO 4762 {lbl} head height k"))
             blocks["socket_od"].append(_row(f"{key}_socket_head_OD", "", dk, f"ISO 4762 {lbl} head diameter dk max"))
-            blocks["cb_od_socket"].append(_row(f"{key}_counterbore_OD_socket", "", dk + 2.0,
+            blocks["cb_od_socket"].append(_row(f"{key}_counterbore_ID_socket", "", dk + 2.0,
                                                "Tool-driven: written by ToolSnap from the shop inventory", True))
             blocks["cb_depth_socket"].append(_row(f"{key}_counterbore_depth_socket",
                                                   f"{key}_socket_head_height + counterbore_depth_clearance", None, "", True))
@@ -176,7 +176,7 @@ def param_rows(sizes: Iterable[str], families: Iterable[str] = FAMILIES,
             dk, k = s["button"]
             blocks["round_h"].append(_row(f"{key}_round_head_height", "", k, f"ISO 7380 {lbl} button head height k"))
             blocks["round_od"].append(_row(f"{key}_round_head_OD", "", dk, f"ISO 7380 {lbl} button head diameter dk"))
-            blocks["cb_od_round"].append(_row(f"{key}_counterbore_OD_round", "", dk + 2.0,
+            blocks["cb_od_round"].append(_row(f"{key}_counterbore_ID_round", "", dk + 2.0,
                                               "Tool-driven: written by ToolSnap from the shop inventory", True))
             blocks["cb_depth_round"].append(_row(f"{key}_counterbore_depth_round",
                                                  f"{key}_round_head_height + counterbore_depth_clearance", None, "", True))
@@ -187,7 +187,7 @@ def param_rows(sizes: Iterable[str], families: Iterable[str] = FAMILIES,
             note = "45 deg equal-distance chamfer leg on the hole edge"
             if "clearance" in fam:
                 blocks["csk_slip"].append(_row(
-                    f"{key}_countersink_chamfer_slip_fit",
+                    f"{key}_countersink_chamfer_clearance",
                     f"{key}_flat_head_height + countersink_depth_clearance + ({key}_nominal_dia - {key}_clearance_hole) / 2",
                     None, note, True))
             if "tap" in fam:

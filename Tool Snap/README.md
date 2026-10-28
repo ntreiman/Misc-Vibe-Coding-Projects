@@ -25,7 +25,7 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
 Only the "tool-driven" parameters (`mX_clearance_hole`, `mX_pilot_drill`,
-`mX_counterbore_OD_round/socket`) are written. Counterbore depths and
+`mX_counterbore_ID_round/socket`) are written. Counterbore depths and
 countersink chamfer legs keep their Fusion expressions and recompute by
 themselves.
 
@@ -55,8 +55,10 @@ the live values. Hand-edit one of the 20 tool-driven outputs and either set its
 row to **Keep** or expect the next Snap to overwrite it. Neither command ever
 changes the Favorite flag or comment of a parameter that already exists —
 those are only set when ToolSnap creates one. If you rename one of
-those 20, rename it in `snap_rules.json` too, or Snap will create the old name
-afresh.
+those tool-driven parameters, add the old name as `legacy` in
+`snap_rules.json` (as done for `mX_counterbore_OD_*` → `mX_counterbore_ID_*`):
+a design that still has the old name is written in place, and one that has
+both gets the unused old one removed.
 
 Holes snap to **drills**; counterbores snap to **flat endmills** (plunged on a
 manual mill). Every row has a **floor** (hard minimum) and most have an ISO

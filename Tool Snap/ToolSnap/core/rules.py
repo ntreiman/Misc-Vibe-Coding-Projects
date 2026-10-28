@@ -14,7 +14,7 @@ dowel pin without touching Python.
 """
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable, Dict, List, Optional
 
 from .snap import MODES, SnapResult, Tool, snap
@@ -34,6 +34,7 @@ class Rule:
     nominal: Optional[str] = None  # thread nominal Ø   -> "% thread" for tap drills
     pitch: Optional[str] = None    # thread pitch        (needs nominal too)
     head_od: Optional[str] = None  # screw head Ø        -> actual radial clearance of a counterbore
+    legacy: Optional[str] = None   # older parameter name; written in place when only it exists
 
     def filled(self, m: str, fit: str) -> "Rule":
         def fill(s: Optional[str]) -> Optional[str]:
@@ -41,7 +42,7 @@ class Rule:
         return Rule(parameter=fill(self.parameter), tool=self.tool, target=fill(self.target),
                     floor=fill(self.floor), ceiling=fill(self.ceiling), mode=self.mode,
                     comment=fill(self.comment), nominal=fill(self.nominal),
-                    pitch=fill(self.pitch), head_od=fill(self.head_od))
+                    pitch=fill(self.pitch), head_od=fill(self.head_od), legacy=fill(self.legacy))
 
 
 @dataclass
@@ -81,7 +82,7 @@ def load(path: str) -> RuleSet:
                           floor=raw.get("floor"), ceiling=raw.get("ceiling"), mode=mode,
                           comment=raw.get("comment", ""),
                           nominal=raw.get("nominal"), pitch=raw.get("pitch"),
-                          head_od=raw.get("head_od")))
+                          head_od=raw.get("head_od"), legacy=raw.get("legacy")))
     return RuleSet(sizes=list(data.get("sizes", [])),
                    fits=list(data.get("fits", ["fine", "medium", "coarse"])),
                    defaults=dict(data.get("defaults", {})),
@@ -167,6 +168,8 @@ def run(ruleset: RuleSet,
     out = []
     for rule in ruleset.expand(fit, sizes):
         if has_param is not None:
+            if rule.legacy and has_param(rule.legacy) and not has_param(rule.parameter):
+                rule = replace(rule, parameter=rule.legacy)   # keep writing the design's own name
             missing = [n for n in inputs_of(rule) if not has_param(n)]
             if missing:
                 out.append(Snapped(rule, None, error="needs " + ", ".join(missing), skipped=True))
@@ -185,12 +188,12 @@ def run(ruleset: RuleSet,
     return out
 
 
-_SHORT = (("_counterbore_OD_socket", " cbore socket"), ("_counterbore_OD_round", " cbore button"),
+_SHORT = (("_counterbore_ID_socket", " cbore socket"), ("_counterbore_ID_round", " cbore button"),
           ("_clearance_hole", " clearance"), ("_pilot_drill", " tap drill"))
 
 
 def short_name(parameter: str) -> str:
-    """'m4_counterbore_OD_socket' -> 'M4 cbore socket' (for compact UI columns)."""
+    """'m4_counterbore_ID_socket' -> 'M4 cbore socket' (for compact UI columns)."""
     for suffix, label in _SHORT:
         if parameter.endswith(suffix):
             return size_label(parameter[:-len(suffix)]) + label

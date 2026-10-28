@@ -18,16 +18,16 @@ SHEET = {
     "m4_pilot_drill": (3.4544, "29", None),
     "m5_pilot_drill": (4.2164, "19", None),
     "m6_pilot_drill": (5.0, "5 mm", None),
-    "m2_counterbore_OD_round": (6.0, "6 mm", 4.1),
-    "m3_counterbore_OD_round": (7.9375, "5/16", 6.3),
-    "m4_counterbore_OD_round": (9.525, "3/8", 8.4),
-    "m5_counterbore_OD_round": (12.7, "1/2", 10.3),
-    "m6_counterbore_OD_round": (12.7, "1/2", 11.5),
-    "m2_counterbore_OD_socket": (6.0, "6 mm", 4.4),
-    "m3_counterbore_OD_socket": (7.9375, "5/16", 6.1),
-    "m4_counterbore_OD_socket": (9.525, "3/8", 7.8),
-    "m5_counterbore_OD_socket": (9.525, "3/8", 9.3),
-    "m6_counterbore_OD_socket": (12.7, "1/2", 11.0),
+    "m2_counterbore_ID_round": (6.0, "6 mm", 4.1),
+    "m3_counterbore_ID_round": (7.9375, "5/16", 6.3),
+    "m4_counterbore_ID_round": (9.525, "3/8", 8.4),
+    "m5_counterbore_ID_round": (12.7, "1/2", 10.3),
+    "m6_counterbore_ID_round": (12.7, "1/2", 11.5),
+    "m2_counterbore_ID_socket": (6.0, "6 mm", 4.4),
+    "m3_counterbore_ID_socket": (7.9375, "5/16", 6.1),
+    "m4_counterbore_ID_socket": (9.525, "3/8", 7.8),
+    "m5_counterbore_ID_socket": (9.525, "3/8", 9.3),
+    "m6_counterbore_ID_socket": (12.7, "1/2", 11.0),
 }
 
 
@@ -102,15 +102,15 @@ def test_adding_a_10mm_endmill_changes_m5_socket(ruleset, tools, params):
     more = inventory.add_tool(tools, "10 mm", "endmill", 10, "mm")
     out = {s.parameter: s for s in
            rules.run(ruleset, more, lambda e: expr.evaluate(e, params), fit="medium")}
-    assert out["m5_counterbore_OD_socket"].result.snapped_mm == 10.0
-    assert out["m5_counterbore_OD_socket"].result.tool_label == "10 mm"
+    assert out["m5_counterbore_ID_socket"].result.snapped_mm == 10.0
+    assert out["m5_counterbore_ID_socket"].result.tool_label == "10 mm"
 
 
 def test_mode_override_off(ruleset, tools, params):
     out = {s.parameter: s for s in
            rules.run(ruleset, tools, lambda e: expr.evaluate(e, params), fit="medium",
-                     mode_overrides={"m5_counterbore_OD_round": "Off"})}
-    assert out["m5_counterbore_OD_round"].result.snapped_mm == 11.5
+                     mode_overrides={"m5_counterbore_ID_round": "Off"})}
+    assert out["m5_counterbore_ID_round"].result.snapped_mm == 11.5
 
 
 def test_bad_fit_rejected(ruleset):
@@ -122,7 +122,7 @@ def test_notes_thread_percent_and_radial(snapped):
     # Machinery's Handbook convention: % = (D - drill) / (1.299 * pitch)
     assert rules.thread_percent(4.0, 0.7, 3.3) == pytest.approx(77.0, abs=0.5)
     assert snapped["m4_pilot_drill"].note == "60% thread, OVER ISO max 3.422"  # forced Up -> #29
-    assert snapped["m5_counterbore_OD_socket"].note == "radial 0.51 mm"
+    assert snapped["m5_counterbore_ID_socket"].note == "radial 0.51 mm"
     assert snapped["m2_clearance_hole"].note == ""
 
 
@@ -130,8 +130,8 @@ def test_non_strict_run_reports_missing_parameters(ruleset, tools, params):
     partial = {k: v for k, v in params.items() if k != "m5_socket_head_OD"}
     out = {s.parameter: s for s in
            rules.run(ruleset, tools, lambda e: expr.evaluate(e, partial), fit="medium", strict=False)}
-    bad = out["m5_counterbore_OD_socket"]
+    bad = out["m5_counterbore_ID_socket"]
     assert bad.result is None and not bad.ok and "m5_socket_head_OD" in bad.error
-    assert out["m4_counterbore_OD_socket"].ok
+    assert out["m4_counterbore_ID_socket"].ok
     with pytest.raises(expr.ExpressionError):
         rules.run(ruleset, tools, lambda e: expr.evaluate(e, partial), fit="medium")

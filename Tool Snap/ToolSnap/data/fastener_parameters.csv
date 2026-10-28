@@ -97,31 +97,31 @@ m6_round_head_OD,mm,,10.5,ISO 7380 M6 button head diameter dk,false
 countersink_depth_clearance,mm,,0.3,How far below flush a flat head sits,false
 counterbore_depth_clearance,mm,,0.3,How far below flush a counterbored head sits,false
 counterbore_radial_clearance,mm,,1,Target radial gap between head OD and counterbore wall,false
-m2_counterbore_OD_round,mm,,5.5,Tool-driven: written by ToolSnap from the shop inventory,true
-m3_counterbore_OD_round,mm,,7.7,Tool-driven: written by ToolSnap from the shop inventory,true
-m4_counterbore_OD_round,mm,,9.6,Tool-driven: written by ToolSnap from the shop inventory,true
-m5_counterbore_OD_round,mm,,11.5,Tool-driven: written by ToolSnap from the shop inventory,true
-m6_counterbore_OD_round,mm,,12.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m2_counterbore_ID_round,mm,,5.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m3_counterbore_ID_round,mm,,7.7,Tool-driven: written by ToolSnap from the shop inventory,true
+m4_counterbore_ID_round,mm,,9.6,Tool-driven: written by ToolSnap from the shop inventory,true
+m5_counterbore_ID_round,mm,,11.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m6_counterbore_ID_round,mm,,12.5,Tool-driven: written by ToolSnap from the shop inventory,true
 m2_counterbore_depth_round,mm,m2_round_head_height + counterbore_depth_clearance,1.6,,true
 m3_counterbore_depth_round,mm,m3_round_head_height + counterbore_depth_clearance,1.95,,true
 m4_counterbore_depth_round,mm,m4_round_head_height + counterbore_depth_clearance,2.5,,true
 m5_counterbore_depth_round,mm,m5_round_head_height + counterbore_depth_clearance,3.05,,true
 m6_counterbore_depth_round,mm,m6_round_head_height + counterbore_depth_clearance,3.6,,true
-m2_counterbore_OD_socket,mm,,5.8,Tool-driven: written by ToolSnap from the shop inventory,true
-m3_counterbore_OD_socket,mm,,7.5,Tool-driven: written by ToolSnap from the shop inventory,true
-m4_counterbore_OD_socket,mm,,9,Tool-driven: written by ToolSnap from the shop inventory,true
-m5_counterbore_OD_socket,mm,,10.5,Tool-driven: written by ToolSnap from the shop inventory,true
-m6_counterbore_OD_socket,mm,,12,Tool-driven: written by ToolSnap from the shop inventory,true
+m2_counterbore_ID_socket,mm,,5.8,Tool-driven: written by ToolSnap from the shop inventory,true
+m3_counterbore_ID_socket,mm,,7.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m4_counterbore_ID_socket,mm,,9,Tool-driven: written by ToolSnap from the shop inventory,true
+m5_counterbore_ID_socket,mm,,10.5,Tool-driven: written by ToolSnap from the shop inventory,true
+m6_counterbore_ID_socket,mm,,12,Tool-driven: written by ToolSnap from the shop inventory,true
 m2_counterbore_depth_socket,mm,m2_socket_head_height + counterbore_depth_clearance,2.3,,true
 m3_counterbore_depth_socket,mm,m3_socket_head_height + counterbore_depth_clearance,3.3,,true
 m4_counterbore_depth_socket,mm,m4_socket_head_height + counterbore_depth_clearance,4.3,,true
 m5_counterbore_depth_socket,mm,m5_socket_head_height + counterbore_depth_clearance,5.3,,true
 m6_counterbore_depth_socket,mm,m6_socket_head_height + counterbore_depth_clearance,6.3,,true
-m2_countersink_chamfer_slip_fit,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_clearance_hole) / 2,1.3,45 deg equal-distance chamfer leg on the hole edge,true
-m3_countersink_chamfer_slip_fit,mm,m3_flat_head_height + countersink_depth_clearance + (m3_nominal_dia - m3_clearance_hole) / 2,1.8,45 deg equal-distance chamfer leg on the hole edge,true
-m4_countersink_chamfer_slip_fit,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_clearance_hole) / 2,2.35,45 deg equal-distance chamfer leg on the hole edge,true
-m5_countersink_chamfer_slip_fit,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_clearance_hole) / 2,2.85,45 deg equal-distance chamfer leg on the hole edge,true
-m6_countersink_chamfer_slip_fit,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_clearance_hole) / 2,3.3,45 deg equal-distance chamfer leg on the hole edge,true
+m2_countersink_chamfer_clearance,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_clearance_hole) / 2,1.3,45 deg equal-distance chamfer leg on the hole edge,true
+m3_countersink_chamfer_clearance,mm,m3_flat_head_height + countersink_depth_clearance + (m3_nominal_dia - m3_clearance_hole) / 2,1.8,45 deg equal-distance chamfer leg on the hole edge,true
+m4_countersink_chamfer_clearance,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_clearance_hole) / 2,2.35,45 deg equal-distance chamfer leg on the hole edge,true
+m5_countersink_chamfer_clearance,mm,m5_flat_head_height + countersink_depth_clearance + (m5_nominal_dia - m5_clearance_hole) / 2,2.85,45 deg equal-distance chamfer leg on the hole edge,true
+m6_countersink_chamfer_clearance,mm,m6_flat_head_height + countersink_depth_clearance + (m6_nominal_dia - m6_clearance_hole) / 2,3.3,45 deg equal-distance chamfer leg on the hole edge,true
 m2_countersink_chamfer_tapped,mm,m2_flat_head_height + countersink_depth_clearance + (m2_nominal_dia - m2_pilot_drill) / 2,1.7,45 deg equal-distance chamfer leg on the hole edge,true
 m3_countersink_chamfer_tapped,mm,m3_flat_head_height + countersink_depth_clearance + (m3_nominal_dia - m3_pilot_drill) / 2,2.25,45 deg equal-distance chamfer leg on the hole edge,true
 m4_countersink_chamfer_tapped,mm,m4_flat_head_height + countersink_depth_clearance + (m4_nominal_dia - m4_pilot_drill) / 2,2.95,45 deg equal-distance chamfer leg on the hole edge,true

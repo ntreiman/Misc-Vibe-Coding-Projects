@@ -32,7 +32,7 @@ def test_m8_parameters_are_consistent_with_the_standards():
     assert rows["m8_clearance_hole_coarse_max"].value == pytest.approx(10.36)     # 10.0 is in the 6-10 range
     assert rows["m8_tap_drill_min"].value == pytest.approx(6.647, abs=1e-3)
     assert rows["m8_tap_drill_max"].value == pytest.approx(6.912, abs=1e-3)       # published 6H limit
-    assert rows["m8_socket_head_OD"].value == 13 and rows["m8_counterbore_OD_socket"].value == 15
+    assert rows["m8_socket_head_OD"].value == 13 and rows["m8_counterbore_ID_socket"].value == 15
     assert rows["m8_counterbore_depth_socket"].value == pytest.approx(8.3)
     values = {n: r.value for n, r in rows.items()}
     for r in rows.values():
@@ -62,12 +62,12 @@ def test_new_size_snaps_and_missing_family_is_skipped(ruleset, tools):
     assert by["m8_clearance_hole"].ok and by["m8_clearance_hole"].result.tool_label == "9 mm" or \
         by["m8_clearance_hole"].result.snapped_mm >= 9.0
     assert by["m8_pilot_drill"].ok and 6.647 <= by["m8_pilot_drill"].result.snapped_mm <= 6.912 + 1e-9
-    assert by["m8_counterbore_OD_socket"].skipped and "m8_socket_head_OD" in by["m8_counterbore_OD_socket"].error
+    assert by["m8_counterbore_ID_socket"].skipped and "m8_socket_head_OD" in by["m8_counterbore_ID_socket"].error
     assert not any(s.result is None and not s.skipped for s in out)
 
 
 def test_short_names_and_tool_labels():
-    assert rules.short_name("m4_counterbore_OD_socket") == "M4 cbore socket"
+    assert rules.short_name("m4_counterbore_ID_socket") == "M4 cbore socket"
     assert rules.short_name("m2_5_pilot_drill") == "M2.5 tap drill"
     assert rules.short_name("m3_clearance_hole") == "M3 clearance"
     from core.snap import Tool
