@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+ToolSnap/data/snap_settings.json
+ToolSnap/data/*.tmp

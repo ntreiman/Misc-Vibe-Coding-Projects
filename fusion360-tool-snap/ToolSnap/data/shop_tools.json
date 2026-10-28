@@ -1,0 +1,2490 @@
+{
+ "_comment": "Shop tool inventory used by ToolSnap. Holes snap to drills, counterbores to endmills. Set available=false to keep a tool in the list without using it.",
+ "tools": [
+  {
+   "name": "A",
+   "type": "drill",
+   "diameter_mm": 5.9436,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "B",
+   "type": "drill",
+   "diameter_mm": 6.0452,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "C",
+   "type": "drill",
+   "diameter_mm": 6.1468,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "D",
+   "type": "drill",
+   "diameter_mm": 6.2484,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "E",
+   "type": "drill",
+   "diameter_mm": 6.35,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "F",
+   "type": "drill",
+   "diameter_mm": 6.5278,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "G",
+   "type": "drill",
+   "diameter_mm": 6.6294,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "H",
+   "type": "drill",
+   "diameter_mm": 6.7564,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "I",
+   "type": "drill",
+   "diameter_mm": 6.9088,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "J",
+   "type": "drill",
+   "diameter_mm": 7.0358,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "K",
+   "type": "drill",
+   "diameter_mm": 7.1374,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "L",
+   "type": "drill",
+   "diameter_mm": 7.366,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "M",
+   "type": "drill",
+   "diameter_mm": 7.493,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "N",
+   "type": "drill",
+   "diameter_mm": 7.6708,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "O",
+   "type": "drill",
+   "diameter_mm": 8.0264,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "P",
+   "type": "drill",
+   "diameter_mm": 8.2042,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "Q",
+   "type": "drill",
+   "diameter_mm": 8.4328,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "R",
+   "type": "drill",
+   "diameter_mm": 8.6106,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "S",
+   "type": "drill",
+   "diameter_mm": 8.8392,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "T",
+   "type": "drill",
+   "diameter_mm": 9.0932,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "U",
+   "type": "drill",
+   "diameter_mm": 9.3472,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "V",
+   "type": "drill",
+   "diameter_mm": 9.5758,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "W",
+   "type": "drill",
+   "diameter_mm": 9.8044,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "X",
+   "type": "drill",
+   "diameter_mm": 10.0838,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "Y",
+   "type": "drill",
+   "diameter_mm": 10.2616,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "Z",
+   "type": "drill",
+   "diameter_mm": 10.4902,
+   "available": true,
+   "category": "Letter"
+  },
+  {
+   "name": "1",
+   "type": "drill",
+   "diameter_mm": 5.7912,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "2",
+   "type": "drill",
+   "diameter_mm": 5.6134,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "3",
+   "type": "drill",
+   "diameter_mm": 5.4102,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "4",
+   "type": "drill",
+   "diameter_mm": 5.3086,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "5",
+   "type": "drill",
+   "diameter_mm": 5.2197,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "6",
+   "type": "drill",
+   "diameter_mm": 5.1816,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "7",
+   "type": "drill",
+   "diameter_mm": 5.1054,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "8",
+   "type": "drill",
+   "diameter_mm": 5.0546,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "9",
+   "type": "drill",
+   "diameter_mm": 4.9784,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "10",
+   "type": "drill",
+   "diameter_mm": 4.9149,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "11",
+   "type": "drill",
+   "diameter_mm": 4.8514,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "12",
+   "type": "drill",
+   "diameter_mm": 4.8006,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "13",
+   "type": "drill",
+   "diameter_mm": 4.699,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "14",
+   "type": "drill",
+   "diameter_mm": 4.6228,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "15",
+   "type": "drill",
+   "diameter_mm": 4.572,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "16",
+   "type": "drill",
+   "diameter_mm": 4.4958,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "17",
+   "type": "drill",
+   "diameter_mm": 4.3942,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "18",
+   "type": "drill",
+   "diameter_mm": 4.3053,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "19",
+   "type": "drill",
+   "diameter_mm": 4.2164,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "20",
+   "type": "drill",
+   "diameter_mm": 4.0894,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "21",
+   "type": "drill",
+   "diameter_mm": 4.0386,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "22",
+   "type": "drill",
+   "diameter_mm": 3.9878,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "23",
+   "type": "drill",
+   "diameter_mm": 3.9116,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "24",
+   "type": "drill",
+   "diameter_mm": 3.8608,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "25",
+   "type": "drill",
+   "diameter_mm": 3.7973,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "26",
+   "type": "drill",
+   "diameter_mm": 3.7338,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "27",
+   "type": "drill",
+   "diameter_mm": 3.6576,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "28",
+   "type": "drill",
+   "diameter_mm": 3.5687,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "29",
+   "type": "drill",
+   "diameter_mm": 3.4544,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "30",
+   "type": "drill",
+   "diameter_mm": 3.2639,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "31",
+   "type": "drill",
+   "diameter_mm": 3.048,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "32",
+   "type": "drill",
+   "diameter_mm": 2.9464,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "33",
+   "type": "drill",
+   "diameter_mm": 2.8702,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "34",
+   "type": "drill",
+   "diameter_mm": 2.8194,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "35",
+   "type": "drill",
+   "diameter_mm": 2.794,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "36",
+   "type": "drill",
+   "diameter_mm": 2.7051,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "37",
+   "type": "drill",
+   "diameter_mm": 2.6416,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "38",
+   "type": "drill",
+   "diameter_mm": 2.5781,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "39",
+   "type": "drill",
+   "diameter_mm": 2.5273,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "40",
+   "type": "drill",
+   "diameter_mm": 2.4892,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "41",
+   "type": "drill",
+   "diameter_mm": 2.4384,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "42",
+   "type": "drill",
+   "diameter_mm": 2.3749,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "43",
+   "type": "drill",
+   "diameter_mm": 2.2606,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "44",
+   "type": "drill",
+   "diameter_mm": 2.1844,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "45",
+   "type": "drill",
+   "diameter_mm": 2.0828,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "46",
+   "type": "drill",
+   "diameter_mm": 2.0574,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "47",
+   "type": "drill",
+   "diameter_mm": 1.9939,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "48",
+   "type": "drill",
+   "diameter_mm": 1.9304,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "49",
+   "type": "drill",
+   "diameter_mm": 1.8542,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "50",
+   "type": "drill",
+   "diameter_mm": 1.778,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "51",
+   "type": "drill",
+   "diameter_mm": 1.7018,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "52",
+   "type": "drill",
+   "diameter_mm": 1.6129,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "53",
+   "type": "drill",
+   "diameter_mm": 1.5113,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "54",
+   "type": "drill",
+   "diameter_mm": 1.397,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "55",
+   "type": "drill",
+   "diameter_mm": 1.3208,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "56",
+   "type": "drill",
+   "diameter_mm": 1.1811,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "57",
+   "type": "drill",
+   "diameter_mm": 1.0922,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "58",
+   "type": "drill",
+   "diameter_mm": 1.0668,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "59",
+   "type": "drill",
+   "diameter_mm": 1.0414,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "60",
+   "type": "drill",
+   "diameter_mm": 1.016,
+   "available": true,
+   "category": "Number"
+  },
+  {
+   "name": "1/16",
+   "type": "drill",
+   "diameter_mm": 1.5875,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "5/64",
+   "type": "drill",
+   "diameter_mm": 1.9844,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "3/32",
+   "type": "drill",
+   "diameter_mm": 2.3812,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "7/64",
+   "type": "drill",
+   "diameter_mm": 2.7781,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "1/8",
+   "type": "drill",
+   "diameter_mm": 3.175,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "9/64",
+   "type": "drill",
+   "diameter_mm": 3.5719,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "5/32",
+   "type": "drill",
+   "diameter_mm": 3.9688,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "11/64",
+   "type": "drill",
+   "diameter_mm": 4.3656,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "3/16",
+   "type": "drill",
+   "diameter_mm": 4.7625,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "13/64",
+   "type": "drill",
+   "diameter_mm": 5.1594,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "7/32",
+   "type": "drill",
+   "diameter_mm": 5.5562,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "15/64",
+   "type": "drill",
+   "diameter_mm": 5.9531,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "1/4",
+   "type": "drill",
+   "diameter_mm": 6.35,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "17/64",
+   "type": "drill",
+   "diameter_mm": 6.7469,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "9/32",
+   "type": "drill",
+   "diameter_mm": 7.1437,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "19/64",
+   "type": "drill",
+   "diameter_mm": 7.5406,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "5/16",
+   "type": "drill",
+   "diameter_mm": 7.9375,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "21/64",
+   "type": "drill",
+   "diameter_mm": 8.3344,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "11/32",
+   "type": "drill",
+   "diameter_mm": 8.7312,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "23/64",
+   "type": "drill",
+   "diameter_mm": 9.1281,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "3/8",
+   "type": "drill",
+   "diameter_mm": 9.525,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "25/64",
+   "type": "drill",
+   "diameter_mm": 9.9219,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "13/32",
+   "type": "drill",
+   "diameter_mm": 10.3187,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "27/64",
+   "type": "drill",
+   "diameter_mm": 10.7156,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "7/16",
+   "type": "drill",
+   "diameter_mm": 11.1125,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "29/64",
+   "type": "drill",
+   "diameter_mm": 11.5094,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "15/32",
+   "type": "drill",
+   "diameter_mm": 11.9062,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "31/64",
+   "type": "drill",
+   "diameter_mm": 12.3031,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "1/2",
+   "type": "drill",
+   "diameter_mm": 12.7,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "1\"",
+   "type": "drill",
+   "diameter_mm": 25.4,
+   "available": true,
+   "category": "Fractional"
+  },
+  {
+   "name": "2 mm",
+   "type": "drill",
+   "diameter_mm": 2.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "2.5 mm",
+   "type": "drill",
+   "diameter_mm": 2.5,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "3 mm",
+   "type": "drill",
+   "diameter_mm": 3.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "3.5 mm",
+   "type": "drill",
+   "diameter_mm": 3.5,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "4 mm",
+   "type": "drill",
+   "diameter_mm": 4.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "4.5 mm",
+   "type": "drill",
+   "diameter_mm": 4.5,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "5 mm",
+   "type": "drill",
+   "diameter_mm": 5.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "5.5 mm",
+   "type": "drill",
+   "diameter_mm": 5.5,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "6 mm",
+   "type": "drill",
+   "diameter_mm": 6.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "6.5 mm",
+   "type": "drill",
+   "diameter_mm": 6.5,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "7 mm",
+   "type": "drill",
+   "diameter_mm": 7.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "7.5 mm",
+   "type": "drill",
+   "diameter_mm": 7.5,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "8 mm",
+   "type": "drill",
+   "diameter_mm": 8.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "14 mm",
+   "type": "drill",
+   "diameter_mm": 14.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "1/64",
+   "type": "endmill",
+   "diameter_mm": 0.3969,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1/32",
+   "type": "endmill",
+   "diameter_mm": 0.7937,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "3/64",
+   "type": "endmill",
+   "diameter_mm": 1.1906,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1/16",
+   "type": "endmill",
+   "diameter_mm": 1.5875,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "5/64",
+   "type": "endmill",
+   "diameter_mm": 1.9844,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "3/32",
+   "type": "endmill",
+   "diameter_mm": 2.3812,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "7/64",
+   "type": "endmill",
+   "diameter_mm": 2.7781,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1/8",
+   "type": "endmill",
+   "diameter_mm": 3.175,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "9/64",
+   "type": "endmill",
+   "diameter_mm": 3.5719,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "5/32",
+   "type": "endmill",
+   "diameter_mm": 3.9688,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "11/64",
+   "type": "endmill",
+   "diameter_mm": 4.3656,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "3/16",
+   "type": "endmill",
+   "diameter_mm": 4.7625,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "13/64",
+   "type": "endmill",
+   "diameter_mm": 5.1594,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "7/32",
+   "type": "endmill",
+   "diameter_mm": 5.5562,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "15/64",
+   "type": "endmill",
+   "diameter_mm": 5.9531,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1/4",
+   "type": "endmill",
+   "diameter_mm": 6.35,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "17/64",
+   "type": "endmill",
+   "diameter_mm": 6.7469,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "9/32",
+   "type": "endmill",
+   "diameter_mm": 7.1437,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "19/64",
+   "type": "endmill",
+   "diameter_mm": 7.5406,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "5/16",
+   "type": "endmill",
+   "diameter_mm": 7.9375,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "21/64",
+   "type": "endmill",
+   "diameter_mm": 8.3344,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "11/32",
+   "type": "endmill",
+   "diameter_mm": 8.7312,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "23/64",
+   "type": "endmill",
+   "diameter_mm": 9.1281,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "3/8",
+   "type": "endmill",
+   "diameter_mm": 9.525,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "25/64",
+   "type": "endmill",
+   "diameter_mm": 9.9219,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "13/32",
+   "type": "endmill",
+   "diameter_mm": 10.3187,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "27/64",
+   "type": "endmill",
+   "diameter_mm": 10.7156,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "7/16",
+   "type": "endmill",
+   "diameter_mm": 11.1125,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "29/64",
+   "type": "endmill",
+   "diameter_mm": 11.5094,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "15/32",
+   "type": "endmill",
+   "diameter_mm": 11.9062,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "31/64",
+   "type": "endmill",
+   "diameter_mm": 12.3031,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1/2",
+   "type": "endmill",
+   "diameter_mm": 12.7,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "33/64",
+   "type": "endmill",
+   "diameter_mm": 13.0969,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "17/32",
+   "type": "endmill",
+   "diameter_mm": 13.4937,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "35/64",
+   "type": "endmill",
+   "diameter_mm": 13.8906,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "9/16",
+   "type": "endmill",
+   "diameter_mm": 14.2875,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "37/64",
+   "type": "endmill",
+   "diameter_mm": 14.6844,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "19/32",
+   "type": "endmill",
+   "diameter_mm": 15.0812,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "39/64",
+   "type": "endmill",
+   "diameter_mm": 15.4781,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "5/8",
+   "type": "endmill",
+   "diameter_mm": 15.875,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "41/64",
+   "type": "endmill",
+   "diameter_mm": 16.2719,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "21/32",
+   "type": "endmill",
+   "diameter_mm": 16.6687,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "43/64",
+   "type": "endmill",
+   "diameter_mm": 17.0656,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "11/16",
+   "type": "endmill",
+   "diameter_mm": 17.4625,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "45/64",
+   "type": "endmill",
+   "diameter_mm": 17.8594,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "23/32",
+   "type": "endmill",
+   "diameter_mm": 18.2562,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "47/64",
+   "type": "endmill",
+   "diameter_mm": 18.6531,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "3/4",
+   "type": "endmill",
+   "diameter_mm": 19.05,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "49/64",
+   "type": "endmill",
+   "diameter_mm": 19.4469,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "25/32",
+   "type": "endmill",
+   "diameter_mm": 19.8438,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "51/64",
+   "type": "endmill",
+   "diameter_mm": 20.2406,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "13/16",
+   "type": "endmill",
+   "diameter_mm": 20.6375,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "53/64",
+   "type": "endmill",
+   "diameter_mm": 21.0344,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "27/32",
+   "type": "endmill",
+   "diameter_mm": 21.4312,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "55/64",
+   "type": "endmill",
+   "diameter_mm": 21.8281,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "7/8",
+   "type": "endmill",
+   "diameter_mm": 22.225,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "57/64",
+   "type": "endmill",
+   "diameter_mm": 22.6219,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "29/32",
+   "type": "endmill",
+   "diameter_mm": 23.0187,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "59/64",
+   "type": "endmill",
+   "diameter_mm": 23.4156,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "15/16",
+   "type": "endmill",
+   "diameter_mm": 23.8125,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "61/64",
+   "type": "endmill",
+   "diameter_mm": 24.2094,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "31/32",
+   "type": "endmill",
+   "diameter_mm": 24.6062,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "63/64",
+   "type": "endmill",
+   "diameter_mm": 25.0031,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1",
+   "type": "endmill",
+   "diameter_mm": 25.4,
+   "available": true,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 1/64",
+   "type": "endmill",
+   "diameter_mm": 25.7969,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 1/32",
+   "type": "endmill",
+   "diameter_mm": 26.1937,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 3/64",
+   "type": "endmill",
+   "diameter_mm": 26.5906,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 1/16",
+   "type": "endmill",
+   "diameter_mm": 26.9875,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 5/64",
+   "type": "endmill",
+   "diameter_mm": 27.3844,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 3/32",
+   "type": "endmill",
+   "diameter_mm": 27.7812,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 7/64",
+   "type": "endmill",
+   "diameter_mm": 28.1781,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 1/8",
+   "type": "endmill",
+   "diameter_mm": 28.575,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 9/64",
+   "type": "endmill",
+   "diameter_mm": 28.9719,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 5/32",
+   "type": "endmill",
+   "diameter_mm": 29.3687,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 11/64",
+   "type": "endmill",
+   "diameter_mm": 29.7656,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 3/16",
+   "type": "endmill",
+   "diameter_mm": 30.1625,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 13/64",
+   "type": "endmill",
+   "diameter_mm": 30.5594,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 7/32",
+   "type": "endmill",
+   "diameter_mm": 30.9562,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 15/64",
+   "type": "endmill",
+   "diameter_mm": 31.3531,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 1/4",
+   "type": "endmill",
+   "diameter_mm": 31.75,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 17/64",
+   "type": "endmill",
+   "diameter_mm": 32.1469,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 9/32",
+   "type": "endmill",
+   "diameter_mm": 32.5437,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 19/64",
+   "type": "endmill",
+   "diameter_mm": 32.9406,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 5/16",
+   "type": "endmill",
+   "diameter_mm": 33.3375,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 21/64",
+   "type": "endmill",
+   "diameter_mm": 33.7344,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 11/32",
+   "type": "endmill",
+   "diameter_mm": 34.1313,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 23/64",
+   "type": "endmill",
+   "diameter_mm": 34.5281,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 3/8",
+   "type": "endmill",
+   "diameter_mm": 34.925,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 25/64",
+   "type": "endmill",
+   "diameter_mm": 35.3219,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 13/32",
+   "type": "endmill",
+   "diameter_mm": 35.7188,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 27/64",
+   "type": "endmill",
+   "diameter_mm": 36.1156,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 7/16",
+   "type": "endmill",
+   "diameter_mm": 36.5125,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 29/64",
+   "type": "endmill",
+   "diameter_mm": 36.9094,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 15/32",
+   "type": "endmill",
+   "diameter_mm": 37.3062,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 31/64",
+   "type": "endmill",
+   "diameter_mm": 37.7031,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 1/2",
+   "type": "endmill",
+   "diameter_mm": 38.1,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 33/64",
+   "type": "endmill",
+   "diameter_mm": 38.4969,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 17/32",
+   "type": "endmill",
+   "diameter_mm": 38.8937,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 35/64",
+   "type": "endmill",
+   "diameter_mm": 39.2906,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 9/16",
+   "type": "endmill",
+   "diameter_mm": 39.6875,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 37/64",
+   "type": "endmill",
+   "diameter_mm": 40.0844,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 19/32",
+   "type": "endmill",
+   "diameter_mm": 40.4812,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 39/64",
+   "type": "endmill",
+   "diameter_mm": 40.8781,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 5/8",
+   "type": "endmill",
+   "diameter_mm": 41.275,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 41/64",
+   "type": "endmill",
+   "diameter_mm": 41.6719,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 21/32",
+   "type": "endmill",
+   "diameter_mm": 42.0687,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 43/64",
+   "type": "endmill",
+   "diameter_mm": 42.4656,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 11/16",
+   "type": "endmill",
+   "diameter_mm": 42.8625,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 45/64",
+   "type": "endmill",
+   "diameter_mm": 43.2594,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 23/32",
+   "type": "endmill",
+   "diameter_mm": 43.6562,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 47/64",
+   "type": "endmill",
+   "diameter_mm": 44.0531,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 3/4",
+   "type": "endmill",
+   "diameter_mm": 44.45,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 49/64",
+   "type": "endmill",
+   "diameter_mm": 44.8469,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 25/32",
+   "type": "endmill",
+   "diameter_mm": 45.2437,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 51/64",
+   "type": "endmill",
+   "diameter_mm": 45.6406,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 13/16",
+   "type": "endmill",
+   "diameter_mm": 46.0375,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 53/64",
+   "type": "endmill",
+   "diameter_mm": 46.4344,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 27/32",
+   "type": "endmill",
+   "diameter_mm": 46.8312,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 55/64",
+   "type": "endmill",
+   "diameter_mm": 47.2281,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 7/8",
+   "type": "endmill",
+   "diameter_mm": 47.625,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 57/64",
+   "type": "endmill",
+   "diameter_mm": 48.0219,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 29/32",
+   "type": "endmill",
+   "diameter_mm": 48.4187,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 59/64",
+   "type": "endmill",
+   "diameter_mm": 48.8156,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 15/16",
+   "type": "endmill",
+   "diameter_mm": 49.2125,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 61/64",
+   "type": "endmill",
+   "diameter_mm": 49.6094,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 31/32",
+   "type": "endmill",
+   "diameter_mm": 50.0062,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "1 63/64",
+   "type": "endmill",
+   "diameter_mm": 50.4031,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "2",
+   "type": "endmill",
+   "diameter_mm": 50.8,
+   "available": false,
+   "category": "Imperial"
+  },
+  {
+   "name": "2 mm",
+   "type": "endmill",
+   "diameter_mm": 2.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "2.5 mm",
+   "type": "endmill",
+   "diameter_mm": 2.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "3 mm",
+   "type": "endmill",
+   "diameter_mm": 3.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "3.5 mm",
+   "type": "endmill",
+   "diameter_mm": 3.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "4 mm",
+   "type": "endmill",
+   "diameter_mm": 4.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "4.5 mm",
+   "type": "endmill",
+   "diameter_mm": 4.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "5 mm",
+   "type": "endmill",
+   "diameter_mm": 5.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "5.5 mm",
+   "type": "endmill",
+   "diameter_mm": 5.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "6 mm",
+   "type": "endmill",
+   "diameter_mm": 6.0,
+   "available": true,
+   "category": "Metric"
+  },
+  {
+   "name": "6.5 mm",
+   "type": "endmill",
+   "diameter_mm": 6.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "7 mm",
+   "type": "endmill",
+   "diameter_mm": 7.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "7.5 mm",
+   "type": "endmill",
+   "diameter_mm": 7.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "8 mm",
+   "type": "endmill",
+   "diameter_mm": 8.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "8.5 mm",
+   "type": "endmill",
+   "diameter_mm": 8.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "9 mm",
+   "type": "endmill",
+   "diameter_mm": 9.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "9.5 mm",
+   "type": "endmill",
+   "diameter_mm": 9.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "10 mm",
+   "type": "endmill",
+   "diameter_mm": 10.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "10.5 mm",
+   "type": "endmill",
+   "diameter_mm": 10.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "11 mm",
+   "type": "endmill",
+   "diameter_mm": 11.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "11.5 mm",
+   "type": "endmill",
+   "diameter_mm": 11.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "12 mm",
+   "type": "endmill",
+   "diameter_mm": 12.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "12.5 mm",
+   "type": "endmill",
+   "diameter_mm": 12.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "13 mm",
+   "type": "endmill",
+   "diameter_mm": 13.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "13.5 mm",
+   "type": "endmill",
+   "diameter_mm": 13.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "14 mm",
+   "type": "endmill",
+   "diameter_mm": 14.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "14.5 mm",
+   "type": "endmill",
+   "diameter_mm": 14.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "15 mm",
+   "type": "endmill",
+   "diameter_mm": 15.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "15.5 mm",
+   "type": "endmill",
+   "diameter_mm": 15.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "16 mm",
+   "type": "endmill",
+   "diameter_mm": 16.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "16.5 mm",
+   "type": "endmill",
+   "diameter_mm": 16.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "17 mm",
+   "type": "endmill",
+   "diameter_mm": 17.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "17.5 mm",
+   "type": "endmill",
+   "diameter_mm": 17.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "18 mm",
+   "type": "endmill",
+   "diameter_mm": 18.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "18.5 mm",
+   "type": "endmill",
+   "diameter_mm": 18.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "19 mm",
+   "type": "endmill",
+   "diameter_mm": 19.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "19.5 mm",
+   "type": "endmill",
+   "diameter_mm": 19.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "20 mm",
+   "type": "endmill",
+   "diameter_mm": 20.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "20.5 mm",
+   "type": "endmill",
+   "diameter_mm": 20.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "21 mm",
+   "type": "endmill",
+   "diameter_mm": 21.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "21.5 mm",
+   "type": "endmill",
+   "diameter_mm": 21.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "22 mm",
+   "type": "endmill",
+   "diameter_mm": 22.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "22.5 mm",
+   "type": "endmill",
+   "diameter_mm": 22.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "23 mm",
+   "type": "endmill",
+   "diameter_mm": 23.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "23.5 mm",
+   "type": "endmill",
+   "diameter_mm": 23.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "24 mm",
+   "type": "endmill",
+   "diameter_mm": 24.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "24.5 mm",
+   "type": "endmill",
+   "diameter_mm": 24.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "25 mm",
+   "type": "endmill",
+   "diameter_mm": 25.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "25.5 mm",
+   "type": "endmill",
+   "diameter_mm": 25.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "26 mm",
+   "type": "endmill",
+   "diameter_mm": 26.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "26.5 mm",
+   "type": "endmill",
+   "diameter_mm": 26.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "27 mm",
+   "type": "endmill",
+   "diameter_mm": 27.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "27.5 mm",
+   "type": "endmill",
+   "diameter_mm": 27.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "28 mm",
+   "type": "endmill",
+   "diameter_mm": 28.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "28.5 mm",
+   "type": "endmill",
+   "diameter_mm": 28.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "29 mm",
+   "type": "endmill",
+   "diameter_mm": 29.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "29.5 mm",
+   "type": "endmill",
+   "diameter_mm": 29.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "30 mm",
+   "type": "endmill",
+   "diameter_mm": 30.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "30.5 mm",
+   "type": "endmill",
+   "diameter_mm": 30.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "31 mm",
+   "type": "endmill",
+   "diameter_mm": 31.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "31.5 mm",
+   "type": "endmill",
+   "diameter_mm": 31.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "32 mm",
+   "type": "endmill",
+   "diameter_mm": 32.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "32.5 mm",
+   "type": "endmill",
+   "diameter_mm": 32.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "33 mm",
+   "type": "endmill",
+   "diameter_mm": 33.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "33.5 mm",
+   "type": "endmill",
+   "diameter_mm": 33.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "34 mm",
+   "type": "endmill",
+   "diameter_mm": 34.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "34.5 mm",
+   "type": "endmill",
+   "diameter_mm": 34.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "35 mm",
+   "type": "endmill",
+   "diameter_mm": 35.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "35.5 mm",
+   "type": "endmill",
+   "diameter_mm": 35.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "36 mm",
+   "type": "endmill",
+   "diameter_mm": 36.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "36.5 mm",
+   "type": "endmill",
+   "diameter_mm": 36.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "37 mm",
+   "type": "endmill",
+   "diameter_mm": 37.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "37.5 mm",
+   "type": "endmill",
+   "diameter_mm": 37.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "38 mm",
+   "type": "endmill",
+   "diameter_mm": 38.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "38.5 mm",
+   "type": "endmill",
+   "diameter_mm": 38.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "39 mm",
+   "type": "endmill",
+   "diameter_mm": 39.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "39.5 mm",
+   "type": "endmill",
+   "diameter_mm": 39.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "40 mm",
+   "type": "endmill",
+   "diameter_mm": 40.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "40.5 mm",
+   "type": "endmill",
+   "diameter_mm": 40.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "41 mm",
+   "type": "endmill",
+   "diameter_mm": 41.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "41.5 mm",
+   "type": "endmill",
+   "diameter_mm": 41.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "42 mm",
+   "type": "endmill",
+   "diameter_mm": 42.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "42.5 mm",
+   "type": "endmill",
+   "diameter_mm": 42.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "43 mm",
+   "type": "endmill",
+   "diameter_mm": 43.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "43.5 mm",
+   "type": "endmill",
+   "diameter_mm": 43.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "44 mm",
+   "type": "endmill",
+   "diameter_mm": 44.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "44.5 mm",
+   "type": "endmill",
+   "diameter_mm": 44.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "45 mm",
+   "type": "endmill",
+   "diameter_mm": 45.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "45.5 mm",
+   "type": "endmill",
+   "diameter_mm": 45.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "46 mm",
+   "type": "endmill",
+   "diameter_mm": 46.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "46.5 mm",
+   "type": "endmill",
+   "diameter_mm": 46.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "47 mm",
+   "type": "endmill",
+   "diameter_mm": 47.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "47.5 mm",
+   "type": "endmill",
+   "diameter_mm": 47.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "48 mm",
+   "type": "endmill",
+   "diameter_mm": 48.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "48.5 mm",
+   "type": "endmill",
+   "diameter_mm": 48.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "49 mm",
+   "type": "endmill",
+   "diameter_mm": 49.0,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "49.5 mm",
+   "type": "endmill",
+   "diameter_mm": 49.5,
+   "available": false,
+   "category": "Metric"
+  },
+  {
+   "name": "50 mm",
+   "type": "endmill",
+   "diameter_mm": 50.0,
+   "available": false,
+   "category": "Metric"
+  }
+ ]
+}

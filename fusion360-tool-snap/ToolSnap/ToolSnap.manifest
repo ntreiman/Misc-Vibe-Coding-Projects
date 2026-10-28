@@ -1,0 +1,13 @@
+{
+    "autodeskProduct": "Fusion",
+    "type": "addin",
+    "id": "6f1c2d0e-7b3a-4c9e-9a5d-2e8f4b1a7c63",
+    "author": "ntreiman",
+    "description": {
+        "": "Snap hole, tap-drill and counterbore parameters to the drills and endmills you actually own."
+    },
+    "version": "0.1.0",
+    "runOnStartup": true,
+    "supportedOS": "windows|mac",
+    "editEnabled": true
+}
