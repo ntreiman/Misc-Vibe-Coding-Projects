@@ -91,6 +91,12 @@ Nothing I could find does this already. The nearest things:
 2. Pick the `ToolSnap` folder (the one containing `ToolSnap.py`).
 3. Run (and tick *Run on Startup*). A **TOOL SNAP** panel appears on the Solid tab.
 
+Alternatively, copy or symlink the `ToolSnap` folder into Fusion's add-ins
+directory and it shows up in that dialog by itself:
+
+* macOS: `~/Library/Application Support/Autodesk/Autodesk Fusion 360/API/AddIns/`
+* Windows: `%APPDATA%\Autodesk\Autodesk Fusion 360\API\AddIns\`
+
 ## Checking without Fusion
 
 ```bash
