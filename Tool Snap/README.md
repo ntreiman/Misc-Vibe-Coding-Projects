@@ -20,7 +20,7 @@ target diameter  ──►  snap to available tool  ──►  user parameter
 |---|---|
 | **Snap to Tools** | Dialog with fit (fine / medium / coarse), snap tolerance, and one row per tool-driven parameter: target, floor, **Mode** dropdown (Up / Nearest / Down / Off / Keep), snapped Ø, tool, Δ. OK writes the values into the design's user parameters. |
 | **Add Shop Tool** | Type (drill / endmill), diameter (`10`, `0.4375`, or `7/16`), unit, optional name → appended to `data/shop_tools.json`. |
-| **Shop Tools** | Filterable inventory table — type, category (Number / Letter / Fractional / Metric), available / retired, Ø range, name search, "only tools a hole snaps to" — with human labels (`#29`, `1/16"`, `E`, `5 mm`), a **Used for** column (which hole parameters currently pick that tool) and a shown/total count. Tick or untick *Available* to retire or restore a tool; Save persists. *Export CSVs on Save* writes `Drill Library.csv` and `Endmill Library.csv` — one per Google Sheet tab, same columns — into a folder you pick. |
+| **Shop Tools** | The inventory as a filterable, sortable table. **Filter:** type · system (imperial / metric) · series as a multi-select (Number, Letter, Fractional, Metric, …) · available / retired · Ø min / max · *near Ø* (the 4 closest tools each side of a size) · search · "only tools a hole snaps to". **Display:** units (mm, inches, or both), sort (Ø up / down, name, series-grouped with header rows), human labels (`#29`, `1/16"`, `E`, `5 mm`), a **Step ↑** column with the gap to the next larger available tool of the same type (big steps = holes in the library), a **Used for** column listing the hole parameters that currently pick each tool, and a shown/total count. **Edit:** tick / untick *Available* per tool or mark all shown tools available / retired in one go; Save persists. *Export CSVs on Save* writes `Drill Library.csv` and `Endmill Library.csv` — one per Google Sheet tab, same columns — into a folder you pick. |
 | **Add Fastener Size** | Pick a size (M1.6 … M20) and the features to set up — clearance hole, tap drill, socket-head counterbore, button-head counterbore, countersink — and the parameters are created from the standards table (`core/standards.py`: ISO 273 + ISO 286 limits, ISO 262 pitch, ISO 965-1 6H band, ISO 4762 / ISO 7380 / DIN 7991 heads). Snap to Tools then shows the size automatically; features without standard head data for a size (e.g. M7 counterbores) are greyed out. |
 | **Import Parameters** | Creates the full fastener parameter set (nominal Ø, ISO 273 clearance series, tap drills, head geometry, counterbore/countersink expressions) in a fresh design from `data/fastener_parameters.csv`, then optionally snaps. |
 
@@ -146,8 +146,8 @@ implies).
 ToolSnap/
   ToolSnap.py, ToolSnap.manifest   add-in entry point
   core/      pure Python: snap.py (modes/floor/ceiling), rules.py, inventory.py,
-             standards.py (fastener data -> parameters), paramcsv.py,
-             expr.py (safe expression evaluator for tests/CLI)
+             standards.py (fastener data -> parameters), library_view.py
+             (Shop Tools filtering/sorting), paramcsv.py, expr.py
   fusion/    Fusion API only: commands, user-parameter I/O, CAM library reader
   resources/ toolbar icon (16/32/64 px + @2x)
   data/      inventory, rules, parameter CSV

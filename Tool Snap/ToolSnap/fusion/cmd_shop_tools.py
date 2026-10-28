@@ -1,20 +1,24 @@
-"""'Shop Tools' command: browse and filter the inventory, retire / restore
-tools, see which hole parameters each tool is picked for, and export the
-inventory as CSVs in the Google Sheet's Drill Library / Endmill Library format."""
+"""'Shop Tools' command: browse, filter and sort the inventory, retire /
+restore tools (singly or in bulk), see which hole parameters each tool is
+picked for and the gap to the next available size, and export the inventory
+as CSVs in the Google Sheet's Drill Library / Endmill Library format."""
 
 from typing import Dict, List, Tuple
 
 import adsk.core
 
-from ..core import inventory, rules, standards
+from ..core import inventory, library_view as lv, rules, standards
 from ..core.snap import Tool
 from . import params, ui
 
 CMD_ID = "ToolSnap_ShopTools"
-TYPES = ("All", "Drills", "Endmills")
-AVAIL = ("All", "Available", "Retired")
-COLS = ("Size", "Type", "Ø mm", "Ø in", "Category", "Used for", "Available")
-RATIO = "2:2:2:2:2:4:2"
+TYPES = (("All tools", "all"), ("Drills", "drill"), ("Endmills", "endmill"))
+SYSTEMS = (("All", "all"), ("Imperial", "imperial"), ("Metric", "metric"))
+AVAIL = (("All", "all"), ("Available", "available"), ("Retired", "retired"))
+UNITS = (("mm and inches", "both"), ("millimetres", "mm"), ("inches", "in"))
+BULK = ("—", "Mark all shown AVAILABLE", "Mark all shown RETIRED")
+N_COLS = 8
+RATIO = "2:2:2:2:2:2:4:2"
 
 
 class State:
@@ -22,9 +26,10 @@ class State:
         self.tools = sorted(tools, key=lambda t: (t.type, t.diameter_mm))
         self.used_for = used_for
         self.avail = {(t.type, t.name): t.available for t in self.tools}   # edited in the dialog
-        self.row_ids: List[str] = []          # input ids of the current table rows
+        self.row_ids: List[str] = []
         self.checkbox_key: Dict[str, Tuple[str, str]] = {}
         self.counter = 0
+        self.shown: List[lv.Row] = []
 
 
 def _used_for(app) -> Dict[Tuple[str, str], List[str]]:
@@ -46,34 +51,51 @@ def _used_for(app) -> Dict[Tuple[str, str], List[str]]:
         return {}
 
 
+def _dropdown(inputs, cid, name, items, selected=0):
+    dd = inputs.addDropDownCommandInput(cid, name, adsk.core.DropDownStyles.TextListDropDownStyle)
+    for i, item in enumerate(items):
+        dd.listItems.add(item[0] if isinstance(item, tuple) else item, i == selected)
+    return dd
+
+
+def _value_of(dd, items):
+    return items[dd.selectedItem.index][1]
+
+
 class Created(adsk.core.CommandCreatedEventHandler):
     def notify(self, args):
         app = adsk.core.Application.get()
         try:
             cmd = args.command
             cmd.okButtonText = "Save"
-            cmd.setDialogMinimumSize(760, 560)
+            cmd.setDialogMinimumSize(820, 620)
             inputs = cmd.commandInputs
             tools = inventory.load(ui.TOOLS_PATH)
             state = State(tools, _used_for(app))
 
-            dd = inputs.addDropDownCommandInput("type", "Type", adsk.core.DropDownStyles.TextListDropDownStyle)
-            for i, n in enumerate(TYPES):
-                dd.listItems.add(n, i == 0)
-            cats = sorted({t.category for t in tools if t.category})
-            dd = inputs.addDropDownCommandInput("cat", "Category", adsk.core.DropDownStyles.TextListDropDownStyle)
-            dd.listItems.add("All", True)
-            for c in cats:
-                dd.listItems.add(c, False)
-            dd = inputs.addDropDownCommandInput("avail", "Availability", adsk.core.DropDownStyles.TextListDropDownStyle)
-            for i, n in enumerate(AVAIL):
-                dd.listItems.add(n, i == 0)
-            inputs.addStringValueInput("dmin", "Ø min (mm)", "")
-            inputs.addStringValueInput("dmax", "Ø max (mm)", "")
-            inputs.addStringValueInput("search", "Name contains", "")
-            inputs.addBoolValueInput("used_only", "Only tools a hole snaps to", True, "", False)
+            grp = inputs.addGroupCommandInput("filters", "Filter")
+            grp.isExpanded = True
+            f = grp.children
+            _dropdown(f, "type", "Type", TYPES)
+            _dropdown(f, "system", "System", SYSTEMS)
+            series = f.addDropDownCommandInput("series", "Series", adsk.core.DropDownStyles.CheckBoxDropDownStyle)
+            for name in sorted({lv.series_of(t) for t in tools}):
+                series.listItems.add(name, True)
+            _dropdown(f, "avail", "Availability", AVAIL)
+            f.addStringValueInput("dmin", "Ø min", "")
+            f.addStringValueInput("dmax", "Ø max", "")
+            f.addStringValueInput("near", "Near Ø (closest 4 each side)", "")
+            f.addStringValueInput("search", "Search (name / series)", "")
+            f.addBoolValueInput("used_only", "Only tools a hole snaps to", True, "", False)
 
-            table = inputs.addTableCommandInput("table", "Inventory", len(COLS), RATIO)
+            grp = inputs.addGroupCommandInput("display", "Display")
+            grp.isExpanded = True
+            d = grp.children
+            _dropdown(d, "units", "Units", UNITS)
+            _dropdown(d, "sort", "Sort", [(lv.SORT_LABELS[s], s) for s in lv.SORTS])
+            _dropdown(d, "bulk", "Shown tools →", BULK)
+
+            table = inputs.addTableCommandInput("table", "Inventory", N_COLS, RATIO)
             table.maximumVisibleRows = 20
             table.minimumVisibleRows = 6
             inputs.addTextBoxCommandInput("status", "", "", 2, True)
@@ -81,7 +103,8 @@ class Created(adsk.core.CommandCreatedEventHandler):
                                      True, "", False)
             inputs.addTextBoxCommandInput(
                 "info", "", "Untick Available to retire a tool without deleting it; Save persists. "
-                "Export writes one CSV per Google Sheet tab into a folder you choose.", 2, True)
+                "Step ↑ is the gap to the next larger available tool of the same type - big steps "
+                "are the holes in your library. Export writes one CSV per Google Sheet tab.", 3, True)
 
             for ev, h in ((cmd.inputChanged, Changed(state)), (cmd.execute, Execute(state))):
                 ev.add(h)
@@ -92,40 +115,45 @@ class Created(adsk.core.CommandCreatedEventHandler):
 
 
 def _num(text: str):
-    text = text.strip()
+    text = text.strip().replace(",", ".")
     if not text:
         return None
     try:
+        if "/" in text:
+            a, b = text.split("/", 1)
+            return float(a) / float(b)
         return float(text)
-    except ValueError:
+    except (ValueError, ZeroDivisionError):
         return None
 
 
-def visible_tools(inputs, state: State) -> List[Tool]:
-    which = inputs.itemById("type").selectedItem.index
-    cat = inputs.itemById("cat").selectedItem.name
-    av = inputs.itemById("avail").selectedItem.index
-    dmin = _num(inputs.itemById("dmin").value)
-    dmax = _num(inputs.itemById("dmax").value)
-    search = inputs.itemById("search").value.strip().lower()
-    used_only = inputs.itemById("used_only").value
-    out = []
-    for t in state.tools:
-        if which == 1 and t.type != "drill" or which == 2 and t.type != "endmill":
-            continue
-        if cat != "All" and t.category != cat:
-            continue
-        available = state.avail[(t.type, t.name)]
-        if av == 1 and not available or av == 2 and available:
-            continue
-        if dmin is not None and t.diameter_mm < dmin - 1e-9 or dmax is not None and t.diameter_mm > dmax + 1e-9:
-            continue
-        if search and search not in t.name.lower() and search not in inventory.label(t).lower():
-            continue
-        if used_only and (t.type, t.name) not in state.used_for:
-            continue
-        out.append(t)
-    return out
+def criteria(inputs) -> Tuple[lv.Criteria, str]:
+    units = _value_of(inputs.itemById("units"), UNITS)
+    entry_units = "in" if units == "in" else "mm"       # Ø min / max / near are typed in this unit
+    series_dd = inputs.itemById("series")
+    chosen = {series_dd.listItems.item(i).name for i in range(series_dd.listItems.count)
+              if series_dd.listItems.item(i).isSelected}
+    all_series = series_dd.listItems.count == len(chosen)
+    c = lv.Criteria(
+        tool_type=_value_of(inputs.itemById("type"), TYPES),
+        system=_value_of(inputs.itemById("system"), SYSTEMS),
+        series=None if all_series else chosen,
+        availability=_value_of(inputs.itemById("avail"), AVAIL),
+        dmin_mm=lv.to_mm(_num(inputs.itemById("dmin").value), entry_units),
+        dmax_mm=lv.to_mm(_num(inputs.itemById("dmax").value), entry_units),
+        near_mm=lv.to_mm(_num(inputs.itemById("near").value), entry_units),
+        search=inputs.itemById("search").value.strip(),
+        used_only=inputs.itemById("used_only").value,
+        sort=lv.SORTS[inputs.itemById("sort").selectedItem.index],
+    )
+    return c, units
+
+
+def _headers(units: str):
+    if units == "both":
+        return ("Size", "Type", "Ø mm", "Ø in", "Series", "Step ↑", "Used for", "Available")
+    u = "mm" if units == "mm" else "in"
+    return ("Size", "Type", f"Ø {u}", "Next ↑", "Series", f"Step ↑ {u}", "Used for", "Available")
 
 
 def rebuild(inputs, state: State) -> None:
@@ -137,34 +165,54 @@ def rebuild(inputs, state: State) -> None:
             old.deleteMe()
     state.row_ids = []
     state.checkbox_key = {}
+    c, units = criteria(inputs)
+    rows = lv.build(state.tools, state.avail, state.used_for, c)
+    state.shown = rows
 
-    def add(cell, row, col):
+    def text_cell(text, row, col, tooltip=""):
+        state.counter += 1
+        cell = inputs.addStringValueInput(f"s{state.counter}", "", text)
+        cell.isReadOnly = True
+        if tooltip:
+            cell.tooltip = tooltip
         table.addCommandInput(cell, row, col)
         state.row_ids.append(cell.id)
 
-    for c, title in enumerate(COLS):
-        cell = inputs.addStringValueInput(f"h{state.counter}_{c}", title, title)
-        cell.isReadOnly = True
-        add(cell, 0, c)
-    shown = visible_tools(inputs, state)
-    for row, t in enumerate(shown, start=1):
-        state.counter += 1
-        n = state.counter
-        used = ", ".join(state.used_for.get((t.type, t.name), []))
-        texts = (inventory.label(t), t.type, f"{t.diameter_mm:.3f}", f"{t.diameter_mm / inventory.INCH_MM:.4f}",
-                 t.category, used)
-        for c, text in enumerate(texts):
-            cell = inputs.addStringValueInput(f"c{n}_{c}", COLS[c], text)
+    for col, title in enumerate(_headers(units)):
+        text_cell(title, 0, col)
+    r = 1
+    last_group = None
+    for row in rows:
+        t = row.tool
+        if c.sort == "series" and lv.group_title(row) != last_group:
+            last_group = lv.group_title(row)
+            state.counter += 1
+            cell = inputs.addStringValueInput(f"s{state.counter}", "", f"——  {last_group}  ——")
             cell.isReadOnly = True
-            if c == 5 and used:
-                cell.tooltip = used
-            add(cell, row, c)
-        chk = inputs.addBoolValueInput(f"av{n}", "Available", True, "", state.avail[(t.type, t.name)])
+            table.addCommandInput(cell, r, 0, 1, N_COLS)
+            state.row_ids.append(cell.id)
+            r += 1
+        step = "—" if row.step_up_mm is None else ("+" + lv.fmt(row.step_up_mm, "in" if units == "in" else "mm"))
+        nxt = inventory.label(row.next_up) if row.next_up else "—"
+        used = ", ".join(row.used_for)
+        if units == "both":
+            cells = (inventory.label(t), t.type, lv.fmt(t.diameter_mm, "mm"), lv.fmt(t.diameter_mm, "in"),
+                     row.series, step, used)
+            tips = ("", "", "", "", "", f"next available: {nxt}", used)
+        else:
+            cells = (inventory.label(t), t.type, lv.fmt(t.diameter_mm, units), nxt, row.series, step, used)
+            tips = ("", "", lv.fmt(t.diameter_mm, "in" if units == "mm" else "mm") + (" in" if units == "mm" else " mm"),
+                    "", "", "", used)
+        for col, (text, tip) in enumerate(zip(cells, tips)):
+            text_cell(text, r, col, tip)
+        state.counter += 1
+        chk = inputs.addBoolValueInput(f"a{state.counter}", "Available", True, "", row.available)
         state.checkbox_key[chk.id] = (t.type, t.name)
-        add(chk, row, 6)
-    n_avail = sum(state.avail.values())
-    inputs.itemById("status").text = (f"Showing {len(shown)} of {len(state.tools)} tools "
-                                      f"({n_avail} available, {len(state.tools) - n_avail} retired).")
+        table.addCommandInput(chk, r, 7)
+        state.row_ids.append(chk.id)
+        r += 1
+    inputs.itemById("status").text = lv.summary(rows, state.tools, state.avail) + (
+        f"  Ø min / max / near are in {'inches' if units == 'in' else 'mm'}.")
 
 
 class Changed(adsk.core.InputChangedEventHandler):
@@ -175,11 +223,21 @@ class Changed(adsk.core.InputChangedEventHandler):
     def notify(self, args):
         try:
             cid = args.input.id
-            if cid in self.state.checkbox_key:
-                self.state.avail[self.state.checkbox_key[cid]] = args.input.value
+            st = self.state
+            if cid in st.checkbox_key:
+                st.avail[st.checkbox_key[cid]] = args.input.value
                 return
-            if cid in ("type", "cat", "avail", "dmin", "dmax", "search", "used_only"):
-                rebuild(args.inputs, self.state)
+            if cid == "bulk":
+                choice = args.input.selectedItem.index
+                if choice:
+                    for row in st.shown:
+                        st.avail[(row.tool.type, row.tool.name)] = (choice == 1)
+                    args.input.listItems.item(0).isSelected = True
+                    rebuild(args.inputs, st)
+                return
+            if cid in ("type", "system", "series", "avail", "dmin", "dmax", "near", "search",
+                       "used_only", "units", "sort"):
+                rebuild(args.inputs, st)
         except Exception:
             ui.report_error(adsk.core.Application.get().userInterface, "Shop Tools filter failed")
 
@@ -223,8 +281,8 @@ def start(user_interface, panel):
     global _created
     _created = Created()
     ui.add_button(user_interface, panel, CMD_ID, "Shop Tools",
-                  "Browse and filter the shop inventory, retire/restore tools, see which holes use "
-                  "each tool, and export CSVs matching the Google Sheet's library tabs.", _created)
+                  "Browse, filter and sort the shop inventory, retire/restore tools, see which holes "
+                  "use each tool, and export CSVs matching the Google Sheet's library tabs.", _created)
 
 
 def stop(user_interface):
