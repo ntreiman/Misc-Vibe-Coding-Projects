@@ -274,9 +274,12 @@ zeros removed. Tool type comes from the Fusion tool library (`flat end mill`, `b
 - **Single file**: the program is written to the dialog-named file as usual. In `onTerminate()` (the kernel
   callback that runs after the output file has been written and closed) it is copied to the descriptive
   name, and a tiny background script written next to it (`.remove_<name>.sh`, or `.cmd` on Windows) deletes
-  the dialog-named file 3 seconds later and then itself. The delay exists because Fusion checks that the
+  the dialog-named file 6 seconds later and then itself. The delay exists because Fusion checks that the
   dialog-named file exists right after the post and reports "failed to post" if it is already gone. Result:
-  one file, no overwrite prompt. If the copy fails the post warns and the program stays in the dialog-named
+  one file, no overwrite prompt. Two timing effects remain with dialog posting: posting the same program
+  again within those 6 seconds shows the overwrite prompt (the stub is still there), and a very slow post
+  check on Fusion's side can still report "failed" although the descriptive file is complete. Posting
+  through the Batch Post by Tool add-in has neither issue, because API posts neither prompt nor validate. If the copy fails the post warns and the program stays in the dialog-named
   file. Keep *Open NC file in editor* unchecked with this method.
 
 If the descriptive file already exists it is overwritten in both methods.

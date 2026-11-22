@@ -314,16 +314,17 @@ function scenarioChecks(s, res) {
       break;
     case "36_descriptive_filename_rename_method":
       check(id, res.redirectedPath === undefined, "no redirection in rename mode");
+      check(id, res.scriptWrittenBeforeLine !== undefined && res.scriptWrittenBeforeLine <= 1, "cleanup script written at the start of the post (main lines before it: " + res.scriptWrittenBeforeLine + ")");
       check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "full program in the main file");
       check(id, JSON.stringify(res.fsOps) === JSON.stringify([["kernel-wrote", "/out/1001.gcode"], ["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["copy", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["executeNoWait", "/bin/sh", "\"/out/.remove_1001.gcode.sh\"", "/out"]]), "copy after the kernel wrote the file, then background cleanup: " + JSON.stringify(res.fsOps));
-      check(id, res.sideFiles.length === 1 && res.sideFiles[0].path === "/out/.remove_1001.gcode.sh" && res.sideFiles[0].text === "#!/bin/sh\nsleep 3\nrm -f \"/out/1001.gcode\"\nrm -f \"$0\"\n", "cleanup script content: " + JSON.stringify(res.sideFiles));
+      check(id, res.sideFiles.length === 1 && res.sideFiles[0].path === "/out/.remove_1001.gcode.sh" && res.sideFiles[0].text === "#!/bin/sh\nsleep 6\nrm -f \"/out/1001.gcode\"\nrm -f \"$0\"\n", "cleanup script content: " + JSON.stringify(res.sideFiles));
       break;
     case "38_descriptive_filename_run_suffix":
       check(id, res.redirectedPath === "/out/op_1_6.35_flat_end_mill_5000RPM_run2.gcode", "run suffix: " + res.redirectedPath);
       break;
     case "37_descriptive_filename_single_file_windows":
       check(id, res.fsOps.some(o => o[0] === "executeNoWait" && o[1] === "cmd.exe" && /\.remove_1001\.gcode\.cmd/.test(o[2])), "cmd.exe cleanup on Windows: " + JSON.stringify(res.fsOps));
-      check(id, res.sideFiles.length === 1 && /^@echo off\nping -n 4 127\.0\.0\.1 >nul\ndel \/q "C:\\Users\\me\\Downloads\\1001\.gcode"\ndel \/q "%~f0"\n$/.test(res.sideFiles[0].text), "cmd script content: " + JSON.stringify(res.sideFiles));
+      check(id, res.sideFiles.length === 1 && /^@echo off\nping -n 7 127\.0\.0\.1 >nul\ndel \/q "C:\\Users\\me\\Downloads\\1001\.gcode"\ndel \/q "%~f0"\n$/.test(res.sideFiles[0].text), "cmd script content: " + JSON.stringify(res.sideFiles));
       break;
     case "35_descriptive_filename_prefix_none":
       check(id, res.redirectedPath === "/out/1_6.35_flat_end_mill_5000RPM.gcode", "no prefix: " + res.redirectedPath);

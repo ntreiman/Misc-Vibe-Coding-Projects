@@ -1,6 +1,6 @@
 # Validation report
 
-Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.8 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
+Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.9 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
 and the Duet G-code dictionary.
 
 ## What was verified
@@ -102,7 +102,10 @@ clearance height is commanded.
   the correct descriptive file but Fusion reported "NC code failed to post" because the dialog-named file
   was gone. 2.7 copies and removes the stub 3 s later via `executeNoWait`; **confirmed in Fusion 360 on macOS by
   the user on 2026-11-22**: no post error, only the `op_...gcode` file remains, no overwrite prompt on the
-  next post. Not yet exercised on Windows (the `.cmd` variant).
+  next post. Not yet exercised on Windows (the `.cmd` variant). The user later saw occasional overwrite
+  prompts and occasional "failed" messages with the descriptive file nevertheless correct; 2.9 writes the
+  script in `onOpen()` and waits 6 s. Dialog posting keeps an inherent race with Fusion's own checks; API
+  posting through the add-in does not.
 - **BatchPostByTool add-in in Fusion.** Its grouping logic has 8 passing unit tests
   (`python3 -m unittest discover BatchPostByTool/tests`), but the Fusion API side (`CAM.postProcess`,
   `postProperties`, toolbar placement) has not been run inside Fusion from this environment.

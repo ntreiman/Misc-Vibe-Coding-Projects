@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.8 $
+  $R 2.9 $
   $Date: 2026-11-22 $
 */
 
@@ -617,7 +617,10 @@ function startDescriptiveOutput() {
     return;
   }
   if (properties.descriptiveFileMethod == "rename") {
-    return; // handled at the end of onClose by finishDescriptiveOutput()
+    // Single-file method: write the cleanup script now, at the very start, so it is long flushed and closed
+    // by the time onTerminate() launches it. The copy itself happens in onTerminate().
+    writeStubCleanupScript(getOutputPath());
+    return;
   }
   var path = descriptiveFilePath();
   writeln("; Program written to " + FileSystem.getFilename(path) + " (post property 'Descriptive output file name')");
@@ -635,13 +638,13 @@ function finishDescriptiveOutput() {
   if (properties.descriptiveFileName && properties.descriptiveFileMethod == "rename" &&
       typeof getOutputPath == "function" && typeof FileSystem != "undefined") {
     renameOutputTo = descriptiveFilePath(); // the file is not complete yet; see onTerminate()
-    writeStubCleanupScript(getOutputPath());
   }
 }
 
 /**
   Fusion checks that the dialog-named output file exists after the post has finished, so it cannot be removed
-  from inside the post. This writes a small script that deletes it 3 seconds later; onTerminate() launches it.
+  from inside the post. This writes a small script that deletes it 6 seconds later; onTerminate() launches it.
+  Called from onOpen() so the file is flushed and closed well before it is executed.
 */
 function writeStubCleanupScript(stubPath) {
   if (typeof redirectToFile != "function" || typeof executeNoWait != "function") {
@@ -654,12 +657,12 @@ function writeStubCleanupScript(stubPath) {
   redirectToFile(stubCleanupScript);
   if (isWindows) {
     writeln("@echo off");
-    writeln("ping -n 4 127.0.0.1 >nul");
+    writeln("ping -n 7 127.0.0.1 >nul");
     writeln("del /q \"" + stubPath + "\"");
     writeln("del /q \"%~f0\"");
   } else {
     writeln("#!/bin/sh");
-    writeln("sleep 3");
+    writeln("sleep 6");
     writeln("rm -f \"" + stubPath + "\"");
     writeln("rm -f \"$0\"");
   }

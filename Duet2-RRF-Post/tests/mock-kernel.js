@@ -143,7 +143,7 @@ function run(cpsPath, job, propertyOverrides, opts) {
     error(m) { errorMsg = errorMsg || m; target.push("!!! ERROR: " + m); }, warning(m) { warnings.push(m); },
     writeln, write(s) { target.push(String(s)); }, writeWords, writeWords2, formatWords,
     FileSystem, getOutputPath() { return outputPath; },
-    redirectToFile(p) { const r = { path: p, lines: [] }; redirected.push(r); target = r.lines; },
+    redirectToFile(p) { const r = { path: p, lines: [], mainLinesBefore: out.length }; redirected.push(r); target = r.lines; },
     closeRedirection() { target = out; }, isRedirecting() { return target !== out; },
     executeNoWait(p, a, hide, wd) { fsOps.push(["executeNoWait", p, a, wd]); },
     setWordSeparator(s) { wordSeparator = s; },
@@ -248,11 +248,12 @@ function run(cpsPath, job, propertyOverrides, opts) {
   if (typeof sandbox.onTerminate === "function") sandbox.onTerminate();
   const gcodeRedirect = redirected.find(r => /\.gcode$/.test(r.path));
   const sideFiles = redirected.filter(r => r !== gcodeRedirect).map(r => ({ path: r.path, text: r.lines.join("\n") + "\n" }));
+  const scriptWrittenBeforeLine = sideFiles.length ? redirected.find(r => r !== gcodeRedirect).mainLinesBefore : undefined;
   if (gcodeRedirect) {
     // the main file only holds the pointer comment; the program is in the redirected file
-    return { text: gcodeRedirect.lines.join("\n") + "\n", lines: gcodeRedirect.lines, mainFileLines: out, redirectedPath: gcodeRedirect.path, sideFiles, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
+    return { text: gcodeRedirect.lines.join("\n") + "\n", lines: gcodeRedirect.lines, mainFileLines: out, redirectedPath: gcodeRedirect.path, sideFiles, scriptWrittenBeforeLine, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
   }
-  return { text: out.join("\n") + "\n", lines: out, sideFiles, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
+  return { text: out.join("\n") + "\n", lines: out, sideFiles, scriptWrittenBeforeLine, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
 }
 
 module.exports = { run, makeTool };
