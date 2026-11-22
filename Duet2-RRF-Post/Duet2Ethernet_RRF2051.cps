@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.3 $
+  $R 2.4 $
   $Date: 2026-11-22 $
 */
 
@@ -107,7 +107,7 @@ properties = {
   writeTools: true,
   writeVersion: true,
   endProgramM0: false,         // emit M0 as the last command. In RRF 2.05.1 M0 runs stop.g, disables all drives and flags every axis as NOT homed
-  descriptiveFileName: false,  // write the program to op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
+  descriptiveFileName: true,   // write the program to op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
   descriptiveFileNamePrefix: "op", // "op" (literal, before every tool number), "none", "operation" (operation names), "program" (program name/number)
 
   // 8- Linear Backlash Compensation (unchanged from upstream apart from being OFF by default)

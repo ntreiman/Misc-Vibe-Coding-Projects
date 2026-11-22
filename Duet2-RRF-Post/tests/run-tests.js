@@ -111,7 +111,7 @@ const scenarios = [
   { id: "29_corner_probe_on_start", job: { sections: [contour] }, props: { probe3dOnStart: true } },
   { id: "30_descriptive_filename_single_tool", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true } },
   { id: "31_descriptive_filename_multi_tool", job: { programName: "Bracket v3", sections: [spotDrill64, contour, pocket, ccwOp_T3] }, props: { descriptiveFileName: true, safeMachineZ: -1 } },
-  { id: "32_descriptive_filename_off_by_default", job: { sections: [spotDrill64] }, props: {} },
+  { id: "32_descriptive_filename_can_be_disabled", job: { sections: [spotDrill64] }, props: { descriptiveFileName: false } },
   { id: "33_descriptive_filename_prefix_program", job: { programName: "1001", sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "program" } },
   { id: "34_descriptive_filename_prefix_operation", job: { sections: [contour, pocket] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "operation" } },
   { id: "35_descriptive_filename_prefix_none", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "none" } }
@@ -216,6 +216,7 @@ function scenarioChecks(s, res) {
   const idx = (re, from) => L.findIndex((l, i) => i >= (from || 0) && re.test(l));
   switch (id) {
     case "01_spot_drill_64_defaults": {
+      check(id, res.redirectedPath === "/out/op_1_6.35_flat_end_mill_5000RPM.gcode", "descriptive name on by default: " + res.redirectedPath);
       check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "64 drill plunges");
       check(id, L.filter(l => /^G1 Z-0\.508 F203$/.test(l)).length >= 1 && !L.some(l => /^G1 Z-0\.508 F\d+/.test(l) && !/F203$/.test(l)), "plunge feed 203");
       check(id, L.some(l => l === "M3 S5000"), "M3 S5000");
@@ -311,8 +312,8 @@ function scenarioChecks(s, res) {
     case "35_descriptive_filename_prefix_none":
       check(id, res.redirectedPath === "/out/1_6.35_flat_end_mill_5000RPM.gcode", "no prefix: " + res.redirectedPath);
       break;
-    case "32_descriptive_filename_off_by_default":
-      check(id, res.redirectedPath === undefined, "no redirection by default");
+    case "32_descriptive_filename_can_be_disabled":
+      check(id, res.redirectedPath === undefined, "no redirection when unchecked");
       break;
     case "29_corner_probe_on_start": check(id, idx(/CORNER PROBE BEGINS/) < idx(/^G0 /) || idx(/CORNER PROBE BEGINS/) < idx(/^G90 G0/), "corner probe before first positioning"); break;
   }
