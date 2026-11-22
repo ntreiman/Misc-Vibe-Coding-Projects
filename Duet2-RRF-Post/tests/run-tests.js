@@ -313,14 +313,14 @@ function scenarioChecks(s, res) {
     case "36_descriptive_filename_rename_method":
       check(id, res.redirectedPath === undefined, "no redirection in rename mode");
       check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "full program in the main file");
-      check(id, JSON.stringify(res.fsOps) === JSON.stringify([["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["move", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"]]), "existing target removed then main file moved: " + JSON.stringify(res.fsOps));
-      check(id, /ON Z/.test(L[L.length - 1]), "rename happens after the last line is written");
+      check(id, JSON.stringify(res.fsOps) === JSON.stringify([["kernel-wrote", "/out/1001.gcode"], ["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["move", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"]]), "rename only after the kernel wrote the file (onTerminate): " + JSON.stringify(res.fsOps));
       break;
     case "35_descriptive_filename_prefix_none":
       check(id, res.redirectedPath === "/out/1_6.35_flat_end_mill_5000RPM.gcode", "no prefix: " + res.redirectedPath);
       break;
     case "32_descriptive_filename_can_be_disabled":
       check(id, res.redirectedPath === undefined, "no redirection when unchecked");
+      check(id, res.fsOps.length === 1, "no file operations when unchecked: " + JSON.stringify(res.fsOps));
       break;
     case "29_corner_probe_on_start": check(id, idx(/CORNER PROBE BEGINS/) < idx(/^G0 /) || idx(/CORNER PROBE BEGINS/) < idx(/^G90 G0/), "corner probe before first positioning"); break;
   }

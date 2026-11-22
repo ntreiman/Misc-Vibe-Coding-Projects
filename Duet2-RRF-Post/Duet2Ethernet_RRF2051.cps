@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.5 $
+  $R 2.6 $
   $Date: 2026-11-22 $
 */
 
@@ -355,6 +355,7 @@ var currentWorkOffset;        // 1..9, WCS currently selected in the output
 var atSafeMachineZ = false;   // true right after a G53 retract to safeMachineZ (XY may then move first)
 var spindleState = { rpm: 0, clockwise: true, on: false };
 var redirectedOutput = false; // true while output goes to the descriptive file name
+var renameOutputTo = undefined; // rename method: destination path, applied in onTerminate() once the output file is complete
 var motionBox = {
   mBox: [[null, null], [null, null], [null, null]],
   set: function (axis, v) {
@@ -616,7 +617,7 @@ function startDescriptiveOutput() {
   redirectedOutput = true;
 }
 
-/** Rename method: move the dialog-named output file to the descriptive name. Must be the last thing the post does. */
+/** End of onClose: close a redirection, or remember the rename target for onTerminate(). */
 function finishDescriptiveOutput() {
   if (redirectedOutput) {
     closeRedirection();
@@ -625,16 +626,25 @@ function finishDescriptiveOutput() {
   }
   if (properties.descriptiveFileName && properties.descriptiveFileMethod == "rename" &&
       typeof getOutputPath == "function" && typeof FileSystem != "undefined") {
-    var src = getOutputPath();
-    var dest = descriptiveFilePath();
-    try {
-      if (FileSystem.isFile(dest)) {
-        FileSystem.remove(dest);
-      }
-      FileSystem.moveFile(src, dest);
-    } catch (e) {
-      warning(localize("Could not rename the output file to the descriptive name. The program is in the dialog-named file. Use the 'Redirect' method on this platform."));
+    renameOutputTo = descriptiveFilePath(); // the file is not complete yet; see onTerminate()
+  }
+}
+
+/** Called by the kernel after the primary output file has been written and closed. Only then can it be renamed. */
+function onTerminate() {
+  if (!renameOutputTo) {
+    return;
+  }
+  var src = getOutputPath();
+  var dest = renameOutputTo;
+  renameOutputTo = undefined;
+  try {
+    if (FileSystem.isFile(dest)) {
+      FileSystem.remove(dest);
     }
+    FileSystem.moveFile(src, dest);
+  } catch (e) {
+    warning(localize("Could not rename the output file to the descriptive name. The program is in the dialog-named file. Use the 'Redirect' method on this platform."));
   }
 }
 
