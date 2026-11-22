@@ -8,6 +8,13 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 2.1 (2026-11-22)
+
+- New property **Descriptive output file name** (default off). When on, `onOpen()` builds
+  `<program>_T<n>_<diameter>_<tool type>_<rpm>RPM[.._T<m>...].gcode` from the tools in order of first use
+  and redirects all output there with `redirectToFile()`; `onClose()` ends the redirection. The kernel has no
+  way to rename its own output, so the dialog-named file still exists and holds one pointer comment.
+
 ## 2.0 (2026-11-19)
 
 ### Motion safety
