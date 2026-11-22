@@ -116,6 +116,7 @@ const scenarios = [
   { id: "34_descriptive_filename_prefix_operation", job: { sections: [contour, pocket] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "operation" } },
   { id: "35_descriptive_filename_prefix_none", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "none" } },
   { id: "36_descriptive_filename_rename_method", job: { sections: [spotDrill64] }, props: { descriptiveFileMethod: "rename" }, runOpts: { existingFiles: ["/out/op_1_6.35_flat_end_mill_5000RPM.gcode"] } },
+  { id: "38_descriptive_filename_run_suffix", job: { sections: [spotDrill64] }, props: { descriptiveFileNameRun: 2 } },
   { id: "37_descriptive_filename_single_file_windows", job: { sections: [spotDrill64] }, props: { descriptiveFileMethod: "rename" }, runOpts: { outputPath: "C:\\Users\\me\\Downloads\\1001.gcode" } }
 ];
 
@@ -316,6 +317,9 @@ function scenarioChecks(s, res) {
       check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "full program in the main file");
       check(id, JSON.stringify(res.fsOps) === JSON.stringify([["kernel-wrote", "/out/1001.gcode"], ["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["copy", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["executeNoWait", "/bin/sh", "\"/out/.remove_1001.gcode.sh\"", "/out"]]), "copy after the kernel wrote the file, then background cleanup: " + JSON.stringify(res.fsOps));
       check(id, res.sideFiles.length === 1 && res.sideFiles[0].path === "/out/.remove_1001.gcode.sh" && res.sideFiles[0].text === "#!/bin/sh\nsleep 3\nrm -f \"/out/1001.gcode\"\nrm -f \"$0\"\n", "cleanup script content: " + JSON.stringify(res.sideFiles));
+      break;
+    case "38_descriptive_filename_run_suffix":
+      check(id, res.redirectedPath === "/out/op_1_6.35_flat_end_mill_5000RPM_run2.gcode", "run suffix: " + res.redirectedPath);
       break;
     case "37_descriptive_filename_single_file_windows":
       check(id, res.fsOps.some(o => o[0] === "executeNoWait" && o[1] === "cmd.exe" && /\.remove_1001\.gcode\.cmd/.test(o[2])), "cmd.exe cleanup on Windows: " + JSON.stringify(res.fsOps));

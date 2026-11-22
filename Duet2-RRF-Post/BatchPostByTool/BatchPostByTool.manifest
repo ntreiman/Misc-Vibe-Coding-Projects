@@ -1,0 +1,13 @@
+{
+    "autodeskProduct": "Fusion",
+    "type": "addin",
+    "id": "3b7f0c2a-5d64-4e1b-9c21-8a0f6d2e4b91",
+    "author": "ntreiman",
+    "description": {
+        "": "One click: post every consecutive run of same-tool operations in the setup to its own G-code file with the Duet 2 / RRF 2.05.1 post."
+    },
+    "version": "0.1.0",
+    "runOnStartup": true,
+    "supportedOS": "windows|mac",
+    "editEnabled": true
+}

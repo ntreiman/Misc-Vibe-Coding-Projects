@@ -25,6 +25,7 @@ was not verified.
 | `examples/*.gcode` | Output produced by the test harness (not reposts of real Fusion jobs) |
 | `tests/mock-kernel.js`, `tests/run-tests.js` | Node.js mock of the Fusion post kernel and the scenario suite (`node tests/run-tests.js`) |
 | `upstream/` | Unmodified upstream `UltimateRRPost.cps` and its Apache 2.0 `LICENSE` |
+| `BatchPostByTool/` | Fusion add-in: one button posts every consecutive same-tool run of the setup to its own file with this post (see its README) |
 
 ## Installation
 
@@ -343,6 +344,7 @@ If the descriptive file already exists it is overwritten in both methods.
 | Descriptive output file name | on | Write to `op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
 | Descriptive file name prefix | op | op / None / operation name(s) / program name |
 | Descriptive file name method | Redirect | Redirect (second file) / Single file (copy, then remove dialog-named file) |
+| Descriptive file name run number | 0 | > 0 appends `_run<n>`; set by the Batch Post by Tool add-in when a tool has several runs |
 
 ### 8- Linear Backlash Compensation
 

@@ -1,6 +1,6 @@
 # Validation report
 
-Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.7 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
+Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.8 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
 and the Duet G-code dictionary.
 
 ## What was verified
@@ -41,7 +41,7 @@ variable/modal, section, tool, cycle expansion and motion callbacks the post use
 behaviour of the kernel. **It is not the Autodesk kernel**; number formatting edge cases, cycle expansion
 details and the kernel's position model are approximations.
 
-`node tests/run-tests.js` runs 37 scenarios and 37/37 pass (mock calls `onTerminate()` after writing the primary file and records `FileSystem`/`executeNoWait` calls). Each scenario's output is in `tests/output/`
+`node tests/run-tests.js` runs 38 scenarios and 38/38 pass (mock calls `onTerminate()` after writing the primary file and records `FileSystem`/`executeNoWait` calls). Each scenario's output is in `tests/output/`
 (not committed) and five headline outputs are in `examples/`.
 
 | # | Scenario | What it checks |
@@ -71,6 +71,7 @@ details and the kernel's position model are approximations.
 | 29 | Corner probe at program start | probe before first positioning |
 | 30 / 31 / 32 | Descriptive output file name (on by default): one tool, three tools, unchecked | redirected to `op_1_6.35_flat_end_mill_5000RPM.gcode` with the whole program and a one-line pointer in the dialog-named file / `op_1_..._op_2_..._op_3_...gcode` / no redirection |
 | 33 / 34 / 35 | Descriptive file name prefix: program name / operation names / none | `1001_1_...` / `2d_contour1_2d_pocket1_2_...` / `1_...` |
+| 38 | Descriptive file name run number = 2 | `op_1_..._RPM_run2.gcode` |
 | 36 / 37 | Descriptive file name method = Single file, macOS path / Windows path | full program in the main file, existing target removed, `copyFile(1001.gcode -> op_1_...gcode)` from `onTerminate()` after the kernel wrote the file, then `executeNoWait` of the cleanup script; exact `.sh` / `.cmd` script text |
 
 Checks applied to every scenario's output: no `G28` (unless enabled), no `M0` (unless enabled), no
@@ -102,6 +103,9 @@ clearance height is commanded.
   was gone. 2.7 copies and removes the stub 3 s later via `executeNoWait`; **confirmed in Fusion 360 on macOS by
   the user on 2026-11-22**: no post error, only the `op_...gcode` file remains, no overwrite prompt on the
   next post. Not yet exercised on Windows (the `.cmd` variant).
+- **BatchPostByTool add-in in Fusion.** Its grouping logic has 8 passing unit tests
+  (`python3 -m unittest discover BatchPostByTool/tests`), but the Fusion API side (`CAM.postProcess`,
+  `postProperties`, toolbar placement) has not been run inside Fusion from this environment.
 - **Probe routines on hardware.** `M585` with `E3 L0`, the corner probe geometry and the `G10 L20`/`M500`
   sequence are upstream logic with the same parameters; they were checked for firmware syntax only. If the
   probe does not trigger, `M585` drives to the `M208` Z minimum. Test with a hand on the stop.
