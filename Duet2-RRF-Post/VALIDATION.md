@@ -32,7 +32,7 @@ The complete upstream `UltimateRRPost.cps` (2128 lines) was read. The uploaded c
 | `M291` modes 0-3, `T` timeout only for 0/1, `X/Y/Z` jog, `S0 T0` rejected, 160-char line limit (dictionary) | `GCodes2.cpp` case 291 |
 | `M585 S1` probes toward the axis minimum, needs a selected tool | `GCodes3.cpp` `ProbeTool()` |
 | `M300`, `M400`, `M450`, `M453`, `M563`, `M585` exist | `GCodes2.cpp` |
-| `G2`/`G3` with `R` select the **long** arc for positive `R` (centre on the wrong side of the chord); `I`/`J` are incremental from the start point and exact | `GCodes.cpp` `DoArcMove()`; confirmed on the machine: 90° `R` arcs cut four-lobed "clover" holes |
+| `G2`/`G3` with `R` select the **long** arc for positive `R` (centre on the wrong side of the chord); `I`/`J` are incremental from the start point and exact | `GCodes.cpp` `DoArcMove()`; confirmed on the machine: 90° `R` arcs cut four-lobed "clover" holes. Duet3D changelog, RRF 3.6.0 "Bug fixes since 3.5.4": *"G2 and G3 commands with R parameter always drew the longer of the two possible arcs. Now they draw the shorter one if the R parameter is positive, or the longer one if it is negative."* `R` arcs were introduced in RRF 2.03 (WHATS_NEW), so every version from 2.03 to 3.5.4 is affected. |
 
 ### Post execution on a mock kernel
 
@@ -82,6 +82,24 @@ Checks applied to every scenario's output: no `G28` (unless enabled), no `M0` (u
 `G21` and the WCS select precede it; `M3`/`M4 S` precedes the first cutting move; `M5` at the end; every
 synthetic cutting coordinate appears in order with the right feed on the first `G1`; every operation's
 clearance height is commanded.
+
+### Cross-check against other posts used on RepRapFirmware (2026-11-22)
+
+| Topic | Autodesk generic `reprap.cps` (library r44245) | flyfisher604 MPCNC post v4.1.2 (RepRap target) | This post 3.0 |
+| --- | --- | --- | --- |
+| Arcs | `I`/`J` only, `allowArcs` switch | `I`/`J` only, XY plane, others linearised | `I`/`J` only, XY plane, others linearised |
+| Dwell | `G4 P<ms>` | `G4 S<s>` on RRF | `G4 P<ms>` |
+| Safe height | `G28` by default (homes on RRF), `G53` optional | user-entered machine Z via `G53 G0 Z`, shipped empty | Fusion clearance (default) or user-entered machine Z via `G53 G0 Z`, shipped `0` with warning |
+| Tool change | `T<n>` always | bare `T` on RRF with a warning that undefined tools error; manual change parks with `G53` and `M0` | optional `T<n>`; manual change parks with `G53` and blocking `M291 S3` |
+| Spindle | `M3 S` at start; mid-section speed change writes a bare `S` line | `M3 S`/`M5` | `M3 S`/`M5`, speed changes re-issue `M3 S` |
+| Program end | `M2` (not implemented before RRF 3.5.1) | `M84 S60` then `M2`, noting RRF gained `M2` in 3.5.1 | clean end of file, optional `M0` |
+| `G41`/`G42` | kernel default | error | error |
+| Canned cycles | expanded | expanded, probing refused | expanded, tapping refused |
+
+Agreement on everything that matters for 2.05.1 (I/J arcs, machine-coordinate `G53` travel height entered by the
+user, no controller compensation, expanded cycles). The two places this post differs from the Autodesk
+generic post (`G28` retract, `M2` end, bare `S`) are exactly the RRF incompatibilities the CHANGELOG lists.
+The Ooznest WorkBee post could not be obtained (not on GitHub, not in the Autodesk library download endpoint).
 
 ## What was not verified
 

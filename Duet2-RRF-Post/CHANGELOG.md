@@ -15,7 +15,9 @@ G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
   side of the chord (`iParam = dx/2 + dy*h/d`, `jParam = dy/2 - dx*h/d`, with the sign only flipped for
   clockwise), which is the long-arc centre for both directions. Every `R` arc therefore ran as a >180°
   arc in the wrong direction. With the kernel's 90° sweep limit in R mode this turned circles into
-  four-lobed clovers and bulged slot ends on the user's machine. Upstream had the same default. The `G90`
+  four-lobed clovers and bulged slot ends on the user's machine. Upstream had the same default. Duet3D's
+  changelog confirms it: fixed in RRF 3.6.0 ("G2 and G3 commands with R parameter always drew the longer of
+  the two possible arcs"); `R` arcs exist since RRF 2.03, so 2.03 to 3.5.4 are all affected. The `G90`
   prefix on arc lines was dropped (modal, already set).
 
 ## 2.9 (2026-11-22)
