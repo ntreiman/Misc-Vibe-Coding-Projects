@@ -99,8 +99,9 @@ clearance height is commanded.
 - **Single-file method in Fusion.** 2.5 (rename in `onClose()`) produced a 0-byte file in Fusion on macOS,
   proving the kernel writes the primary output after `onClose()`. 2.6 (rename in `onTerminate()`) produced
   the correct descriptive file but Fusion reported "NC code failed to post" because the dialog-named file
-  was gone. 2.7 copies and removes the stub 3 s later via `executeNoWait`; not yet confirmed in Fusion. The
-  redirect method is the verified one.
+  was gone. 2.7 copies and removes the stub 3 s later via `executeNoWait`; **confirmed in Fusion 360 on macOS by
+  the user on 2026-11-22**: no post error, only the `op_...gcode` file remains, no overwrite prompt on the
+  next post. Not yet exercised on Windows (the `.cmd` variant).
 - **Probe routines on hardware.** `M585` with `E3 L0`, the corner probe geometry and the `G10 L20`/`M500`
   sequence are upstream logic with the same parameters; they were checked for firmware syntax only. If the
   probe does not trigger, `M585` drives to the `M208` Z minimum. Test with a hand on the stop.

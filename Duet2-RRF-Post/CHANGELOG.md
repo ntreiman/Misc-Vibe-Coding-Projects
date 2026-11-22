@@ -13,7 +13,7 @@ G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 - Single-file method reworked: `onTerminate()` now **copies** the finished output to the descriptive name
   and launches a background script (`/bin/sh` or `cmd.exe`) that deletes the dialog-named file 3 seconds
   later. Fusion validates that the dialog-named file exists after the post ("NC code failed to post" with
-  2.6's rename), so it cannot be removed from inside the post.
+  2.6's rename), so it cannot be removed from inside the post. Confirmed working in Fusion 360 on macOS.
 
 ## 2.6 (2026-11-22)
 
