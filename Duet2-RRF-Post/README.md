@@ -246,16 +246,22 @@ error: there is no rigid tapping on this firmware and expansion would rely on sp
 With the property **Descriptive output file name** checked, the program is written to
 
 ```
-<program name>_T<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode
+op_<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode
 ```
 
-in the output folder, with one `T..._..._..._...RPM` block per tool in order of first use. Examples:
+in the output folder, with one `op_<n>_..._...RPM` block per tool in order of first use, so the files sort
+by tool number. Examples:
 
-- `1001_T1_6_spot_drill_5000RPM.gcode` (your spot-drill job)
-- `bracket_v3_T1_6.35_flat_end_mill_5000RPM_T2_6_flat_end_mill_12000RPM.gcode` (two tools)
+- `op_1_6_spot_drill_5000RPM.gcode` (one tool, the default)
+- `op_1_6.35_flat_end_mill_5000RPM_op_2_6_flat_end_mill_12000RPM.gcode` (two tools)
+- `spotdrill_1_6_spot_drill_5000RPM.gcode` (prefix = operation name)
+- `1001_1_6_spot_drill_5000RPM.gcode` (prefix = program name/number)
+- `1_6_spot_drill_5000RPM.gcode` (prefix = none)
 
-The program name is the *Program name or number* field of the post dialog, lower-cased, with anything other
-than letters, digits, `.` and `-` turned into `_`. Diameter is in program units (mm or inch) with trailing
+*Descriptive file name prefix* chooses the prefix: **op** before every tool number (default), **None**,
+**Operation name(s)** (the Fusion operation names in order, de-duplicated) or **Program name/number** (the
+post dialog field). Names are
+lower-cased, with anything other than letters, digits, `.` and `-` turned into `_`. Diameter is in program units (mm or inch) with trailing
 zeros removed. Tool type comes from the Fusion tool library (`flat end mill`, `ball end mill`, `spot drill`,
 `drill`, `chamfer mill`, ...). RPM is the spindle speed of the first operation that uses the tool.
 
@@ -323,7 +329,8 @@ the descriptive file already exists it is overwritten.
 | Radius arcs | on | `R` instead of `I`/`J` |
 | Write machine / tool list / version | on | Header comments |
 | End program with M0 | off | `M0` runs `stop.g`, idles drives, un-homes axes |
-| Descriptive output file name | off | Write to `<program>_T<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
+| Descriptive output file name | off | Write to `op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
+| Descriptive file name prefix | op | op / None / operation name(s) / program name |
 
 ### 8- Linear Backlash Compensation
 
