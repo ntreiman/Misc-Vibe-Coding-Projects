@@ -1,6 +1,6 @@
 # Validation report
 
-Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.5 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
+Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.6 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
 and the Duet G-code dictionary.
 
 ## What was verified
@@ -41,7 +41,7 @@ variable/modal, section, tool, cycle expansion and motion callbacks the post use
 behaviour of the kernel. **It is not the Autodesk kernel**; number formatting edge cases, cycle expansion
 details and the kernel's position model are approximations.
 
-`node tests/run-tests.js` runs 36 scenarios and 36/36 pass. Each scenario's output is in `tests/output/`
+`node tests/run-tests.js` runs 36 scenarios and 36/36 pass (mock calls `onTerminate()` after writing the primary file). Each scenario's output is in `tests/output/`
 (not committed) and five headline outputs are in `examples/`.
 
 | # | Scenario | What it checks |
@@ -71,7 +71,7 @@ details and the kernel's position model are approximations.
 | 29 | Corner probe at program start | probe before first positioning |
 | 30 / 31 / 32 | Descriptive output file name (on by default): one tool, three tools, unchecked | redirected to `op_1_6.35_flat_end_mill_5000RPM.gcode` with the whole program and a one-line pointer in the dialog-named file / `op_1_..._op_2_..._op_3_...gcode` / no redirection |
 | 33 / 34 / 35 | Descriptive file name prefix: program name / operation names / none | `1001_1_...` / `2d_contour1_2d_pocket1_2_...` / `1_...` |
-| 36 | Descriptive file name method = Rename | no redirection, full program in the main file, existing target removed, then `moveFile(1001.gcode -> op_1_...gcode)` after the last line |
+| 36 | Descriptive file name method = Rename | no redirection, full program in the main file, existing target removed, then `moveFile(1001.gcode -> op_1_...gcode)` from `onTerminate()` after the kernel wrote the file |
 
 Checks applied to every scenario's output: no `G28` (unless enabled), no `M0` (unless enabled), no
 `M1`/`M2`/`M6`, no bare `S` line, no `G10 L2`, no `G60`/`R0`, no `G40`-`G43`, no `G8x`/`G98`/`G99`, no lone
@@ -96,9 +96,9 @@ clearance height is commanded.
   behind it are not available. `examples/spot_drill_64_holes_defaults.gcode` is a **synthetic** 8x8 grid
   built to the same parameters quoted in the handoff (S5000, Z15.24, Z5.08, Z-0.508, F203); it is not a
   repost of the real job.
-- **Rename method in Fusion.** `FileSystem.moveFile()` on the kernel's own open output file was not run in
-  Fusion; it is expected to work on macOS (rename of an open file) and may fail on Windows. The redirect
-  method is the verified one.
+- **Rename method in Fusion.** 2.5 (rename in `onClose()`) was tried in Fusion on macOS and produced a
+  0-byte file, proving the kernel writes the primary output after `onClose()`. 2.6 renames in
+  `onTerminate()` instead; not yet confirmed in Fusion. The redirect method is the verified one.
 - **Probe routines on hardware.** `M585` with `E3 L0`, the corner probe geometry and the `G10 L20`/`M500`
   sequence are upstream logic with the same parameters; they were checked for firmware syntax only. If the
   probe does not trigger, `M585` drives to the `M208` Z minimum. Test with a hand on the stop.

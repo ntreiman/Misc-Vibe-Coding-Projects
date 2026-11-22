@@ -8,6 +8,12 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 2.6 (2026-11-22)
+
+- Rename method moved from the end of `onClose()` to `onTerminate()`. In Fusion the kernel writes the primary
+  output file after `onClose()` returns, so 2.5 renamed an empty file (0 bytes) and the program stayed in
+  the dialog-named file. The reference states the primary output cannot be opened until `onTerminate()`.
+
 ## 2.5 (2026-11-22)
 
 - New enum **Descriptive file name method**: Redirect (default, as before) or Rename at end. Rename writes

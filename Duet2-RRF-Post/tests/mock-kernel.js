@@ -241,6 +241,9 @@ function run(cpsPath, job, propertyOverrides, opts) {
     sandbox.onSectionEnd();
   }
   if (!errorMsg) sandbox.onClose();
+  // kernel writes and closes the primary output file, then calls onTerminate()
+  fsOps.push(["kernel-wrote", outputPath]);
+  if (typeof sandbox.onTerminate === "function") sandbox.onTerminate();
   if (redirected.length) {
     // the main file only holds the pointer comment; the program is in the redirected file
     return { text: redirected[0].lines.join("\n") + "\n", lines: redirected[0].lines, mainFileLines: out, redirectedPath: redirected[0].path, warnings, error: errorMsg, properties: sandbox.properties, fsOps };

@@ -270,11 +270,11 @@ zeros removed. Tool type comes from the Fusion tool library (`flat end mill`, `b
 - **Redirect** (default): output goes to the descriptive file; the file named in the post dialog is still
   created by the kernel and holds one comment line pointing to the real file. Because that stub exists,
   Fusion asks whether to overwrite it on the next post. Upload the descriptive file to the Duet.
-- **Rename at end**: the program is written to the dialog-named file as usual and, as the very last action
-  of the post, that file is renamed to the descriptive name. One file, no overwrite prompt. This relies on the
-  kernel allowing its open output file to be renamed, which works on macOS and may fail on Windows; if the
-  rename fails the post warns and the program stays in the dialog-named file. Keep *Open NC file in editor*
-  unchecked with this method, since Fusion looks for the dialog-named file.
+- **Rename at end**: the program is written to the dialog-named file as usual and, in `onTerminate()` (the
+  kernel callback that runs after the output file has been written and closed), that file is renamed to the
+  descriptive name. One file, no overwrite prompt. If the rename fails the post warns and the program stays
+  in the dialog-named file. Keep *Open NC file in editor* unchecked with this method, since Fusion looks for
+  the dialog-named file.
 
 If the descriptive file already exists it is overwritten in both methods.
 
