@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.6 $
+  $R 2.7 $
   $Date: 2026-11-22 $
 */
 
@@ -276,11 +276,11 @@ propertyDefinitions = {
   },
   descriptiveFileMethod: {
     title: "Descriptive file name method",
-    description: "Redirect (default): the program is written to the descriptive file and the file named in the post dialog is kept with a one-line pointer, so Fusion asks to overwrite it on the next post. Rename: the program is written to the dialog-named file as usual and that file is renamed to the descriptive name at the very end, leaving one file and no overwrite prompt. Rename depends on the post kernel allowing its open output file to be renamed (works on macOS, may fail on Windows); keep 'Open NC file in editor' unchecked with it.",
+    description: "Redirect (default): the program is written to the descriptive file and the file named in the post dialog is kept with a one-line pointer, so Fusion asks to overwrite it on the next post. Single file: the program is written to the dialog-named file as usual, copied to the descriptive name once Fusion has finished writing it, and the dialog-named file is removed 3 seconds later by a small background script (so Fusion still finds it when it validates the post). One file, no overwrite prompt. Keep 'Open NC file in editor' unchecked with it.",
     group: groupNames[6], type: "enum",
     values: [
       { title: "Redirect (second file, keeps dialog-named file)", id: "redirect" },
-      { title: "Rename at end (one file, no overwrite prompt)", id: "rename" }
+      { title: "Single file (copy, then remove dialog-named file)", id: "rename" }
     ]
   },
   descriptiveFileNamePrefix: {
@@ -355,7 +355,8 @@ var currentWorkOffset;        // 1..9, WCS currently selected in the output
 var atSafeMachineZ = false;   // true right after a G53 retract to safeMachineZ (XY may then move first)
 var spindleState = { rpm: 0, clockwise: true, on: false };
 var redirectedOutput = false; // true while output goes to the descriptive file name
-var renameOutputTo = undefined; // rename method: destination path, applied in onTerminate() once the output file is complete
+var renameOutputTo = undefined; // single-file method: destination path, applied in onTerminate() once the output file is complete
+var stubCleanupScript = undefined; // single-file method: path of the background script that removes the dialog-named file
 var motionBox = {
   mBox: [[null, null], [null, null], [null, null]],
   set: function (axis, v) {
@@ -627,10 +628,38 @@ function finishDescriptiveOutput() {
   if (properties.descriptiveFileName && properties.descriptiveFileMethod == "rename" &&
       typeof getOutputPath == "function" && typeof FileSystem != "undefined") {
     renameOutputTo = descriptiveFilePath(); // the file is not complete yet; see onTerminate()
+    writeStubCleanupScript(getOutputPath());
   }
 }
 
-/** Called by the kernel after the primary output file has been written and closed. Only then can it be renamed. */
+/**
+  Fusion checks that the dialog-named output file exists after the post has finished, so it cannot be removed
+  from inside the post. This writes a small script that deletes it 3 seconds later; onTerminate() launches it.
+*/
+function writeStubCleanupScript(stubPath) {
+  if (typeof redirectToFile != "function" || typeof executeNoWait != "function") {
+    return;
+  }
+  var isWindows = (stubPath.indexOf("\\") >= 0);
+  var folder = FileSystem.getFolderPath(stubPath);
+  var scriptName = ".remove_" + FileSystem.getFilename(stubPath) + (isWindows ? ".cmd" : ".sh");
+  stubCleanupScript = FileSystem.getCombinedPath(folder, scriptName);
+  redirectToFile(stubCleanupScript);
+  if (isWindows) {
+    writeln("@echo off");
+    writeln("ping -n 4 127.0.0.1 >nul");
+    writeln("del /q \"" + stubPath + "\"");
+    writeln("del /q \"%~f0\"");
+  } else {
+    writeln("#!/bin/sh");
+    writeln("sleep 3");
+    writeln("rm -f \"" + stubPath + "\"");
+    writeln("rm -f \"$0\"");
+  }
+  closeRedirection();
+}
+
+/** Called by the kernel after the primary output file has been written and closed. Only then is its content complete. */
 function onTerminate() {
   if (!renameOutputTo) {
     return;
@@ -638,13 +667,34 @@ function onTerminate() {
   var src = getOutputPath();
   var dest = renameOutputTo;
   renameOutputTo = undefined;
+  var copied = false;
   try {
     if (FileSystem.isFile(dest)) {
       FileSystem.remove(dest);
     }
-    FileSystem.moveFile(src, dest);
+    FileSystem.copyFile(src, dest);
+    copied = true;
   } catch (e) {
-    warning(localize("Could not rename the output file to the descriptive name. The program is in the dialog-named file. Use the 'Redirect' method on this platform."));
+    warning(localize("Could not copy the output file to the descriptive name. The program is in the dialog-named file. Use the 'Redirect' method."));
+  }
+  if (stubCleanupScript) {
+    var script = stubCleanupScript;
+    stubCleanupScript = undefined;
+    try {
+      if (copied) {
+        var isWindows = (src.indexOf("\\") >= 0);
+        var folder = FileSystem.getFolderPath(src);
+        if (isWindows) {
+          executeNoWait("cmd.exe", "/c \"" + script + "\"", true, folder);
+        } else {
+          executeNoWait("/bin/sh", "\"" + script + "\"", true, folder);
+        }
+      } else {
+        FileSystem.remove(script);
+      }
+    } catch (e2) {
+      warning(localize("Could not start the cleanup of the dialog-named file; it was left in place."));
+    }
   }
 }
 
