@@ -8,6 +8,12 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 2.2 (2026-11-22)
+
+- Descriptive file name no longer starts with the program number by default. New enum **Descriptive file
+  name prefix**: None (default), Operation name(s), Program name/number. Confirmed working in Fusion 360
+  (output `1001_T0_3.175_flat_end_mill_18000RPM.gcode` with 2.1).
+
 ## 2.1 (2026-11-22)
 
 - New property **Descriptive output file name** (default off). When on, `onOpen()` builds
