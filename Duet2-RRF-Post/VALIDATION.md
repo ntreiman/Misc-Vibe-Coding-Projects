@@ -1,6 +1,6 @@
 # Validation report
 
-Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.9 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
+Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 3.0 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
 and the Duet G-code dictionary.
 
 ## What was verified
@@ -32,6 +32,7 @@ The complete upstream `UltimateRRPost.cps` (2128 lines) was read. The uploaded c
 | `M291` modes 0-3, `T` timeout only for 0/1, `X/Y/Z` jog, `S0 T0` rejected, 160-char line limit (dictionary) | `GCodes2.cpp` case 291 |
 | `M585 S1` probes toward the axis minimum, needs a selected tool | `GCodes3.cpp` `ProbeTool()` |
 | `M300`, `M400`, `M450`, `M453`, `M563`, `M585` exist | `GCodes2.cpp` |
+| `G2`/`G3` with `R` select the **long** arc for positive `R` (centre on the wrong side of the chord); `I`/`J` are incremental from the start point and exact | `GCodes.cpp` `DoArcMove()`; confirmed on the machine: 90° `R` arcs cut four-lobed "clover" holes |
 
 ### Post execution on a mock kernel
 
@@ -49,7 +50,7 @@ details and the kernel's position model are approximations.
 | 01 | 64-hole spot drill, defaults (mirrors `1001.cnc.gcode`: S5000, Z15.24 clearance, Z5.08 retract, Z-0.508, F203) | `G54` -> `G0 Z15.24` -> `G0 X20 Y20` order, 64 plunges at F203, `G4 P12500`, blocking start prompt before motion |
 | 02 | Same job, machine-Z retract | `G53 G0 Z-2` -> `G0 X Y` -> `G0 Z15.24` |
 | 03 | Chip-breaking drill with 0.5 s dwell, 3 holes | `G4 P500` x3, pecks to Z-6 |
-| 04 / 05 | 2D contour with a 90 degree arc, R mode and IJ mode | `G3 ... R10` / `G3 ... I J` |
+| 04 / 05 | 2D contour with a 90° arc / pocket with 180° arcs | `G3 X60 Y10 J10` / `G2 X25 I-5` etc.; every scenario also asserts that no `G2`/`G3` line carries an `R` word |
 | 06 | Two pockets, same tool, RPM change | second `M3 S14000`, no tool change routine, 5 s minimum dwell |
 | 07 / 08 | 3D adaptive-style zigzag with combined XYZ rapids, split on/off | Z-first up, XY-first down / combined kept |
 | 09 | 4 operations, 3 tools, default (WCS) retract | tool change order `M5`, `G4 P10000`, `G53 G0 Z`, `G53 G0 X Y`, `M400`, `M291 S3`; after change XY at safe Z then Z clearance; `M3` before first cut; `M4` for CCW tool |

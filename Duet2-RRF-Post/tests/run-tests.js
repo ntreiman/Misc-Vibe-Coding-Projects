@@ -83,8 +83,8 @@ const scenarios = [
   { id: "01_spot_drill_64_defaults", job: { sections: [spotDrill64] }, props: {}, example: "spot_drill_64_holes_defaults.gcode" },
   { id: "02_spot_drill_64_machineZ", job: { sections: [spotDrill64] }, props: { retractMode: "machine", safeMachineZ: -2, toolChangeXPos: 5, toolChangeYPos: 5 }, example: "spot_drill_64_holes_machineZ_retract.gcode" },
   { id: "03_pecking_with_dwell", job: { sections: [pecking] }, props: {} },
-  { id: "04_contour_radius_arcs", job: { sections: [contour] }, props: {} },
-  { id: "05_contour_ij_arcs", job: { sections: [contour] }, props: { useRadius: false } },
+  { id: "04_contour_ij_arcs", job: { sections: [contour] }, props: {} },
+  { id: "05_pocket_half_circles_ij", job: { sections: [pocket] }, props: {} },
   { id: "06_pocket_same_tool_rpm_change", job: { sections: [pocket, pocket2(14000)] }, props: {} },
   { id: "07_adaptive_split_rapids", job: { sections: [adaptive] }, props: {} },
   { id: "08_adaptive_no_split", job: { sections: [adaptive] }, props: { splitRapids: false } },
@@ -155,6 +155,7 @@ function genericChecks(s, res) {
       check(id, !/S0(\s|$)/.test(l) || /T\d/.test(l), "M291 S0 without timeout: " + l);
     }
     check(id, !/G1 H1 Z500/.test(l), "flush routine present: " + l);
+    check(id, !/^G[23] .*\bR-?[\d.]+/.test(l), "R arc emitted (RRF 2.05.1 executes the long arc): " + l);
     check(id, !/^G0 .*F\d/.test(l), "F on rapid: " + l);
     check(id, !/undefined|NaN/.test(l), "undefined/NaN in output: " + l);
   }
@@ -236,8 +237,14 @@ function scenarioChecks(s, res) {
       check(id, L.filter(l => l === "G4 P500").length === 3, "0.5 s cycle dwell -> G4 P500 x3");
       check(id, L.filter(l => /^G1 Z-6 F150$/.test(l) || /^G1 Z-6$/.test(l)).length === 3, "three holes to Z-6");
       break; }
-    case "04_contour_radius_arcs": check(id, L.some(l => /^G3 X60 Y10 R10 F1000$/.test(l) || /^G3 X60 Y10 R10$/.test(l)), "CCW arc with R10"); break;
-    case "05_contour_ij_arcs": check(id, L.some(l => /^G3 X60 Y10 I0 J10/.test(l) || /^G90 G3 X60 Y10 J10/.test(l) || /^G3 X60 Y10 J10/.test(l)), "CCW arc with IJ: " + L.filter(l => /^G(90 )?G?3 /.test(l)).join(" | ")); break;
+    case "04_contour_ij_arcs":
+      check(id, L.some(l => /^G3 X60 Y10 J10$/.test(l) || /^G3 X60 Y10 J10 F1000$/.test(l)), "CCW arc with incremental I/J (I0 omitted): " + L.filter(l => /^G[23] /.test(l)).join(" | "));
+      check(id, !L.some(l => /^G[23] .*\bR-?[\d.]+/.test(l)), "no R arcs anywhere");
+      break;
+    case "05_pocket_half_circles_ij":
+      check(id, L.some(l => /^G2 X25 I-5( F800)?$/.test(l)) && L.some(l => /^G2 X35 I5( F800)?$/.test(l)) && L.some(l => /^G2 X20 I-10$/.test(l)), "180 degree arcs as G2 with X and incremental I (J0 omitted): " + L.filter(l => /^G[23] /.test(l)).join(" | "));
+      check(id, !L.some(l => /^G[23] .*\bR-?[\d.]+/.test(l)), "no R arcs anywhere");
+      break;
     case "06_pocket_same_tool_rpm_change": {
       check(id, L.filter(l => /^M3 S/.test(l)).length === 2 && L.some(l => l === "M3 S14000"), "RPM change -> second M3");
       check(id, !L.some(l => /TOOL CHANGE ROUTINE/.test(l)), "no tool change between same-tool ops");
