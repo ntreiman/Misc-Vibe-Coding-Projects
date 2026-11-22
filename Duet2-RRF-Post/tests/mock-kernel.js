@@ -90,6 +90,7 @@ function run(cpsPath, job, propertyOverrides, opts) {
     isFile(p) { return !!(opts.existingFiles || []).includes(p); },
     remove(p) { fsOps.push(["remove", p]); },
     moveFile(a, b) { fsOps.push(["move", a, b]); },
+    copyFile(a, b) { fsOps.push(["copy", a, b]); },
     getFolderPath(p) { return p.replace(/[\\/][^\\/]*$/, ""); },
     getFilename(p) { return p.replace(/^.*[\\/]/, ""); },
     getCombinedPath(a, b) { return a.replace(/[\\/]$/, "") + "/" + b; },
@@ -144,6 +145,7 @@ function run(cpsPath, job, propertyOverrides, opts) {
     FileSystem, getOutputPath() { return outputPath; },
     redirectToFile(p) { const r = { path: p, lines: [] }; redirected.push(r); target = r.lines; },
     closeRedirection() { target = out; }, isRedirecting() { return target !== out; },
+    executeNoWait(p, a, hide, wd) { fsOps.push(["executeNoWait", p, a, wd]); },
     setWordSeparator(s) { wordSeparator = s; },
     filterText(t, allowed) { let r = ""; for (const ch of String(t)) r += allowed.indexOf(ch) >= 0 ? ch : " "; return r; },
     createFormat, createVariable, createReferenceVariable, createModal,
@@ -244,11 +246,13 @@ function run(cpsPath, job, propertyOverrides, opts) {
   // kernel writes and closes the primary output file, then calls onTerminate()
   fsOps.push(["kernel-wrote", outputPath]);
   if (typeof sandbox.onTerminate === "function") sandbox.onTerminate();
-  if (redirected.length) {
+  const gcodeRedirect = redirected.find(r => /\.gcode$/.test(r.path));
+  const sideFiles = redirected.filter(r => r !== gcodeRedirect).map(r => ({ path: r.path, text: r.lines.join("\n") + "\n" }));
+  if (gcodeRedirect) {
     // the main file only holds the pointer comment; the program is in the redirected file
-    return { text: redirected[0].lines.join("\n") + "\n", lines: redirected[0].lines, mainFileLines: out, redirectedPath: redirected[0].path, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
+    return { text: gcodeRedirect.lines.join("\n") + "\n", lines: gcodeRedirect.lines, mainFileLines: out, redirectedPath: gcodeRedirect.path, sideFiles, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
   }
-  return { text: out.join("\n") + "\n", lines: out, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
+  return { text: out.join("\n") + "\n", lines: out, sideFiles, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
 }
 
 module.exports = { run, makeTool };

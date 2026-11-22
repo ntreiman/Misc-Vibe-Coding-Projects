@@ -115,7 +115,8 @@ const scenarios = [
   { id: "33_descriptive_filename_prefix_program", job: { programName: "1001", sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "program" } },
   { id: "34_descriptive_filename_prefix_operation", job: { sections: [contour, pocket] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "operation" } },
   { id: "35_descriptive_filename_prefix_none", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "none" } },
-  { id: "36_descriptive_filename_rename_method", job: { sections: [spotDrill64] }, props: { descriptiveFileMethod: "rename" }, runOpts: { existingFiles: ["/out/op_1_6.35_flat_end_mill_5000RPM.gcode"] } }
+  { id: "36_descriptive_filename_rename_method", job: { sections: [spotDrill64] }, props: { descriptiveFileMethod: "rename" }, runOpts: { existingFiles: ["/out/op_1_6.35_flat_end_mill_5000RPM.gcode"] } },
+  { id: "37_descriptive_filename_single_file_windows", job: { sections: [spotDrill64] }, props: { descriptiveFileMethod: "rename" }, runOpts: { outputPath: "C:\\Users\\me\\Downloads\\1001.gcode" } }
 ];
 
 // ---------------------------------------------------------------- assertions
@@ -313,7 +314,12 @@ function scenarioChecks(s, res) {
     case "36_descriptive_filename_rename_method":
       check(id, res.redirectedPath === undefined, "no redirection in rename mode");
       check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "full program in the main file");
-      check(id, JSON.stringify(res.fsOps) === JSON.stringify([["kernel-wrote", "/out/1001.gcode"], ["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["move", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"]]), "rename only after the kernel wrote the file (onTerminate): " + JSON.stringify(res.fsOps));
+      check(id, JSON.stringify(res.fsOps) === JSON.stringify([["kernel-wrote", "/out/1001.gcode"], ["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["copy", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["executeNoWait", "/bin/sh", "\"/out/.remove_1001.gcode.sh\"", "/out"]]), "copy after the kernel wrote the file, then background cleanup: " + JSON.stringify(res.fsOps));
+      check(id, res.sideFiles.length === 1 && res.sideFiles[0].path === "/out/.remove_1001.gcode.sh" && res.sideFiles[0].text === "#!/bin/sh\nsleep 3\nrm -f \"/out/1001.gcode\"\nrm -f \"$0\"\n", "cleanup script content: " + JSON.stringify(res.sideFiles));
+      break;
+    case "37_descriptive_filename_single_file_windows":
+      check(id, res.fsOps.some(o => o[0] === "executeNoWait" && o[1] === "cmd.exe" && /\.remove_1001\.gcode\.cmd/.test(o[2])), "cmd.exe cleanup on Windows: " + JSON.stringify(res.fsOps));
+      check(id, res.sideFiles.length === 1 && /^@echo off\nping -n 4 127\.0\.0\.1 >nul\ndel \/q "C:\\Users\\me\\Downloads\\1001\.gcode"\ndel \/q "%~f0"\n$/.test(res.sideFiles[0].text), "cmd script content: " + JSON.stringify(res.sideFiles));
       break;
     case "35_descriptive_filename_prefix_none":
       check(id, res.redirectedPath === "/out/1_6.35_flat_end_mill_5000RPM.gcode", "no prefix: " + res.redirectedPath);

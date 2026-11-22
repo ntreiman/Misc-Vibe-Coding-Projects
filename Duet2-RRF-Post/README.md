@@ -270,11 +270,13 @@ zeros removed. Tool type comes from the Fusion tool library (`flat end mill`, `b
 - **Redirect** (default): output goes to the descriptive file; the file named in the post dialog is still
   created by the kernel and holds one comment line pointing to the real file. Because that stub exists,
   Fusion asks whether to overwrite it on the next post. Upload the descriptive file to the Duet.
-- **Rename at end**: the program is written to the dialog-named file as usual and, in `onTerminate()` (the
-  kernel callback that runs after the output file has been written and closed), that file is renamed to the
-  descriptive name. One file, no overwrite prompt. If the rename fails the post warns and the program stays
-  in the dialog-named file. Keep *Open NC file in editor* unchecked with this method, since Fusion looks for
-  the dialog-named file.
+- **Single file**: the program is written to the dialog-named file as usual. In `onTerminate()` (the kernel
+  callback that runs after the output file has been written and closed) it is copied to the descriptive
+  name, and a tiny background script written next to it (`.remove_<name>.sh`, or `.cmd` on Windows) deletes
+  the dialog-named file 3 seconds later and then itself. The delay exists because Fusion checks that the
+  dialog-named file exists right after the post and reports "failed to post" if it is already gone. Result:
+  one file, no overwrite prompt. If the copy fails the post warns and the program stays in the dialog-named
+  file. Keep *Open NC file in editor* unchecked with this method.
 
 If the descriptive file already exists it is overwritten in both methods.
 
@@ -340,7 +342,7 @@ If the descriptive file already exists it is overwritten in both methods.
 | End program with M0 | off | `M0` runs `stop.g`, idles drives, un-homes axes |
 | Descriptive output file name | on | Write to `op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
 | Descriptive file name prefix | op | op / None / operation name(s) / program name |
-| Descriptive file name method | Redirect | Redirect (second file) / Rename at end (one file, no overwrite prompt) |
+| Descriptive file name method | Redirect | Redirect (second file) / Single file (copy, then remove dialog-named file) |
 
 ### 8- Linear Backlash Compensation
 
