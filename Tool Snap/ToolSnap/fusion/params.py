@@ -110,3 +110,16 @@ def import_rows(design: adsk.fusion.Design, rows: List[ParamRow],
         if r.comment and r.name in created:
             _set_comment(p, r.comment)
     return stats
+
+
+def remove_if_unused(design: adsk.fusion.Design, name: str) -> bool:
+    """Delete a user parameter nothing depends on (used to retire legacy names)."""
+    p = design.userParameters.itemByName(name)
+    if not p:
+        return False
+    try:
+        if p.dependentParameters.count:
+            return False
+        return bool(p.deleteMe())
+    except Exception:  # noqa: BLE001 - never let cleanup break a write
+        return False
