@@ -24,6 +24,8 @@ function makeTool(t) {
 function run(cpsPath, job, propertyOverrides, opts) {
   opts = opts || {};
   const out = [];
+  const redirected = []; // {path, lines}
+  let target = out;
   const warnings = [];
   let errorMsg = null;
   let wordSeparator = " ";
@@ -79,9 +81,16 @@ function run(cpsPath, job, propertyOverrides, opts) {
     (function walk(a) { for (const w of Array.from(a)) { if (isList(w)) walk(w); else if (w !== undefined && w !== null && w !== "") flat.push(String(w)); } })(args);
     return flat.join(wordSeparator);
   }
-  function writeln(s) { out.push(String(s)); }
-  function writeWords() { const t = formatWords(arguments); if (t) out.push(t); }
-  function writeWords2(n, args) { const t = formatWords(args); if (t) out.push(n + wordSeparator + t); }
+  function writeln(s) { target.push(String(s)); }
+  function writeWords() { const t = formatWords(arguments); if (t) target.push(t); }
+  function writeWords2(n, args) { const t = formatWords(args); if (t) target.push(n + wordSeparator + t); }
+  const outputPath = opts.outputPath || "/out/" + (job.programName || "1001") + ".gcode";
+  const FileSystem = {
+    getFolderPath(p) { return p.replace(/[\\/][^\\/]*$/, ""); },
+    getFilename(p) { return p.replace(/^.*[\\/]/, ""); },
+    getCombinedPath(a, b) { return a.replace(/[\\/]$/, "") + "/" + b; },
+    replaceExtension(p, e) { return p.replace(/\.[^.\\/]*$/, "") + "." + e; }
+  };
 
   // ----- job model -----
   const sections = job.sections.map((s, i) => {
@@ -126,8 +135,11 @@ function run(cpsPath, job, propertyOverrides, opts) {
     radiusCompensation: 0,
     setCodePage() {}, spatial(v) { return v; }, toRad(d) { return d * Math.PI / 180; }, toDeg(r) { return r * 180 / Math.PI; },
     localize(s) { return s; }, subst(s) { return s; }, conditional(c, v) { return c ? v : ""; },
-    error(m) { errorMsg = errorMsg || m; out.push("!!! ERROR: " + m); }, warning(m) { warnings.push(m); },
-    writeln, write(s) { out.push(String(s)); }, writeWords, writeWords2, formatWords,
+    error(m) { errorMsg = errorMsg || m; target.push("!!! ERROR: " + m); }, warning(m) { warnings.push(m); },
+    writeln, write(s) { target.push(String(s)); }, writeWords, writeWords2, formatWords,
+    FileSystem, getOutputPath() { return outputPath; },
+    redirectToFile(p) { const r = { path: p, lines: [] }; redirected.push(r); target = r.lines; },
+    closeRedirection() { target = out; }, isRedirecting() { return target !== out; },
     setWordSeparator(s) { wordSeparator = s; },
     filterText(t, allowed) { let r = ""; for (const ch of String(t)) r += allowed.indexOf(ch) >= 0 ? ch : " "; return r; },
     createFormat, createVariable, createReferenceVariable, createModal,
@@ -225,6 +237,10 @@ function run(cpsPath, job, propertyOverrides, opts) {
     sandbox.onSectionEnd();
   }
   if (!errorMsg) sandbox.onClose();
+  if (redirected.length) {
+    // the main file only holds the pointer comment; the program is in the redirected file
+    return { text: redirected[0].lines.join("\n") + "\n", lines: redirected[0].lines, mainFileLines: out, redirectedPath: redirected[0].path, warnings, error: errorMsg, properties: sandbox.properties };
+  }
   return { text: out.join("\n") + "\n", lines: out, warnings, error: errorMsg, properties: sandbox.properties };
 }
 

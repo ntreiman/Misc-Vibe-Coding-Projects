@@ -14,8 +14,8 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.0 $
-  $Date: 2026-11-19 $
+  $R 2.1 $
+  $Date: 2026-11-22 $
 */
 
 description = "Duet 2 Ethernet / RRF 2.05.1 CNC (UltimateRepRapPost fork)";
@@ -107,6 +107,7 @@ properties = {
   writeTools: true,
   writeVersion: true,
   endProgramM0: false,         // emit M0 as the last command. In RRF 2.05.1 M0 runs stop.g, disables all drives and flags every axis as NOT homed
+  descriptiveFileName: false,  // write the program to <program name>_T<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
 
   // 8- Linear Backlash Compensation (unchanged from upstream apart from being OFF by default)
   applyBacklashCompensation: false,
@@ -266,6 +267,11 @@ propertyDefinitions = {
   writeMachine: { title: "Write machine", description: "Machine settings in the header.", group: groupNames[6], type: "boolean" },
   writeTools: { title: "Write tool list", description: "Tool list in the header.", group: groupNames[6], type: "boolean" },
   writeVersion: { title: "Write version", description: "Post version in the header.", group: groupNames[6], type: "boolean" },
+  descriptiveFileName: {
+    title: "Descriptive output file name (tool number, diameter, type, RPM)",
+    description: "Writes the program to <program name>_T<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode in the output folder, one block per tool in order of use, e.g. 1001_T1_6_spot_drill_5000RPM.gcode. The file named in the post dialog is still created and contains a single comment pointing to the real file (the Fusion kernel cannot rename its own output).",
+    group: groupNames[6], type: "boolean"
+  },
   endProgramM0: {
     title: "End program with M0 - CAUTION",
     description: "In RRF 2.05.1 M0 from the job file runs stop.g (if present), switches drives to idle and flags ALL axes as not homed. Leave off to let the file end normally with the motors holding position.",
@@ -326,6 +332,7 @@ var sequenceNumber;
 var currentWorkOffset;        // 1..9, WCS currently selected in the output
 var atSafeMachineZ = false;   // true right after a G53 retract to safeMachineZ (XY may then move first)
 var spindleState = { rpm: 0, clockwise: true, on: false };
+var redirectedOutput = false; // true while output goes to the descriptive file name
 var motionBox = {
   mBox: [[null, null], [null, null], [null, null]],
   set: function (axis, v) {
@@ -531,6 +538,41 @@ function writeToolCall(toolNumber) {
   }
 }
 
+/** Build "<program>_T1_6_spot_drill_5000RPM[_T2_...]" from the tools in order of first use. */
+function buildDescriptiveFileName() {
+  var safe = function (text) {
+    return String(text).toLowerCase().replace(/[^a-z0-9.\-]+/g, "_").replace(/^_+|_+$/g, "");
+  };
+  var diaFormat = createFormat({ decimals: (unit == MM ? 3 : 4), forceDecimal: false });
+  var seen = {};
+  var parts = [];
+  for (var i = 0; i < getNumberOfSections(); ++i) {
+    var t = getSection(i).getTool();
+    if (seen[t.number]) {
+      continue;
+    }
+    seen[t.number] = true;
+    parts.push("T" + toolFormat.format(t.number) + "_" + diaFormat.format(t.diameter) + "_" +
+      safe(getToolTypeName(t.type)) + "_" + rpmFormat.format(t.spindleRPM) + "RPM");
+  }
+  var base = safe(programName ? programName : "program");
+  return (base ? base + "_" : "") + parts.join("_");
+}
+
+/** Redirect all output to the descriptive file name. Leaves a one-line pointer in the file Fusion named. */
+function startDescriptiveOutput() {
+  if (typeof redirectToFile != "function" || typeof getOutputPath != "function" || typeof FileSystem == "undefined") {
+    warning(localize("Descriptive file name is not available in this post kernel. Writing to the normal output file."));
+    return;
+  }
+  var name = buildDescriptiveFileName() + "." + extension;
+  var folder = FileSystem.getFolderPath(getOutputPath());
+  var path = FileSystem.getCombinedPath(folder, name);
+  writeln("; Program written to " + name + " (post property 'Descriptive output file name')");
+  redirectToFile(path);
+  redirectedOutput = true;
+}
+
 // ---------------------------------------------------------------------------
 // program start
 // ---------------------------------------------------------------------------
@@ -565,6 +607,10 @@ function onOpen() {
       error(localize("Multi-axis toolpaths are not supported by this post."));
       return;
     }
+  }
+
+  if (properties.descriptiveFileName) {
+    startDescriptiveOutput();
   }
 
   setupBacklashCompensation();
@@ -1057,6 +1103,10 @@ function onClose() {
   writeComment(" on X: " + motionBox.text(0));
   writeComment(" on Y: " + motionBox.text(1));
   writeComment(" on Z: " + motionBox.text(2));
+  if (redirectedOutput) {
+    closeRedirection();
+    redirectedOutput = false;
+  }
 }
 
 // ---------------------------------------------------------------------------

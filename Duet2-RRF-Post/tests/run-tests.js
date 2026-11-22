@@ -108,7 +108,10 @@ const scenarios = [
   { id: "26_sequence_numbers", job: { sections: [contour] }, props: { showSequenceNumbers: true } },
   { id: "27_backlash_steps", job: { sections: [adaptive] }, props: { applyBacklashCompensation: true, backlashCompensationMethod: "steps", measuredBacklashXFor1mm: 0.05, measuredBacklashXFor10mm: 0.1, measuredBacklashYFor1mm: 0.05, measuredBacklashYFor10mm: 0.1 } },
   { id: "28_backlash_distance", job: { sections: [adaptive] }, props: { applyBacklashCompensation: true, backlashCompensationMethod: "distance", measuredBacklashXFor1mm: 0.05, measuredBacklashXFor10mm: 0.1 } },
-  { id: "29_corner_probe_on_start", job: { sections: [contour] }, props: { probe3dOnStart: true } }
+  { id: "29_corner_probe_on_start", job: { sections: [contour] }, props: { probe3dOnStart: true } },
+  { id: "30_descriptive_filename_single_tool", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true } },
+  { id: "31_descriptive_filename_multi_tool", job: { programName: "Bracket v3", sections: [spotDrill64, contour, pocket, ccwOp_T3] }, props: { descriptiveFileName: true, safeMachineZ: -1 } },
+  { id: "32_descriptive_filename_off_by_default", job: { sections: [spotDrill64] }, props: {} }
 ];
 
 // ---------------------------------------------------------------- assertions
@@ -288,6 +291,17 @@ function scenarioChecks(s, res) {
       break; }
     case "26_sequence_numbers": check(id, res.lines.some(l => /^N\d+ G0 Z15$/.test(l) || /^N\d+ G90 G0 Z15$/.test(l)) && res.lines.filter(l => /^N\d+ /.test(l)).length > 20, "sequence numbers present with spaces"); break;
     case "27_backlash_steps": check(id, L.some(l => /^M92 X/.test(l)), "M92 compensation emitted"); break;
+    case "30_descriptive_filename_single_tool":
+      check(id, res.redirectedPath === "/out/1001_T1_6.35_flat_end_mill_5000RPM.gcode", "redirected path: " + res.redirectedPath);
+      check(id, res.mainFileLines.length === 1 && /Program written to 1001_T1_6\.35_flat_end_mill_5000RPM\.gcode/.test(res.mainFileLines[0]), "main file holds only the pointer: " + JSON.stringify(res.mainFileLines));
+      check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "full program in the redirected file");
+      break;
+    case "31_descriptive_filename_multi_tool":
+      check(id, res.redirectedPath === "/out/bracket_v3_T1_6.35_flat_end_mill_5000RPM_T2_6_flat_end_mill_12000RPM_T3_3_flat_end_mill_18000RPM.gcode", "multi-tool path: " + res.redirectedPath);
+      break;
+    case "32_descriptive_filename_off_by_default":
+      check(id, res.redirectedPath === undefined, "no redirection by default");
+      break;
     case "29_corner_probe_on_start": check(id, idx(/CORNER PROBE BEGINS/) < idx(/^G0 /) || idx(/CORNER PROBE BEGINS/) < idx(/^G90 G0/), "corner probe before first positioning"); break;
   }
 }

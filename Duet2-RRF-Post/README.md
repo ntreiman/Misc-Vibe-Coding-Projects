@@ -241,6 +241,28 @@ error: there is no rigid tapping on this firmware and expansion would rely on sp
 - **Inches**: `G20` is written and all coordinates follow Fusion. Enter *Safe machine Z* and the tool change
   position in inches too in that case.
 
+## Descriptive output file name
+
+With the property **Descriptive output file name** checked, the program is written to
+
+```
+<program name>_T<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode
+```
+
+in the output folder, with one `T..._..._..._...RPM` block per tool in order of first use. Examples:
+
+- `1001_T1_6_spot_drill_5000RPM.gcode` (your spot-drill job)
+- `bracket_v3_T1_6.35_flat_end_mill_5000RPM_T2_6_flat_end_mill_12000RPM.gcode` (two tools)
+
+The program name is the *Program name or number* field of the post dialog, lower-cased, with anything other
+than letters, digits, `.` and `-` turned into `_`. Diameter is in program units (mm or inch) with trailing
+zeros removed. Tool type comes from the Fusion tool library (`flat end mill`, `ball end mill`, `spot drill`,
+`drill`, `chamfer mill`, ...). RPM is the spindle speed of the first operation that uses the tool.
+
+The Fusion post kernel cannot rename its own output file, so the file named in the post dialog is still
+created; it contains one comment line pointing to the real file. Upload the descriptive one to the Duet. If
+the descriptive file already exists it is overwritten.
+
 ## Properties reference
 
 ### 1- Safe Z and Retracts
@@ -301,6 +323,7 @@ error: there is no rigid tapping on this firmware and expansion would rely on sp
 | Radius arcs | on | `R` instead of `I`/`J` |
 | Write machine / tool list / version | on | Header comments |
 | End program with M0 | off | `M0` runs `stop.g`, idles drives, un-homes axes |
+| Descriptive output file name | off | Write to `<program>_T<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
 
 ### 8- Linear Backlash Compensation
 
