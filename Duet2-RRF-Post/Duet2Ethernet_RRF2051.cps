@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.9 $
+  $R 3.0 $
   $Date: 2026-11-22 $
 */
 
@@ -102,7 +102,6 @@ properties = {
   showSequenceNumbers: false,
   sequenceNumberStart: 10,
   sequenceNumberIncrement: 5,
-  useRadius: true,             // arcs with R instead of I/J
   writeMachine: true,
   writeTools: true,
   writeVersion: true,
@@ -266,7 +265,6 @@ propertyDefinitions = {
   showSequenceNumbers: { title: "Use sequence numbers", description: "N-numbers on every block.", group: groupNames[6], type: "boolean" },
   sequenceNumberStart: { title: "Start sequence number", description: "First N-number.", group: groupNames[6], type: "integer" },
   sequenceNumberIncrement: { title: "Sequence number increment", description: "N-number increment.", group: groupNames[6], type: "integer" },
-  useRadius: { title: "Radius arcs", description: "Arcs with R instead of I/J. Arcs over 90 degrees are split.", group: groupNames[6], type: "boolean" },
   writeMachine: { title: "Write machine", description: "Machine settings in the header.", group: groupNames[6], type: "boolean" },
   writeTools: { title: "Write tool list", description: "Tool list in the header.", group: groupNames[6], type: "boolean" },
   writeVersion: { title: "Write version", description: "Post version in the header.", group: groupNames[6], type: "boolean" },
@@ -332,7 +330,6 @@ var nFormat = createFormat({ prefix: "N", decimals: 0 });
 var gFormat = createFormat({ prefix: "G", decimals: 1 });
 var mFormat = createFormat({ prefix: "M", decimals: 0 });
 var xyzFormat = createFormat({ decimals: (unit == MM ? 3 : 4), forceDecimal: false });
-var rFormat = xyzFormat; // radius
 var feedFormat = createFormat({ decimals: (unit == MM ? 0 : 1), forceDecimal: false });
 var toolFormat = createFormat({ decimals: 0 });
 var rpmFormat = createFormat({ decimals: 0 });
@@ -712,9 +709,6 @@ function onTerminate() {
 // program start
 // ---------------------------------------------------------------------------
 function onOpen() {
-  if (properties.useRadius) {
-    maximumCircularSweep = toRad(90); // avoid potential center calculation errors for CNC
-  }
   // Words are always space separated: RRF 2.05.1 splits several commands on one line (e.g. "G53 G0 Z5", "G90 G0 X0 Y0")
   // only at a space followed by G or M. Without spaces the second command would be swallowed as a parameter.
   setWordSeparator(" ");
@@ -1108,38 +1102,21 @@ function onCircular(clockwise, cx, cy, cz, x, y, z, feed) {
   }
   var start = getCurrentPosition();
 
+  // Arcs are always written with I/J centre offsets (incremental from the start point), never with R.
+  // RRF 2.05.1 DoArcMove() places the centre on the wrong side of the chord for a positive R, so an R arc
+  // is executed as the long (>180 degree) arc in the wrong direction. I/J is handled exactly.
+  if (getCircularPlane() != PLANE_XY) {
+    linearize(tolerance);
+    return;
+  }
   if (isFullCircle()) {
-    if (properties.useRadius || isHelical()) { // radius mode does not support full arcs
+    if (isHelical()) {
       linearize(tolerance);
       return;
     }
-    switch (getCircularPlane()) {
-      case PLANE_XY:
-        writeBlock(gAbsIncModal.format(90), gMotionModal.format(clockwise ? 2 : 3), iOutput.format(cx - start.x, 0), jOutput.format(cy - start.y, 0), feedOutput.format(feed));
-        break;
-      default:
-        linearize(tolerance);
-    }
-  } else if (!properties.useRadius) {
-    switch (getCircularPlane()) {
-      case PLANE_XY:
-        writeBlock(gAbsIncModal.format(90), gMotionModal.format(clockwise ? 2 : 3), xOutput.format(x), yOutput.format(y), zOutput.format(z), iOutput.format(cx - start.x, 0), jOutput.format(cy - start.y, 0), feedOutput.format(feed));
-        break;
-      default:
-        linearize(tolerance);
-    }
-  } else { // use radius mode
-    var r = getCircularRadius();
-    if (toDeg(getCircularSweep()) > (180 + 1e-9)) {
-      r = -r; // allow up to <360 deg arcs
-    }
-    switch (getCircularPlane()) {
-      case PLANE_XY:
-        writeBlock(gMotionModal.format(clockwise ? 2 : 3), xOutput.format(x), yOutput.format(y), zOutput.format(z), "R" + rFormat.format(r), feedOutput.format(feed));
-        break;
-      default:
-        linearize(tolerance);
-    }
+    writeBlock(gMotionModal.format(clockwise ? 2 : 3), iOutput.format(cx - start.x, 0), jOutput.format(cy - start.y, 0), feedOutput.format(feed));
+  } else {
+    writeBlock(gMotionModal.format(clockwise ? 2 : 3), xOutput.format(x), yOutput.format(y), zOutput.format(z), iOutput.format(cx - start.x, 0), jOutput.format(cy - start.y, 0), feedOutput.format(feed));
   }
   trackMotion(x, y, z);
   // keep the backlash bookkeeping in step with the arc end point (steps method only; distance method linearizes above)

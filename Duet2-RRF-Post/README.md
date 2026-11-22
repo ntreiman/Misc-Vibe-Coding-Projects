@@ -233,8 +233,12 @@ error: there is no rigid tapping on this firmware and expansion would rely on sp
   computer* compensation in the Fusion operation (the default).
 - **No coolant / dust collector output.** Upstream had the `M7`/`M8`/`M9` output commented out; the property
   was removed.
-- **Arcs**: `G2`/`G3` with `R` (default) or `I`/`J`, XY plane only; other planes and full circles in R mode are
-  linearised. Helical moves are allowed.
+- **Arcs**: `G2`/`G3` with incremental `I`/`J` centre offsets only, XY plane, helical Z allowed; other planes
+  and helical full circles are linearised. **Never `R` arcs on this firmware**: RRF 2.05.1's `DoArcMove()`
+  puts the centre on the wrong side of the chord for a positive `R`, so an `R` arc runs as the long (>180°)
+  arc the wrong way round. A circle split into four 90° `R` arcs comes out as a four-lobed clover, a slot end
+  bulges. (Upstream and this post up to 2.9 used `R` arcs by default; later RRF 3.x versions select the
+  short arc.)
 - **Linear backlash compensation**: upstream's feature is kept unchanged in its two methods but is **off by
   default**. The upstream "flush accumulated compensation" routines were removed (see CHANGELOG).
 - **Motion box**: the comment block at the end of the file lists the commanded min/max per axis in the
@@ -341,7 +345,6 @@ If the descriptive file already exists it is overwritten in both methods.
 | Property | Default | Meaning |
 | --- | --- | --- |
 | Use sequence numbers, start, increment | off / 10 / 5 | `N` words |
-| Radius arcs | on | `R` instead of `I`/`J` |
 | Write machine / tool list / version | on | Header comments |
 | End program with M0 | off | `M0` runs `stop.g`, idles drives, un-homes axes |
 | Descriptive output file name | on | Write to `op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |

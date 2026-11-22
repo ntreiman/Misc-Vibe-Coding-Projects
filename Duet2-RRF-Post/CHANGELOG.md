@@ -8,6 +8,16 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 3.0 (2026-11-22)
+
+- **Arcs are now always written with incremental `I`/`J` centre offsets; the `Radius arcs` property and the
+  `R` code path are removed.** RRF 2.05.1 `DoArcMove()` computes the centre for a positive `R` on the wrong
+  side of the chord (`iParam = dx/2 + dy*h/d`, `jParam = dy/2 - dx*h/d`, with the sign only flipped for
+  clockwise), which is the long-arc centre for both directions. Every `R` arc therefore ran as a >180°
+  arc in the wrong direction. With the kernel's 90° sweep limit in R mode this turned circles into
+  four-lobed clovers and bulged slot ends on the user's machine. Upstream had the same default. The `G90`
+  prefix on arc lines was dropped (modal, already set).
+
 ## 2.9 (2026-11-22)
 
 - Single-file method: the cleanup script is now written at the start of the post (`onOpen()`) instead of in
