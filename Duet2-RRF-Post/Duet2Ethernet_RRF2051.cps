@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.2 $
+  $R 2.3 $
   $Date: 2026-11-22 $
 */
 
@@ -107,8 +107,8 @@ properties = {
   writeTools: true,
   writeVersion: true,
   endProgramM0: false,         // emit M0 as the last command. In RRF 2.05.1 M0 runs stop.g, disables all drives and flags every axis as NOT homed
-  descriptiveFileName: false,  // write the program to [prefix_]T<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
-  descriptiveFileNamePrefix: "none", // "none", "operation" (operation names), "program" (program name/number)
+  descriptiveFileName: false,  // write the program to op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
+  descriptiveFileNamePrefix: "op", // "op" (literal, before every tool number), "none", "operation" (operation names), "program" (program name/number)
 
   // 8- Linear Backlash Compensation (unchanged from upstream apart from being OFF by default)
   applyBacklashCompensation: false,
@@ -270,14 +270,15 @@ propertyDefinitions = {
   writeVersion: { title: "Write version", description: "Post version in the header.", group: groupNames[6], type: "boolean" },
   descriptiveFileName: {
     title: "Descriptive output file name (tool number, diameter, type, RPM)",
-    description: "Writes the program to T<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode in the output folder, one block per tool in order of use, e.g. T1_6_spot_drill_5000RPM.gcode, optionally with a prefix (see 'Descriptive file name prefix'). The file named in the post dialog is still created and contains a single comment pointing to the real file (the Fusion kernel cannot rename its own output).",
+    description: "Writes the program to op_<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode in the output folder, one block per tool in order of use, e.g. op_1_6_spot_drill_5000RPM.gcode (see 'Descriptive file name prefix' for the prefix). The file named in the post dialog is still created and contains a single comment pointing to the real file (the Fusion kernel cannot rename its own output).",
     group: groupNames[6], type: "boolean"
   },
   descriptiveFileNamePrefix: {
     title: "Descriptive file name prefix",
-    description: "What goes in front of the tool blocks when 'Descriptive output file name' is on: nothing, the Fusion operation name(s), or the program name/number from the post dialog.",
+    description: "What goes in front of the tool number when 'Descriptive output file name' is on: 'op' before every tool number (op_1_..._op_2_...), nothing, the Fusion operation name(s), or the program name/number from the post dialog.",
     group: groupNames[6], type: "enum",
     values: [
+      { title: "op (before every tool number)", id: "op" },
       { title: "None", id: "none" },
       { title: "Operation name(s)", id: "operation" },
       { title: "Program name/number", id: "program" }
@@ -549,7 +550,7 @@ function writeToolCall(toolNumber) {
   }
 }
 
-/** Build "[prefix_]T1_6_spot_drill_5000RPM[_T2_...]" from the tools in order of first use. */
+/** Build "op_1_6_spot_drill_5000RPM[_op_2_...]" (or another prefix) from the tools in order of first use. */
 function buildDescriptiveFileName() {
   var safe = function (text) {
     return String(text).toLowerCase().replace(/[^a-z0-9.\-]+/g, "_").replace(/^_+|_+$/g, "");
@@ -563,7 +564,8 @@ function buildDescriptiveFileName() {
       continue;
     }
     seen[t.number] = true;
-    parts.push("T" + toolFormat.format(t.number) + "_" + diaFormat.format(t.diameter) + "_" +
+    parts.push((properties.descriptiveFileNamePrefix == "op" ? "op_" : "") +
+      toolFormat.format(t.number) + "_" + diaFormat.format(t.diameter) + "_" +
       safe(getToolTypeName(t.type)) + "_" + rpmFormat.format(t.spindleRPM) + "RPM");
   }
   var base = "";

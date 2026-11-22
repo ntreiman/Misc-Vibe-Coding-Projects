@@ -1,6 +1,6 @@
 # Validation report
 
-Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.2 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
+Date: 2026-11-22. Post: `Duet2Ethernet_RRF2051.cps` 2.3 (first written 2026-11-19 for 2.0). Firmware reference: RepRapFirmware 2.05.1 source
 and the Duet G-code dictionary.
 
 ## What was verified
@@ -41,7 +41,7 @@ variable/modal, section, tool, cycle expansion and motion callbacks the post use
 behaviour of the kernel. **It is not the Autodesk kernel**; number formatting edge cases, cycle expansion
 details and the kernel's position model are approximations.
 
-`node tests/run-tests.js` runs 34 scenarios and 34/34 pass. Each scenario's output is in `tests/output/`
+`node tests/run-tests.js` runs 35 scenarios and 35/35 pass. Each scenario's output is in `tests/output/`
 (not committed) and five headline outputs are in `examples/`.
 
 | # | Scenario | What it checks |
@@ -69,8 +69,8 @@ details and the kernel's position model are approximations.
 | 26 | Sequence numbers | `N` words, spaces kept |
 | 27 / 28 | Backlash compensation steps / distance on the zigzag | `M92` emitted / runs |
 | 29 | Corner probe at program start | probe before first positioning |
-| 30 / 31 / 32 | Descriptive output file name: one tool, three tools, off | redirected to `T1_6.35_flat_end_mill_5000RPM.gcode` with the whole program and a one-line pointer in the dialog-named file / `T1_..._T2_..._T3_...gcode` / no redirection |
-| 33 / 34 | Descriptive file name prefix: program name / operation names | `1001_T1_...` / `2d_contour1_2d_pocket1_T2_...` |
+| 30 / 31 / 32 | Descriptive output file name: one tool, three tools, off | redirected to `op_1_6.35_flat_end_mill_5000RPM.gcode` with the whole program and a one-line pointer in the dialog-named file / `op_1_..._op_2_..._op_3_...gcode` / no redirection |
+| 33 / 34 / 35 | Descriptive file name prefix: program name / operation names / none | `1001_1_...` / `2d_contour1_2d_pocket1_2_...` / `1_...` |
 
 Checks applied to every scenario's output: no `G28` (unless enabled), no `M0` (unless enabled), no
 `M1`/`M2`/`M6`, no bare `S` line, no `G10 L2`, no `G60`/`R0`, no `G40`-`G43`, no `G8x`/`G98`/`G99`, no lone

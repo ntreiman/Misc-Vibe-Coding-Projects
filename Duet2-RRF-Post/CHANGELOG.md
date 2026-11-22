@@ -8,11 +8,13 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
-## 2.2 (2026-11-22)
+## 2.3 (2026-11-22)
 
-- Descriptive file name no longer starts with the program number by default. New enum **Descriptive file
-  name prefix**: None (default), Operation name(s), Program name/number. Confirmed working in Fusion 360
-  (output `1001_T0_3.175_flat_end_mill_18000RPM.gcode` with 2.1).
+- Descriptive file name is now `op_<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode` by default
+  (literal `op` before every tool number so files sort in tool order; the `T` letter is dropped). New enum
+  **Descriptive file name prefix**: op (default), None, Operation name(s), Program name/number. The 2.1
+  behaviour (program number first) was confirmed working in Fusion 360
+  (`1001_T0_3.175_flat_end_mill_18000RPM.gcode`) before being changed on request.
 
 ## 2.1 (2026-11-22)
 
