@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.7 $
+  $R 2.8 $
   $Date: 2026-11-22 $
 */
 
@@ -110,6 +110,7 @@ properties = {
   descriptiveFileName: true,   // write the program to op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
   descriptiveFileNamePrefix: "op", // "op" (literal, before every tool number), "none", "operation" (operation names), "program" (program name/number)
   descriptiveFileMethod: "redirect", // "redirect": write a second file, keep the dialog-named file as a pointer. "rename": rename the dialog-named file at the end (one file, no overwrite prompt)
+  descriptiveFileNameRun: 0,   // > 0 appends _run<n> to the descriptive name (set by the Batch Post by Tool add-in when a tool is used in more than one run)
 
   // 8- Linear Backlash Compensation (unchanged from upstream apart from being OFF by default)
   applyBacklashCompensation: false,
@@ -282,6 +283,11 @@ propertyDefinitions = {
       { title: "Redirect (second file, keeps dialog-named file)", id: "redirect" },
       { title: "Single file (copy, then remove dialog-named file)", id: "rename" }
     ]
+  },
+  descriptiveFileNameRun: {
+    title: "Descriptive file name run number",
+    description: "0 = no suffix. A value above 0 appends _run<n> to the descriptive file name. The Batch Post by Tool add-in sets this when the same tool is used in more than one consecutive run of operations, so the runs do not overwrite each other.",
+    group: groupNames[6], type: "integer"
   },
   descriptiveFileNamePrefix: {
     title: "Descriptive file name prefix",
@@ -594,7 +600,8 @@ function buildDescriptiveFileName() {
     }
     base = names.join("_");
   }
-  return (base ? base + "_" : "") + parts.join("_");
+  var run = parseInt(properties.descriptiveFileNameRun, 10);
+  return (base ? base + "_" : "") + parts.join("_") + ((run > 0) ? "_run" + run : "");
 }
 
 function descriptiveFilePath() {

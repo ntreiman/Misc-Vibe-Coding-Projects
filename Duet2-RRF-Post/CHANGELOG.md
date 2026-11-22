@@ -8,6 +8,15 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 2.8 (2026-11-22)
+
+- New integer property **Descriptive file name run number** (default 0): > 0 appends `_run<n>` to the
+  descriptive file name. Used by the new `BatchPostByTool` Fusion add-in so that a tool used in two separate
+  runs of a setup does not overwrite its first file.
+- New `BatchPostByTool/` add-in (separate README): posts every consecutive run of same-tool operations of a
+  setup to its own `op_<tool>_..._RPM.gcode` through the Fusion API, forcing the descriptive single-file
+  naming via `PostProcessInput.postProperties`.
+
 ## 2.7 (2026-11-22)
 
 - Single-file method reworked: `onTerminate()` now **copies** the finished output to the descriptive name
