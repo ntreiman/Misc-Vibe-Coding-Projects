@@ -8,6 +8,12 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 2.5 (2026-11-22)
+
+- New enum **Descriptive file name method**: Redirect (default, as before) or Rename at end. Rename writes
+  the program to the dialog-named file and moves it to the descriptive name with `FileSystem.moveFile()` as
+  the last action of `onClose()`, so only one file remains and Fusion stops asking to overwrite the stub.
+
 ## 2.4 (2026-11-22)
 
 - **Descriptive output file name** is now on by default.

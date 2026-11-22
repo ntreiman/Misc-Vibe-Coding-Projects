@@ -114,7 +114,8 @@ const scenarios = [
   { id: "32_descriptive_filename_can_be_disabled", job: { sections: [spotDrill64] }, props: { descriptiveFileName: false } },
   { id: "33_descriptive_filename_prefix_program", job: { programName: "1001", sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "program" } },
   { id: "34_descriptive_filename_prefix_operation", job: { sections: [contour, pocket] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "operation" } },
-  { id: "35_descriptive_filename_prefix_none", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "none" } }
+  { id: "35_descriptive_filename_prefix_none", job: { sections: [spotDrill64] }, props: { descriptiveFileName: true, descriptiveFileNamePrefix: "none" } },
+  { id: "36_descriptive_filename_rename_method", job: { sections: [spotDrill64] }, props: { descriptiveFileMethod: "rename" }, runOpts: { existingFiles: ["/out/op_1_6.35_flat_end_mill_5000RPM.gcode"] } }
 ];
 
 // ---------------------------------------------------------------- assertions
@@ -309,6 +310,12 @@ function scenarioChecks(s, res) {
     case "34_descriptive_filename_prefix_operation":
       check(id, res.redirectedPath === "/out/2d_contour1_2d_pocket1_2_6_flat_end_mill_12000RPM.gcode", "operation prefix: " + res.redirectedPath);
       break;
+    case "36_descriptive_filename_rename_method":
+      check(id, res.redirectedPath === undefined, "no redirection in rename mode");
+      check(id, L.filter(l => /^G1 Z-0\.508/.test(l)).length === 64, "full program in the main file");
+      check(id, JSON.stringify(res.fsOps) === JSON.stringify([["remove", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"], ["move", "/out/1001.gcode", "/out/op_1_6.35_flat_end_mill_5000RPM.gcode"]]), "existing target removed then main file moved: " + JSON.stringify(res.fsOps));
+      check(id, /ON Z/.test(L[L.length - 1]), "rename happens after the last line is written");
+      break;
     case "35_descriptive_filename_prefix_none":
       check(id, res.redirectedPath === "/out/1_6.35_flat_end_mill_5000RPM.gcode", "no prefix: " + res.redirectedPath);
       break;
@@ -325,7 +332,7 @@ const report = [];
 for (const s of scenarios) {
   const before = problems.length;
   let res;
-  try { res = run(CPS, s.job, s.props); } catch (e) { problems.push(s.id + ": EXCEPTION " + (e.stack || e)); report.push([s.id, "EXCEPTION"]); fail++; continue; }
+  try { res = run(CPS, s.job, s.props, s.runOpts); } catch (e) { problems.push(s.id + ": EXCEPTION " + (e.stack || e)); report.push([s.id, "EXCEPTION"]); fail++; continue; }
   fs.writeFileSync(path.join(OUT, s.id + ".gcode"), res.text);
   if (s.example) fs.writeFileSync(path.join(EXAMPLES, s.example), res.text);
   if (s.expectError) {
