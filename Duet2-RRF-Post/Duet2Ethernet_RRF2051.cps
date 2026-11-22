@@ -14,7 +14,7 @@
   This file is a modified version of UltimateRRPost.cps R1.5 (2021-03-17) by Bruce Royce.
   See CHANGELOG.md next to this file for the list of changes and the reasons for them.
 
-  $R 2.4 $
+  $R 2.5 $
   $Date: 2026-11-22 $
 */
 
@@ -109,6 +109,7 @@ properties = {
   endProgramM0: false,         // emit M0 as the last command. In RRF 2.05.1 M0 runs stop.g, disables all drives and flags every axis as NOT homed
   descriptiveFileName: true,   // write the program to op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode (one block per tool)
   descriptiveFileNamePrefix: "op", // "op" (literal, before every tool number), "none", "operation" (operation names), "program" (program name/number)
+  descriptiveFileMethod: "redirect", // "redirect": write a second file, keep the dialog-named file as a pointer. "rename": rename the dialog-named file at the end (one file, no overwrite prompt)
 
   // 8- Linear Backlash Compensation (unchanged from upstream apart from being OFF by default)
   applyBacklashCompensation: false,
@@ -272,6 +273,15 @@ propertyDefinitions = {
     title: "Descriptive output file name (tool number, diameter, type, RPM)",
     description: "Writes the program to op_<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode in the output folder, one block per tool in order of use, e.g. op_1_6_spot_drill_5000RPM.gcode (see 'Descriptive file name prefix' for the prefix). The file named in the post dialog is still created and contains a single comment pointing to the real file (the Fusion kernel cannot rename its own output).",
     group: groupNames[6], type: "boolean"
+  },
+  descriptiveFileMethod: {
+    title: "Descriptive file name method",
+    description: "Redirect (default): the program is written to the descriptive file and the file named in the post dialog is kept with a one-line pointer, so Fusion asks to overwrite it on the next post. Rename: the program is written to the dialog-named file as usual and that file is renamed to the descriptive name at the very end, leaving one file and no overwrite prompt. Rename depends on the post kernel allowing its open output file to be renamed (works on macOS, may fail on Windows); keep 'Open NC file in editor' unchecked with it.",
+    group: groupNames[6], type: "enum",
+    values: [
+      { title: "Redirect (second file, keeps dialog-named file)", id: "redirect" },
+      { title: "Rename at end (one file, no overwrite prompt)", id: "rename" }
+    ]
   },
   descriptiveFileNamePrefix: {
     title: "Descriptive file name prefix",
@@ -585,18 +595,47 @@ function buildDescriptiveFileName() {
   return (base ? base + "_" : "") + parts.join("_");
 }
 
+function descriptiveFilePath() {
+  var name = buildDescriptiveFileName() + "." + extension;
+  var folder = FileSystem.getFolderPath(getOutputPath());
+  return FileSystem.getCombinedPath(folder, name);
+}
+
 /** Redirect all output to the descriptive file name. Leaves a one-line pointer in the file Fusion named. */
 function startDescriptiveOutput() {
   if (typeof redirectToFile != "function" || typeof getOutputPath != "function" || typeof FileSystem == "undefined") {
     warning(localize("Descriptive file name is not available in this post kernel. Writing to the normal output file."));
     return;
   }
-  var name = buildDescriptiveFileName() + "." + extension;
-  var folder = FileSystem.getFolderPath(getOutputPath());
-  var path = FileSystem.getCombinedPath(folder, name);
-  writeln("; Program written to " + name + " (post property 'Descriptive output file name')");
+  if (properties.descriptiveFileMethod == "rename") {
+    return; // handled at the end of onClose by finishDescriptiveOutput()
+  }
+  var path = descriptiveFilePath();
+  writeln("; Program written to " + FileSystem.getFilename(path) + " (post property 'Descriptive output file name')");
   redirectToFile(path);
   redirectedOutput = true;
+}
+
+/** Rename method: move the dialog-named output file to the descriptive name. Must be the last thing the post does. */
+function finishDescriptiveOutput() {
+  if (redirectedOutput) {
+    closeRedirection();
+    redirectedOutput = false;
+    return;
+  }
+  if (properties.descriptiveFileName && properties.descriptiveFileMethod == "rename" &&
+      typeof getOutputPath == "function" && typeof FileSystem != "undefined") {
+    var src = getOutputPath();
+    var dest = descriptiveFilePath();
+    try {
+      if (FileSystem.isFile(dest)) {
+        FileSystem.remove(dest);
+      }
+      FileSystem.moveFile(src, dest);
+    } catch (e) {
+      warning(localize("Could not rename the output file to the descriptive name. The program is in the dialog-named file. Use the 'Redirect' method on this platform."));
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1129,10 +1168,7 @@ function onClose() {
   writeComment(" on X: " + motionBox.text(0));
   writeComment(" on Y: " + motionBox.text(1));
   writeComment(" on Z: " + motionBox.text(2));
-  if (redirectedOutput) {
-    closeRedirection();
-    redirectedOutput = false;
-  }
+  finishDescriptiveOutput(); // keep last
 }
 
 // ---------------------------------------------------------------------------

@@ -85,7 +85,11 @@ function run(cpsPath, job, propertyOverrides, opts) {
   function writeWords() { const t = formatWords(arguments); if (t) target.push(t); }
   function writeWords2(n, args) { const t = formatWords(args); if (t) target.push(n + wordSeparator + t); }
   const outputPath = opts.outputPath || "/out/" + (job.programName || "1001") + ".gcode";
+  const fsOps = [];
   const FileSystem = {
+    isFile(p) { return !!(opts.existingFiles || []).includes(p); },
+    remove(p) { fsOps.push(["remove", p]); },
+    moveFile(a, b) { fsOps.push(["move", a, b]); },
     getFolderPath(p) { return p.replace(/[\\/][^\\/]*$/, ""); },
     getFilename(p) { return p.replace(/^.*[\\/]/, ""); },
     getCombinedPath(a, b) { return a.replace(/[\\/]$/, "") + "/" + b; },
@@ -239,9 +243,9 @@ function run(cpsPath, job, propertyOverrides, opts) {
   if (!errorMsg) sandbox.onClose();
   if (redirected.length) {
     // the main file only holds the pointer comment; the program is in the redirected file
-    return { text: redirected[0].lines.join("\n") + "\n", lines: redirected[0].lines, mainFileLines: out, redirectedPath: redirected[0].path, warnings, error: errorMsg, properties: sandbox.properties };
+    return { text: redirected[0].lines.join("\n") + "\n", lines: redirected[0].lines, mainFileLines: out, redirectedPath: redirected[0].path, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
   }
-  return { text: out.join("\n") + "\n", lines: out, warnings, error: errorMsg, properties: sandbox.properties };
+  return { text: out.join("\n") + "\n", lines: out, warnings, error: errorMsg, properties: sandbox.properties, fsOps };
 }
 
 module.exports = { run, makeTool };
