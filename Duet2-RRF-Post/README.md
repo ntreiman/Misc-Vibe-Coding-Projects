@@ -243,7 +243,7 @@ error: there is no rigid tapping on this firmware and expansion would rely on sp
 
 ## Descriptive output file name
 
-With the property **Descriptive output file name** checked, the program is written to
+With the property **Descriptive output file name** checked (the default), the program is written to
 
 ```
 op_<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode
@@ -329,7 +329,7 @@ the descriptive file already exists it is overwritten.
 | Radius arcs | on | `R` instead of `I`/`J` |
 | Write machine / tool list / version | on | Header comments |
 | End program with M0 | off | `M0` runs `stop.g`, idles drives, un-homes axes |
-| Descriptive output file name | off | Write to `op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
+| Descriptive output file name | on | Write to `op_<n>_<diameter>_<tool type>_<rpm>RPM.gcode`, see below |
 | Descriptive file name prefix | op | op / None / operation name(s) / program name |
 
 ### 8- Linear Backlash Compensation

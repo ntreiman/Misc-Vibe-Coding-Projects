@@ -8,6 +8,10 @@ Every RepRapFirmware claim below was checked against the RRF 2.05.1 source tree
 (`src/GCodes/GCodes.cpp`, `GCodes2.cpp`, `GCodes3.cpp`, `GCodeBuffer.cpp`, `RepRap.cpp`) and the Duet
 G-code dictionary (https://docs.duet3d.com/User_manual/Reference/Gcodes).
 
+## 2.4 (2026-11-22)
+
+- **Descriptive output file name** is now on by default.
+
 ## 2.3 (2026-11-22)
 
 - Descriptive file name is now `op_<tool number>_<diameter>_<tool type>_<rpm>RPM.gcode` by default
